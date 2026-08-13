@@ -6,6 +6,7 @@ from st_guitar_fingering_training.dataset import VoicingCandidateRow
 from st_guitar_fingering_training.training import (
     evaluate_low_total_fret_voicing_baseline,
     evaluate_ranker,
+    filter_ambiguous_ranking_rows,
 )
 
 
@@ -48,6 +49,16 @@ class TrainingTests(unittest.TestCase):
         self.assertEqual(metrics.events, 1)
         self.assertEqual(metrics.top1_accuracy, 1.0)
         self.assertEqual(metrics.mean_reciprocal_rank, 1.0)
+
+    def test_filter_ambiguous_ranking_rows_excludes_trivial_events(self):
+        rows = (
+            self._row("single", ((60, 2, 1), (64, 1, 0)), 1, 0.9),
+            self._row("ambiguous", ((60, 2, 1), (64, 1, 0)), 1, 0.9),
+            self._row("ambiguous", ((60, 3, 5), (64, 2, 5)), 0, 0.1),
+        )
+        filtered = filter_ambiguous_ranking_rows(rows)
+        self.assertEqual({row.event_id for row in filtered}, {"ambiguous"})
+        self.assertEqual(len(filtered), 2)
 
 
 if __name__ == "__main__":
