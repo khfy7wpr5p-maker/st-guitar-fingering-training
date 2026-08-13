@@ -43,6 +43,14 @@ EXPECTED_SIGNS = {
     },
 }
 
+FOCUS_FEATURE = {
+    "open_low": "open_ratio",
+    "compact": "fret_span",
+    "mid_position": "distance_to_fret5",
+    "high_position": "distance_to_fret9",
+    "common_tone": "shared_pitch_same_string_ratio",
+}
+
 
 @dataclass(frozen=True)
 class BehaviorRow:
@@ -140,7 +148,8 @@ def build_behavior_rows(sources: Iterable[ParsedSource], style: str) -> tuple[Be
                     observed=int(candidate == observed),
                     features=_feature_vector(style, candidate, previous),
                 ))
-            previous = observed
+            if style == "common_tone":
+                previous = observed
     return tuple(rows)
 
 
@@ -202,9 +211,96 @@ def coefficient_report(model, style: str) -> dict:
         name: bool(np.sign(values[name]) == sign)
         for name, sign in expected.items()
     }
+    focus = FOCUS_FEATURE[style]
     return {
+        "feature_space": "standardized",
         "coefficients": values,
         "expected_direction_match": matches,
         "expected_direction_matches": sum(matches.values()),
         "expected_direction_total": len(matches),
+        "focus_feature": focus,
+        "focus_expected_sign": expected[focus],
+        "focus_direction_match": matches[focus],
+    }
+
+
+def behavior_cross_validation_report(
+    sources: Iterable[ParsedSource],
+    style: str,
+    folds: int = 5,
+) -> dict:
+    """Evaluate one synthetic behavior specialist with family-isolated folds.
+
+    The five behavior styles are intentionally evaluated independently. For
+    common_tone, previous-voicing context is the observed previous voicing
+    inside the same synthetic family; the report marks that context explicitly
+    as teacher-forced diagnostic context. No model/checkpoint is serialized.
+    """
+    if style not in STYLES:
+        raise ValueError(f"unsupported synthetic behavior style: {style}")
+    sources = tuple(sources)
+    family_ids = tuple(sorted({source.family_id for source in sources}))
+    fold_family_ids = deterministic_style_folds(family_ids, folds=folds)
+    rows = build_behavior_rows(sources, style)
+    if not rows:
+        raise ValueError("no synthetic behavior rows for cross-validation")
+
+    fold_reports = []
+    coefficient_values: dict[str, list[float]] = {name: [] for name in FEATURE_NAMES[style]}
+    direction_matches: dict[str, int] = {name: 0 for name in EXPECTED_SIGNS[style]}
+
+    for fold_index, validation_ids_tuple in enumerate(fold_family_ids):
+        validation_ids = set(validation_ids_tuple)
+        train_ids = set(family_ids) - validation_ids
+        if not train_ids or train_ids & validation_ids:
+            raise AssertionError("family leakage in synthetic behavior cross-validation")
+
+        train_rows = tuple(row for row in rows if row.family_id in train_ids)
+        validation_rows = tuple(row for row in rows if row.family_id in validation_ids)
+        if {row.family_id for row in train_rows} & {row.family_id for row in validation_rows}:
+            raise AssertionError("family leakage across synthetic behavior rows")
+
+        model = train_behavior_ranker(train_rows)
+        metrics = evaluate_behavior_ranker(model, validation_rows)
+        coefficients = coefficient_report(model, style)
+        for name, value in coefficients["coefficients"].items():
+            coefficient_values[name].append(value)
+        for name, matched in coefficients["expected_direction_match"].items():
+            direction_matches[name] += int(matched)
+
+        fold_reports.append({
+            "fold": fold_index + 1,
+            "train_families": sorted(train_ids),
+            "validation_families": sorted(validation_ids),
+            "train_family_count": len(train_ids),
+            "validation_family_count": len(validation_ids),
+            "validation_events": metrics.events,
+            "top1": metrics.top1_accuracy,
+            "mrr": metrics.mean_reciprocal_rank,
+            "uniform_random_top1": metrics.uniform_top1_baseline,
+            "top1_over_random": metrics.top1_accuracy - metrics.uniform_top1_baseline,
+            "coefficients": coefficients,
+        })
+
+    focus = FOCUS_FEATURE[style]
+    return {
+        "style": style,
+        "model_kind": "logistic_ranking_specialist",
+        "family_count": len(family_ids),
+        "fold_count": folds,
+        "family_isolated": True,
+        "previous_context": "teacher_forced_previous_voicing" if style == "common_tone" else "none",
+        "macro_top1": float(np.mean([fold["top1"] for fold in fold_reports])),
+        "macro_mrr": float(np.mean([fold["mrr"] for fold in fold_reports])),
+        "macro_uniform_random_top1": float(np.mean([fold["uniform_random_top1"] for fold in fold_reports])),
+        "macro_top1_over_random": float(np.mean([fold["top1_over_random"] for fold in fold_reports])),
+        "mean_standardized_coefficients": {
+            name: float(np.mean(values)) for name, values in coefficient_values.items()
+        },
+        "expected_direction_match_folds": direction_matches,
+        "focus_feature": focus,
+        "focus_expected_sign": EXPECTED_SIGNS[style][focus],
+        "focus_direction_match_folds": direction_matches[focus],
+        "folds": fold_reports,
+        "checkpoint_retained": False,
     }
