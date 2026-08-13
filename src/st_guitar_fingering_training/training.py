@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
+from hashlib import sha256
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -39,6 +40,25 @@ def filter_ambiguous_ranking_rows(rows):
         if len(event_rows) > 1:
             kept.extend(event_rows)
     return tuple(kept)
+
+
+def deterministic_family_folds(family_ids, folds: int = 5):
+    """Return stable, exhaustive, approximately balanced family-id folds.
+
+    Family IDs are ordered by SHA-256 and assigned round-robin. The function is
+    intentionally independent of event labels and candidate counts so fold membership
+    cannot leak ranking outcomes into validation selection.
+    """
+    unique = tuple(set(family_ids))
+    if folds < 2:
+        raise ValueError("fold count must be at least 2")
+    if len(unique) < folds:
+        raise ValueError("not enough families for requested fold count")
+    ordered = sorted(unique, key=lambda family_id: sha256(family_id.encode("utf-8")).hexdigest())
+    out = [[] for _ in range(folds)]
+    for index, family_id in enumerate(ordered):
+        out[index % folds].append(family_id)
+    return tuple(tuple(group) for group in out)
 
 
 def train_logistic_ranker(train_rows):
