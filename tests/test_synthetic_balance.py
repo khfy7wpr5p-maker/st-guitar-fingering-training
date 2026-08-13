@@ -2,7 +2,7 @@ import unittest
 
 from st_guitar_fingering_training.synthetic import generate_synthetic_family
 from st_guitar_fingering_training.synthetic_balanced import balanced_family_indices
-from st_guitar_fingering_training.synthetic_behavior import deterministic_style_folds
+from st_guitar_fingering_training.synthetic_behavior import _feature_vector, deterministic_style_folds
 
 
 class SyntheticBalanceTests(unittest.TestCase):
@@ -30,6 +30,16 @@ class SyntheticBalanceTests(unittest.TestCase):
         flattened = [family_id for fold in folds for family_id in fold]
         self.assertEqual(set(flattened), set(family_ids))
         self.assertEqual(len(flattened), len(set(flattened)))
+
+    def test_only_common_tone_requires_previous_voicing(self):
+        previous = ((60, 2, 1), (64, 3, 2), (67, 4, 3))
+        current = ((60, 2, 1), (65, 3, 3), (67, 4, 3))
+        self.assertEqual(len(_feature_vector("open_low", current, None)), 4)
+        with self.assertRaises(ValueError):
+            _feature_vector("common_tone", current, None)
+        features = _feature_vector("common_tone", current, previous)
+        self.assertAlmostEqual(features[0], 2 / 3)
+        self.assertAlmostEqual(features[2], 1.0)
 
 
 if __name__ == "__main__":
