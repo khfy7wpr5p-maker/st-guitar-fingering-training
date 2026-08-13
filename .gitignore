@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+
+# Real/user-provided corpus and derived private pilot material stay out of Git.
+data/
+quarantine/
+checkpoints/
+artifacts/
+pilot_family_map.json
+pilot_result*.json
+*.xml
+*.mxl
