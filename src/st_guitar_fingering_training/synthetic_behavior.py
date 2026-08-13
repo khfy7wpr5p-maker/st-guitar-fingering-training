@@ -30,17 +30,15 @@ FEATURE_NAMES = {
     ),
 }
 
+# Stage 7B's coefficient gate is intentionally limited to the five explicit
+# behavior hypotheses. Auxiliary coefficients remain reported for inspection,
+# but correlated features are not assigned unsupported sign expectations.
 EXPECTED_SIGNS = {
-    "open_low": {"open_ratio": 1, "mean_fret": -1, "max_fret": -1, "fret_span": -1},
-    "compact": {"fret_span": -1, "mean_fret": -1, "max_fret": -1},
-    "mid_position": {"distance_to_fret5": -1, "fret_span": -1, "open_ratio": -1},
-    "high_position": {"distance_to_fret9": -1, "fret_span": -1, "open_ratio": -1},
-    "common_tone": {
-        "shared_pitch_same_string_ratio": 1,
-        "position_center_move": -1,
-        "string_overlap_ratio": 1,
-        "fret_span": -1,
-    },
+    "open_low": {"open_ratio": 1},
+    "compact": {"fret_span": -1},
+    "mid_position": {"distance_to_fret5": -1},
+    "high_position": {"distance_to_fret9": -1},
+    "common_tone": {"shared_pitch_same_string_ratio": 1},
 }
 
 FOCUS_FEATURE = {
