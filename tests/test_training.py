@@ -4,6 +4,7 @@ import numpy as np
 
 from st_guitar_fingering_training.dataset import VoicingCandidateRow
 from st_guitar_fingering_training.training import (
+    deterministic_family_folds,
     evaluate_low_total_fret_voicing_baseline,
     evaluate_ranker,
     filter_ambiguous_ranking_rows,
@@ -59,6 +60,22 @@ class TrainingTests(unittest.TestCase):
         filtered = filter_ambiguous_ranking_rows(rows)
         self.assertEqual({row.event_id for row in filtered}, {"ambiguous"})
         self.assertEqual(len(filtered), 2)
+
+    def test_deterministic_family_folds_are_stable_balanced_and_exhaustive(self):
+        families = [f"fam-{index}" for index in range(25)]
+        first = deterministic_family_folds(families, folds=5)
+        second = deterministic_family_folds(reversed(families), folds=5)
+        self.assertEqual(first, second)
+        self.assertEqual([len(fold) for fold in first], [5, 5, 5, 5, 5])
+        flattened = [family for fold in first for family in fold]
+        self.assertEqual(set(flattened), set(families))
+        self.assertEqual(len(flattened), len(set(flattened)))
+
+    def test_deterministic_family_folds_reject_invalid_fold_count(self):
+        with self.assertRaises(ValueError):
+            deterministic_family_folds(["a", "b"], folds=1)
+        with self.assertRaises(ValueError):
+            deterministic_family_folds(["a", "b"], folds=3)
 
 
 if __name__ == "__main__":
