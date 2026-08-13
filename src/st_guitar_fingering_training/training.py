@@ -24,6 +24,23 @@ def _matrix(rows):
     return X, y
 
 
+def filter_ambiguous_ranking_rows(rows):
+    """Keep only event groups with at least two physical candidates.
+
+    Single-candidate chord events are valid musical events but not ranking problems.
+    Including them in ranking evaluation would make every method trivially correct
+    and inflate Top-1/MRR. The returned rows preserve original event grouping.
+    """
+    grouped = defaultdict(list)
+    for row in rows:
+        grouped[row.event_id].append(row)
+    kept = []
+    for event_rows in grouped.values():
+        if len(event_rows) > 1:
+            kept.extend(event_rows)
+    return tuple(kept)
+
+
 def train_logistic_ranker(train_rows):
     X, y = _matrix(train_rows)
     if set(y.tolist()) != {0, 1}:
