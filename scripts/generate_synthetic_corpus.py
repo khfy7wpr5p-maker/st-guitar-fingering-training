@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from st_guitar_fingering_training.intake import parse_guitar_musicxml
-from st_guitar_fingering_training.synthetic import generate_synthetic_corpus
+from st_guitar_fingering_training.synthetic_balanced import generate_balanced_synthetic_corpus
 
 
 def main() -> None:
@@ -19,11 +19,7 @@ def main() -> None:
     if output.exists() and any(output.glob("*.xml")):
         raise ValueError("output directory already contains XML; use a new/empty directory")
 
-    summary = generate_synthetic_corpus(
-        output,
-        families=args.families,
-        events_per_family=args.events_per_family,
-    )
+    summary = generate_balanced_synthetic_corpus(output, families=args.families, events_per_family=args.events_per_family)
     family_map = json.loads((output / "family_map.json").read_text(encoding="utf-8"))
 
     parsed_events = 0
@@ -39,6 +35,11 @@ def main() -> None:
 
     if parsed_events != args.families * args.events_per_family:
         raise AssertionError("synthetic corpus total event-count mismatch")
+    if args.families == 100:
+        if sorted(summary["styles"].values()) != [20] * 5:
+            raise AssertionError("default corpus style distribution must be 20 x 5")
+        if sorted(summary["progressions"].values()) != [20] * 5:
+            raise AssertionError("default corpus progression distribution must be 20 x 5")
 
     report = dict(summary)
     report.update({
