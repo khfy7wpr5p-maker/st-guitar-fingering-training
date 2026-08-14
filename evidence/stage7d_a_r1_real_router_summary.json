@@ -1,0 +1,175 @@
+{
+  "schema": "st-guitar-stage7d-a-r1-real-router-v1",
+  "run_date": "2026-08-14",
+  "stage": "7D-A-R1",
+  "status": "DIAGNOSTIC_POSITIVE_ROUTER",
+  "protocol_head_sha": "0d6f11268fac0f4f761fa2188e37a846df2fb57b",
+  "corpus": {
+    "unique_admitted_xml": 33,
+    "broad_families": 25,
+    "chord_events": 1879,
+    "evaluated_families": 24,
+    "ambiguous_router_events": 1828,
+    "historical_stage6_chord_crosscheck": 1879
+  },
+  "reproduction_guard": {
+    "open_low_top1": 0.7915754923413567,
+    "compact_top1": 0.6203501094091903,
+    "mid_position_top1": 0.13074398249452954,
+    "high_position_top1": 0.05908096280087528,
+    "matches_stage7c_r1_stateless_specialists_exactly": true
+  },
+  "router": {
+    "kind": "target_blind_stateless_specialist_success_router",
+    "styles": [
+      "open_low",
+      "compact",
+      "mid_position",
+      "high_position"
+    ],
+    "common_tone_included": false,
+    "observed_target_in_features": false,
+    "label_semantics": "specialist_top1_matches_observed_behavior_not_teacher_gold",
+    "fold_count": 5,
+    "family_isolated": true,
+    "macro_router_top1": 0.8386507946895563,
+    "macro_always_open_low_top1": 0.7967706271049415,
+    "macro_delta_vs_open_low": 0.04188016758461477,
+    "event_weighted_router_top1": 0.8309628008752735,
+    "event_weighted_always_open_low_top1": 0.7915754923413567,
+    "event_weighted_delta_vs_open_low": 0.03938730853391681,
+    "macro_stateless_oracle_coverage": 0.9353721802677292,
+    "event_weighted_stateless_oracle_coverage": 0.9305251641137856,
+    "fold_wins": 4,
+    "fold_ties": 0,
+    "fold_losses": 1,
+    "family_wins": 16,
+    "family_ties": 7,
+    "family_losses": 1,
+    "selected_style_counts": {
+      "open_low": 1567,
+      "compact": 261,
+      "mid_position": 0,
+      "high_position": 0
+    }
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "validation_families": [
+        "[HUNTER×HUNTER]魂魄之挽歌C调",
+        "[魔力女管家]归途",
+        "[Fate_Stay_Night]孤独的巡礼",
+        "[Final_Fantasy]Breezy",
+        "[Final_Fantasy]Melodies_of_life"
+      ],
+      "events": 178,
+      "router_top1": 0.9044943820224719,
+      "always_open_low_top1": 0.848314606741573,
+      "delta": 0.0561797752808989,
+      "stateless_oracle_coverage": 0.9719101123595506,
+      "selected_style_counts": {
+        "open_low": 165,
+        "compact": 13,
+        "mid_position": 0,
+        "high_position": 0
+      }
+    },
+    {
+      "fold": 2,
+      "validation_families": [
+        "[黑猫]世界之歌",
+        "[BLEACH]HANABI(花火)",
+        "[龙猫]风之涌道",
+        "[魔兽世界]亡灵序曲",
+        "[Crazy_Arcade]小区"
+      ],
+      "events": 356,
+      "router_top1": 0.8258426966292135,
+      "always_open_low_top1": 0.7640449438202247,
+      "delta": 0.0617977528089888,
+      "stateless_oracle_coverage": 0.9410112359550562,
+      "selected_style_counts": {
+        "open_low": 330,
+        "compact": 26,
+        "mid_position": 0,
+        "high_position": 0
+      }
+    },
+    {
+      "fold": 3,
+      "validation_families": [
+        "[Final_Fantasy]斯毕拉的视野",
+        "[魔女宅急便]风之丘",
+        "[千与千寻]幻化成风",
+        "[黑猫警长]黑猫警长OP",
+        "[魔兽世界]temple_of_the_moon"
+      ],
+      "events": 412,
+      "router_top1": 0.8033980582524272,
+      "always_open_low_top1": 0.7451456310679612,
+      "delta": 0.058252427184466,
+      "stateless_oracle_coverage": 0.8932038834951457,
+      "selected_style_counts": {
+        "open_low": 367,
+        "compact": 45,
+        "mid_position": 0,
+        "high_position": 0
+      }
+    },
+    {
+      "fold": 4,
+      "validation_families": [
+        "[魔女宅急便]能看见海的城市",
+        "[Fate_Stay_Night]光",
+        "[Final_Fantasy]久远的光波记忆",
+        "[魔女宅急便]母亲的扫帚",
+        "[Final_Fantasy]Loss_of_me"
+      ],
+      "events": 465,
+      "router_top1": 0.853763440860215,
+      "always_open_low_top1": 0.8086021505376344,
+      "delta": 0.0451612903225806,
+      "stateless_oracle_coverage": 0.9354838709677419,
+      "selected_style_counts": {
+        "open_low": 399,
+        "compact": 66,
+        "mid_position": 0,
+        "high_position": 0
+      }
+    },
+    {
+      "fold": 5,
+      "validation_families": [
+        "[千与千寻]与你同在",
+        "[KOKIA]ありがとう(谢谢)",
+        "[EVA]残酷的天使纲领",
+        "[Final_Fantasy]To_Zanarkand"
+      ],
+      "events": 417,
+      "router_top1": 0.8057553956834532,
+      "always_open_low_top1": 0.8177458033573142,
+      "delta": -0.011990407673861,
+      "stateless_oracle_coverage": 0.935251798561151,
+      "selected_style_counts": {
+        "open_low": 306,
+        "compact": 111,
+        "mid_position": 0,
+        "high_position": 0
+      }
+    }
+  ],
+  "macro_family": {
+    "router_top1": 0.8468893440769731,
+    "always_open_low_top1": 0.7987829517217305,
+    "delta": 0.04810639235524261,
+    "stateless_oracle_coverage": 0.9401126162984523
+  },
+  "safety": {
+    "physical_candidates": "deterministic_only",
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "real_xml_committed_to_git": false
+  },
+  "interpretation": "The first target-blind stateless router produces a positive family-isolated diagnostic result and beats always-open-low overall. It learned an effective open_low-versus-compact gate and never selected the poorly transferring mid/high specialists. One fold and one family still lose, so the result is not yet a production promotion gate."
+}
