@@ -234,6 +234,12 @@ def parse_target_free_musicxml(
             if tag != "note":
                 continue
 
+            # Grace notes are intentionally outside the Stage 7G-C v1 chord corpus.
+            # MusicXML commonly omits duration for them and they must not advance the
+            # rhythmic cursor or be reinterpreted as simultaneous chord pitches.
+            if _first_child(child, "grace") is not None:
+                continue
+
             chord = _first_child(child, "chord") is not None
             duration = int(_child_text(child, "duration") or 0)
             if duration <= 0:
