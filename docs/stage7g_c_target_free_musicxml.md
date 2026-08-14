@@ -15,6 +15,8 @@ The source supplies musical pitch/rhythm structure only. Physical guitar placeme
 - Multi-part scores require an explicit `part_id`.
 - Multi-staff scores require an explicit `staff_id`.
 - If MusicXML declares staff tuning, it must agree with the explicit tuning.
+- Grace notes are excluded from the Stage 7G-C v1 chord corpus. They do not advance the rhythmic cursor and are not reinterpreted as simultaneous chord pitches.
+- Non-grace notes/rests still require a positive duration and fail closed otherwise.
 - Stage 7E final-test source hashes/origins remain forbidden by the existing annotation sampling quarantine.
 - No Teacher-GOLD labels are created by intake.
 - No model is fitted, no checkpoint is retained, and no production integration is authorized.
@@ -38,6 +40,10 @@ blind Teacher-GOLD task
 ## Why pitch mode is explicit
 
 Existing GP/TAB intake can compare MusicXML pitch with technical string/fret placement and determine whether the XML is already sounding pitch or written an octave above physical guitar pitch. A target-free source has no trusted physical target for that comparison. Guessing would silently shift every candidate by an octave, so Stage 7G-C fails closed instead.
+
+## Grace-note boundary
+
+MusicXML grace notes commonly omit `<duration>`. Stage 7G-C v1 is a chord-placement preference corpus, not an ornament-performance model, so grace notes are deliberately outside its event vocabulary. Skipping them avoids turning ornaments into false simultaneous chord pitches while preserving fail-closed duration validation for ordinary notes and rests.
 
 ## Next gate
 
