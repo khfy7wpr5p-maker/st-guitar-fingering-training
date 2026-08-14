@@ -49,6 +49,32 @@ def _score(*, pitches=(60, 64, 67), include_technical=False, two_parts=False) ->
     )
 
 
+def _score_with_grace() -> str:
+    return (
+        '<score-partwise version="4.0">'
+        '<identification><encoding><software>target-free-test</software></encoding></identification>'
+        '<part-list><score-part id="P1"><part-name>Guitar</part-name></score-part></part-list>'
+        '<part id="P1"><measure number="1">'
+        '<note><grace/><pitch><step>D</step><octave>4</octave></pitch><voice>1</voice></note>'
+        '<note><pitch><step>C</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice></note>'
+        '<note><chord/><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice></note>'
+        '<note><chord/><pitch><step>G</step><octave>4</octave></pitch><duration>1</duration><voice>1</voice></note>'
+        '</measure></part>'
+        '</score-partwise>'
+    )
+
+
+def _score_with_non_grace_missing_duration() -> str:
+    return (
+        '<score-partwise version="4.0">'
+        '<part-list><score-part id="P1"><part-name>Guitar</part-name></score-part></part-list>'
+        '<part id="P1"><measure number="1">'
+        '<note><pitch><step>C</step><octave>4</octave></pitch><voice>1</voice></note>'
+        '</measure></part>'
+        '</score-partwise>'
+    )
+
+
 class _FakeSpecialist:
     def __init__(self, reverse: bool = False) -> None:
         self.reverse = reverse
@@ -123,6 +149,18 @@ class TargetFreeMusicXMLTests(unittest.TestCase):
             [(event.measure, event.onset, event.voice, event.pitches_midi) for event in contaminated.events],
         )
         self.assertNotEqual(plain.source_sha256, contaminated.source_sha256)
+
+    def test_grace_notes_are_excluded_without_advancing_target_free_cursor(self) -> None:
+        source = self._parse(_score_with_grace())
+        self.assertEqual(len(source.events), 1)
+        event = source.events[0]
+        self.assertEqual(event.onset, 0)
+        self.assertEqual(event.duration, 1)
+        self.assertEqual(event.pitches_midi, (60, 64, 67))
+
+    def test_non_grace_note_without_positive_duration_still_fails_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "note/rest duration must be positive"):
+            self._parse(_score_with_non_grace_missing_duration())
 
 
 if __name__ == "__main__":
