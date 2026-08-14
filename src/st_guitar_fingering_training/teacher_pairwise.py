@@ -45,7 +45,7 @@ def build_pairwise_teacher_manifests(
     *,
     completed_task_ids: Iterable[str] = (),
 ) -> tuple[dict, dict]:
-    """Build blind A/B teacher tasks from open_low-vs-compact disagreements.
+    """Build blind A/B teacher tasks from frozen specialist disagreements.
 
     The teacher-facing manifest contains only two physical TAB candidates labelled
     A and B. Specialist identities, model scores, source identity, family identity,
@@ -75,7 +75,7 @@ def build_pairwise_teacher_manifests(
         open_low = predictions["open_low"]
         compact = predictions["compact"]
         if open_low == compact or not diagnostic.open_low_compact_disagreement:
-            raise ValueError("pairwise teacher task must be an open_low-vs-compact disagreement")
+            raise ValueError("pairwise teacher task must be a frozen two-specialist disagreement")
 
         option_a_style, option_b_style = _blind_style_order(task.event_id)
         option_a = predictions[option_a_style]
@@ -120,7 +120,7 @@ def build_pairwise_teacher_manifests(
         "model_scores": "withheld",
         "observed_source_voicing": "withheld",
         "source_identity": "withheld",
-        "choice_semantics": "pairwise_open_low_vs_compact_preference",
+        "choice_semantics": "pairwise_guitaristic_preference",
         "allowed_responses": list(PAIRWISE_RESPONSES),
         "task_count": len(teacher_rows),
         "tasks": teacher_rows,
