@@ -1,0 +1,56 @@
+{
+  "schema": "st-guitar-stage7g-d-r1-teacher-batch-seal-v1",
+  "stage": "7G-D-R1",
+  "status": "SEALED_BLIND_ANNOTATION_BATCH_PENDING_HUMAN_LABELS",
+  "base_main_sha": "1dc0330b9c7c5a2e3d9ad4c59dc7d95cd5430788",
+  "batch_id": "stage7g_teacher_gold_batch01",
+  "source_batch": {
+    "stage": "7G-C-R1",
+    "clean_batch_zip_sha256": "2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710",
+    "independent_families": 40,
+    "eligible_ambiguous_events": 12714,
+    "open_low_compact_disagreement_events": 5626,
+    "any_stateless_disagreement_events": 12358,
+    "stage7e_final_reused": false
+  },
+  "annotation_selection": {
+    "teacher_labels_observed_before_selection": 0,
+    "priority_tier": "open_low_vs_compact_disagreement_only",
+    "candidate_count_cap": 20,
+    "candidate_count_cap_reason": "teacher_annotation_effort_guard_preregistered_before_human_labels",
+    "selection_input_after_tier_and_candidate_cap": 3011,
+    "families_with_at_least_15_eligible_events_after_cap": 40,
+    "selector": "existing_deterministic_family_balanced_round_robin",
+    "selected_tasks": 600,
+    "selected_families": 40,
+    "tasks_per_family": 15,
+    "selected_open_low_compact_disagreement": 600,
+    "selected_any_stateless_disagreement": 600,
+    "candidate_count_min": 8,
+    "candidate_count_mean": 16.788333333333334,
+    "candidate_count_max": 20
+  },
+  "teacher_facing_package": {
+    "teacher_manifest_schema": "st-guitar-stage7g-teacher-task-manifest-v1",
+    "teacher_manifest_sha256": "1617f7d584f22f1f357927c9cc00446f7fe95740e8987cb73fee5474cdcb1871",
+    "package_zip_sha256": "2a0c84ef3f86981c7fe162e421d762079c3b2f182d1602f5e889f6a5a7bd7852",
+    "package_zip_bytes": 159741,
+    "raw_musicxml_in_package": false,
+    "source_identity_in_teacher_manifest": false,
+    "specialist_predictions_in_teacher_manifest": false,
+    "observed_source_voicing_in_teacher_manifest": false,
+    "candidate_order": "deterministic_physical_candidate_order_not_model_ranked",
+    "annotation_ui_local_only": true,
+    "choice_export_schema": "st-guitar-stage7g-teacher-choice-export-v1"
+  },
+  "scientific_boundary": {
+    "teacher_gold_labels_created": 0,
+    "teacher_gold_corpus_gate_passed": false,
+    "teacher_gold_model_fit": false,
+    "training_authorized": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "colab_training_started": false
+  },
+  "interpretation": "The first 600 Teacher-GOLD tasks are sealed before any human preference labels exist. All tasks remain highest-priority open_low-vs-compact disagreements and family-balanced at 15 tasks across each of 40 independent families. A candidate-count cap of 20 is applied before deterministic selection solely to keep blind human annotation tractable; it does not use observed TAB targets or teacher labels."
+}
