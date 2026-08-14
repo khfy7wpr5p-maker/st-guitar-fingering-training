@@ -1,0 +1,74 @@
+{
+  "schema": "st-guitar-stage7g-e2-compact-error-diagnostic-protocol-v1",
+  "stage": "7G-E2",
+  "status": "PREREGISTERED_DIAGNOSTIC_ONLY",
+  "base_main_sha": "7e6bf817d474410e7b34f9256060f5b8b874a0f6",
+  "motivation": "Stage 7G-E1-R1 learned some compact-preference signal but underperformed the always-open_low baseline on teacher agreement.",
+  "inputs": {
+    "teacher_manifest_sha256": "3d3fbf9d0107ef8a1a31e597820b687a072fa0f2cc5123b8e59adbbf07e4a167",
+    "teacher_choice_export_sha256": "87aecd6f26f3aa450bb71524fd4205afefa77cb9aee8b8741577f8a0f169afde",
+    "decisive_events": 556,
+    "families": 40,
+    "equal_or_unsure_excluded": 6,
+    "first_38_full_candidate_choices_used": false,
+    "stage7e_used": false
+  },
+  "questions": [
+    "What are the exact out-of-fold false-positive and false-negative patterns from the frozen Stage 7G-E1 model?",
+    "How does teacher compact-preference rate vary across fixed target-blind proposal-geometry strata?",
+    "How heterogeneous are compact-preference rate and E1 out-of-fold accuracy across the 40 isolated families?"
+  ],
+  "fixed_geometry": {
+    "semantics": "compact_minus_open_low",
+    "names": [
+      "open_note_count",
+      "fretted_note_count",
+      "min_positive_fret",
+      "mean_positive_fret",
+      "max_fret",
+      "positive_fret_span",
+      "unique_positive_frets",
+      "max_same_positive_fret_count",
+      "string_span",
+      "adjacent_string_ratio",
+      "internal_string_gaps"
+    ],
+    "barre_note": "max_same_positive_fret_count is only a geometry proxy; it is not a left-hand fingering label."
+  },
+  "fixed_strata": {
+    "chord_size": ["2", "3", "4", "5_plus"],
+    "candidate_count": ["2_12", "13_16", "17_plus"],
+    "open_note_delta": ["negative", "zero", "positive"],
+    "mean_positive_fret_delta": ["negative_below_minus_1", "zero_within_plus_minus_1", "positive_above_plus_1"],
+    "positive_fret_span_delta": ["negative", "zero", "positive"],
+    "same_fret_barre_proxy_delta": ["negative", "zero", "positive"],
+    "internal_string_gaps_delta": ["negative", "zero", "positive"]
+  },
+  "e1_oof_reproduction": {
+    "fold_count": 5,
+    "family_isolated": true,
+    "model_kind": "fixed Stage 7G-E1 StandardScaler + balanced LogisticRegression",
+    "decision_threshold": 0.5,
+    "hyperparameters_changed": false,
+    "threshold_changed": false
+  },
+  "outputs": {
+    "confusion_counts": true,
+    "fixed_strata_aggregate_rates": true,
+    "family_level_aggregate_rates": true,
+    "raw_teacher_rows_in_git": false,
+    "event_level_predictions_in_git": false
+  },
+  "scientific_boundary": {
+    "diagnostic_only": true,
+    "new_model_fit": false,
+    "feature_selection": false,
+    "threshold_tuning": false,
+    "hyperparameter_search": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_reused": false,
+    "sequence_context_used": false,
+    "future_hypothesis_from_this_diagnostic_requires_new_disjoint_teacher_gold_or_separately_preregistered_nested_evaluation": true
+  }
+}
