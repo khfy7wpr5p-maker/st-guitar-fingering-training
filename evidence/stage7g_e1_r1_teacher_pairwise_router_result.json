@@ -1,0 +1,132 @@
+{
+  "schema": "st-guitar-stage7g-e1-r1-teacher-pairwise-router-result-v1",
+  "stage": "7G-E1-R1",
+  "status": "NEGATIVE_DEVELOPMENT_CV_NO_PROMOTION",
+  "protocol_main_sha": "bd6e894fd239f521f1880240d701cf2f6a5c234a",
+  "execution": {
+    "runtime": "deterministic local reproduction of the merged Stage 7G-E1 protocol",
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "scikit_learn": "1.8.0",
+    "colab_directly_executed": false,
+    "colab_reproduction_notebook_prepared_externally": true
+  },
+  "inputs": {
+    "teacher_manifest_sha256": "3d3fbf9d0107ef8a1a31e597820b687a072fa0f2cc5123b8e59adbbf07e4a167",
+    "teacher_choice_export_sha256": "87aecd6f26f3aa450bb71524fd4205afefa77cb9aee8b8741577f8a0f169afde",
+    "pairwise_tasks": 562,
+    "decisive_rows": 556,
+    "equal_or_unsure_excluded": 6,
+    "families": 40,
+    "decoded_teacher_preference": {
+      "open_low": 433,
+      "compact": 123
+    },
+    "first_38_full_candidate_choices_used": false,
+    "stage7e_used": false
+  },
+  "model": {
+    "kind": "target_blind_stateless_open_low_vs_compact_router",
+    "feature_count": 15,
+    "scaler": "StandardScaler",
+    "classifier": "LogisticRegression",
+    "max_iter": 2000,
+    "class_weight": "balanced",
+    "C": 1.0,
+    "solver": "lbfgs",
+    "random_state": 0,
+    "decision_threshold": 0.5,
+    "hyperparameter_search": false
+  },
+  "validation": {
+    "fold_count": 5,
+    "family_isolated": true,
+    "macro_family_accuracy": 0.7037179487179487,
+    "macro_family_always_open_low_accuracy": 0.7794505494505495,
+    "macro_family_accuracy_delta_vs_always_open_low": -0.0757326007326008,
+    "event_weighted_accuracy": 0.7050359712230215,
+    "event_weighted_always_open_low_accuracy": 0.7787769784172662,
+    "event_weighted_accuracy_delta_vs_always_open_low": -0.0737410071942447,
+    "macro_fold_balanced_accuracy": 0.6413099870941668,
+    "macro_fold_open_low_recall": 0.7528982040573563,
+    "macro_fold_compact_recall": 0.5297217701309773,
+    "folds": [
+      {
+        "fold": 1,
+        "validation_families": ["animetab7gc31", "animetab7gc26", "animetab7gc23", "animetab7gc16", "animetab7gc24", "animetab7gc12", "animetab7gc11", "animetab7gc01"],
+        "validation_events": 112,
+        "accuracy": 0.7767857142857143,
+        "always_open_low_accuracy": 0.7946428571428571,
+        "accuracy_delta_vs_always_open_low": -0.017857142857142794,
+        "balanced_accuracy": 0.730581338544211,
+        "open_low_recall": 0.8089887640449438,
+        "compact_recall": 0.6521739130434783,
+        "predicted_compact": 32
+      },
+      {
+        "fold": 2,
+        "validation_families": ["animetab7gc37", "animetab7gc06", "animetab7gc29", "animetab7gc17", "animetab7gc18", "animetab7gc36", "animetab7gc40", "animetab7gc38"],
+        "validation_events": 111,
+        "accuracy": 0.8018018018018018,
+        "always_open_low_accuracy": 0.8018018018018018,
+        "accuracy_delta_vs_always_open_low": 0.0,
+        "balanced_accuracy": 0.7053115423901941,
+        "open_low_recall": 0.8651685393258427,
+        "compact_recall": 0.5454545454545454,
+        "predicted_compact": 24
+      },
+      {
+        "fold": 3,
+        "validation_families": ["animetab7gc34", "animetab7gc28", "animetab7gc19", "animetab7gc35", "animetab7gc30", "animetab7gc20", "animetab7gc08", "animetab7gc15"],
+        "validation_events": 112,
+        "accuracy": 0.6696428571428571,
+        "always_open_low_accuracy": 0.7857142857142857,
+        "accuracy_delta_vs_always_open_low": -0.1160714285714286,
+        "balanced_accuracy": 0.5473484848484849,
+        "open_low_recall": 0.7613636363636364,
+        "compact_recall": 0.3333333333333333,
+        "predicted_compact": 29
+      },
+      {
+        "fold": 4,
+        "validation_families": ["animetab7gc33", "animetab7gc07", "animetab7gc22", "animetab7gc27", "animetab7gc02", "animetab7gc39", "animetab7gc09", "animetab7gc32"],
+        "validation_events": 108,
+        "accuracy": 0.5462962962962963,
+        "always_open_low_accuracy": 0.8148148148148148,
+        "accuracy_delta_vs_always_open_low": -0.2685185185185185,
+        "balanced_accuracy": 0.5284090909090908,
+        "open_low_recall": 0.5568181818181818,
+        "compact_recall": 0.5,
+        "predicted_compact": 49
+      },
+      {
+        "fold": 5,
+        "validation_families": ["animetab7gc14", "animetab7gc03", "animetab7gc05", "animetab7gc04", "animetab7gc25", "animetab7gc13", "animetab7gc21", "animetab7gc10"],
+        "validation_events": 113,
+        "accuracy": 0.7256637168141593,
+        "always_open_low_accuracy": 0.6991150442477876,
+        "accuracy_delta_vs_always_open_low": 0.026548672566371723,
+        "balanced_accuracy": 0.6948994787788534,
+        "open_low_recall": 0.7721518987341772,
+        "compact_recall": 0.6176470588235294,
+        "predicted_compact": 39
+      }
+    ]
+  },
+  "interpretation": {
+    "primary_baseline_beaten": false,
+    "router_learns_some_minority_compact_signal": true,
+    "overall_teacher_agreement_is_worse_than_always_open_low": true,
+    "post_hoc_threshold_or_hyperparameter_tuning_performed": false,
+    "promotion_decision": "NO_PROMOTION"
+  },
+  "scientific_boundary": {
+    "development_cv_only": true,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_reused": false,
+    "sequence_context_used": false,
+    "raw_teacher_rows_committed_to_git": false,
+    "checkpoint_gate_defined_from_this_cv": false
+  }
+}
