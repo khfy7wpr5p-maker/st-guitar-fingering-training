@@ -1,0 +1,107 @@
+{
+  "schema": "st-guitar-stage7g-e3-a-curriculum-contract-v1",
+  "stage": "7G-E3-A",
+  "status": "CURRICULUM_CONTRACT_PENDING_MERGE",
+  "base_main_sha": "4949d14f95049d8eb58e1c41ff7818aba4137242",
+  "purpose": "freeze_target_blind_easy_to_hard_guitar_ergonomics_curriculum_before_generation_or_training",
+  "curriculum": {
+    "levels": [
+      "L1",
+      "L2",
+      "L3",
+      "L4"
+    ],
+    "assignment_is_target_blind": true,
+    "strong_contrast_thresholds": {
+      "open_note_count": 1.0,
+      "fretted_note_count": 1.0,
+      "mean_positive_fret": 3.0,
+      "positive_fret_span": 2.0,
+      "string_span": 2.0,
+      "internal_string_gaps": 1.0
+    },
+    "level_rules": {
+      "L1": "chord_size==2 AND candidate_count<=12 AND strong_contrast_count>=2",
+      "L2": "not_L1 AND chord_size<=3 AND candidate_count<=20 AND strong_contrast_count>=1",
+      "L3": "not_L1_L2 AND chord_size<=4 AND candidate_count<=40",
+      "L4": "all_remaining_valid_open_low_vs_compact_disagreements"
+    },
+    "threshold_semantics": "difficulty_routing_only_not_teacher_preference_rules"
+  },
+  "feature_contract": {
+    "context_features": 7,
+    "proposal_geometry_features_per_specialist": 11,
+    "proposal_delta_features": 11,
+    "total_features": 40,
+    "delta_semantics": "compact_minus_open_low",
+    "geometry_semantics_reuse_stage7g_e2": true,
+    "target_in_features": false,
+    "family_identity_in_features": false,
+    "source_identity_in_features": false,
+    "observed_tab_in_features": false,
+    "stage7e_information_in_features": false
+  },
+  "supervision": {
+    "rule_derived_property": {
+      "allowed_levels": [
+        "L1",
+        "L2"
+      ],
+      "teacher_preference_semantics": false,
+      "targets": [
+        "more_open_notes",
+        "fewer_fretted_notes",
+        "lower_mean_positive_fret",
+        "narrower_positive_fret_span",
+        "smaller_string_span",
+        "fewer_internal_string_gaps"
+      ],
+      "values": [
+        "OPEN_LOW",
+        "COMPACT",
+        "EQUAL"
+      ]
+    },
+    "teacher_gold": {
+      "allowed_levels": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "target": "pairwise_guitaristic_preference",
+      "values": [
+        "OPEN_LOW",
+        "COMPACT",
+        "EQUAL_OR_UNSURE"
+      ],
+      "annotation_blinded_required": true,
+      "equal_or_unsure_coerced": false
+    }
+  },
+  "data_boundaries": {
+    "existing_556_pairwise_labels": "development_consumed_not_fresh_benchmark",
+    "first_38_full_candidate_choices": "separate_label_type",
+    "family_isolation_required": true,
+    "new_performance_claim_requires_new_family_disjoint_teacher_gold": true,
+    "stage7e_reuse": false
+  },
+  "future_evaluation_minimum_metrics": [
+    "event_weighted_teacher_gold_agreement",
+    "macro_family_teacher_gold_agreement",
+    "compact_precision",
+    "compact_recall",
+    "compact_false_positive_count_or_rate",
+    "family_win_tie_loss_vs_always_open_low"
+  ],
+  "authorization": {
+    "curriculum_generator": false,
+    "teacher_annotation_pilot": false,
+    "model_fit": false,
+    "threshold_tuning": false,
+    "hyperparameter_search": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "automatic_learning_from_corrections": false
+  }
+}
