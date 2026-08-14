@@ -5,8 +5,17 @@
 - Reject unsupported string numbers, fret ranges, missing tuning, malformed durations, and impossible physical mappings.
 - Permit a source XML pitch differing by exactly +12 semitones only when the complete selected stream consistently demonstrates written-guitar octave notation; store this mode explicitly.
 - Never infer left-hand finger numbers from string/fret alone.
+- Deterministic guitar rules remain authoritative for physical validity; learned models may only score/rank/route already-valid candidates.
 - No user upload or teacher correction is automatic training consent.
 - Copyrighted/rights-unclear source files remain outside Git.
 - Training/evaluation split is by source family, never by individual event.
+- Observed corpus placement, rule-derived synthetic targets, blind pairwise Teacher-GOLD, and blind full-candidate Teacher-GOLD are distinct label types and must never be silently mixed.
+- `EQUAL_OR_UNSURE` teacher responses are preserved and are never coerced into A/B.
+- Stage 7E is permanently consumed/evaluation-only. It is forbidden for training, tuning, calibration, feature selection, or new validation.
+- The 556 decisive Stage 7G pairwise labels are consumed development evidence. Stage 7G-E2 patterns may generate hypotheses, but the same labels may not be used for post-hoc tuning and then presented as fresh validation.
+- A simpler curriculum may accelerate learning, but rule-derived curriculum examples are not Teacher-GOLD and cannot substitute for independent teacher validation.
+- Any E3-derived model change must use either a separately preregistered nested family-isolated development design or new family-disjoint Teacher-GOLD evidence.
 - A validation result is not a production-quality claim.
+- Checkpoint-retention criteria must be fixed before the untouched evaluation used to decide retention.
 - A true sealed benchmark requires fresh, separately controlled material not inspected during development.
+- GuitarTab Engine production/shadow integration remains closed until an explicit later gate authorizes it.
