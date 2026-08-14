@@ -1,0 +1,80 @@
+{
+  "schema": "st-guitar-stage7g-d-r3-pairwise-label-evidence-v1",
+  "stage": "7G-D-R3",
+  "status": "PAIRWISE_LABEL_GATE_PASS_PENDING_MERGE",
+  "base_main_sha": "a5f4df08235c829a8f920278ada6b317b10cbe0b",
+  "source_annotation": {
+    "schema": "st-guitar-stage7g-pairwise-choice-export-v1",
+    "raw_export_sha256": "87aecd6f26f3aa450bb71524fd4205afefa77cb9aee8b8741577f8a0f169afde",
+    "teacher_manifest_sha256": "3d3fbf9d0107ef8a1a31e597820b687a072fa0f2cc5123b8e59adbbf07e4a167",
+    "annotation_blinded": true,
+    "annotator_id": "teacher_001",
+    "reported_selected_count": 562,
+    "reported_task_count": 562,
+    "raw_choice_rows_committed_to_git": false
+  },
+  "validation": {
+    "known_manifest_tasks": 562,
+    "validated_choice_rows": 562,
+    "unknown_task_ids": 0,
+    "duplicate_task_ids": 0,
+    "invalid_responses": 0,
+    "missing_task_ids": 0,
+    "complete_export": true,
+    "manifest_sha256_matches_sealed_r2_package": true
+  },
+  "responses": {
+    "A": 252,
+    "B": 304,
+    "EQUAL_OR_UNSURE": 6,
+    "decisive_ab": 556,
+    "decisive_rate": 0.9893238434163701
+  },
+  "blind_side_assignment_audit": {
+    "A_is_open_low": 278,
+    "A_is_compact": 284,
+    "assignment_rule": "sha256(task_id + '|stage7g-pairwise-v1') low-bit; fixed before teacher response"
+  },
+  "decoded_teacher_preference": {
+    "scope": "only the preselected open_low-vs-compact disagreement tasks; not population prevalence and not production accuracy",
+    "open_low": 433,
+    "compact": 123,
+    "EQUAL_OR_UNSURE": 6,
+    "open_low_share_of_decisive": 0.7787769784172662,
+    "compact_share_of_decisive": 0.22122302158273383,
+    "family_majority": {
+      "open_low": 37,
+      "compact": 2,
+      "tie": 1
+    }
+  },
+  "family_coverage": {
+    "family_identity_basis": "Stage 7G-C-R1 pins one preselected source as one Batch01 family; task_id source-hash prefix uniquely identifies all 40 sources",
+    "families_with_any_pairwise_label": 40,
+    "families_with_decisive_ab_label": 40,
+    "minimum_decisive_labels_per_family": 10,
+    "maximum_decisive_labels_per_family": 15
+  },
+  "preregistered_pairwise_training_gate": {
+    "minimum_decisive_ab_labels": 400,
+    "observed_decisive_ab_labels": 556,
+    "minimum_independent_families_with_decisive_labels": 30,
+    "observed_independent_families_with_decisive_labels": 40,
+    "equal_or_unsure_preserved_and_not_coerced": true,
+    "family_isolated_validation_required": true,
+    "gate_passed": true
+  },
+  "retained_full_candidate_preference": {
+    "validated_blind_choices": 38,
+    "semantics": "separate richer full-candidate preference evidence; not counted toward the pairwise gate"
+  },
+  "scientific_boundary": {
+    "model_fit_started": false,
+    "colab_training_started": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_final_reused": false,
+    "raw_teacher_rows_in_git": false
+  },
+  "interpretation": "The preregistered Stage 7G-D-R2 pairwise collection gate is met: 556 decisive blind A/B labels span all 40 independent Batch01 families. The teacher preferred the frozen open_low proposal on 433/556 decisive disagreement tasks and compact on 123/556, with 6 equal/unsure responses. This is a preference result on a disagreement-enriched sample, not deployable accuracy. Training may be proposed only after this evidence is reviewed/merged and must use family-isolated validation."
+}
