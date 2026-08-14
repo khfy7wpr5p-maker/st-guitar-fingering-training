@@ -1,0 +1,64 @@
+{
+  "schema": "st-guitar-stage7d-b-r1-real-rollout-v1",
+  "run_date": "2026-08-14",
+  "stage": "7D-B-R1",
+  "status": "FAIL_NO_PROMOTION",
+  "base_main_sha": "7e55c340008f5420cdd308fa730b491862022136",
+  "corpus": {
+    "raw_xml_files": 42,
+    "parser_accepted_files": 37,
+    "parser_rejected_files": 5,
+    "duplicate_extra_files": 4,
+    "unique_admitted_xml": 33,
+    "families": 25,
+    "chord_events": 1879
+  },
+  "reproduction_guard": {
+    "open_low_event_top1": 0.7915754923413567,
+    "open_low_events": 1828,
+    "common_tone_teacher_forced_event_top1": 0.7473567056204786,
+    "common_tone_teacher_forced_events": 1797,
+    "matches_stage7c_r1": true
+  },
+  "rollout": {
+    "seed_policy": "single_candidate_else_open_low_prediction",
+    "previous_context": "previous_system_prediction",
+    "observed_previous_voicing_in_rollout_features": false,
+    "seed_events": 32,
+    "deterministic_single_candidate_context_updates": 50,
+    "evaluated_ambiguous_post_seed_events": 1797,
+    "event_weighted_self_rollout_top1": 0.31552587646076796,
+    "event_weighted_teacher_forced_top1": 0.7473567056204786,
+    "event_weighted_always_open_low_top1_same_events": 0.7902058987200891,
+    "self_rollout_delta_vs_open_low": -0.4746800222593211,
+    "self_rollout_gap_vs_teacher_forced": -0.4318308291597106,
+    "context_divergence_rate": 0.667779632721202,
+    "macro_family_self_rollout_top1": 0.42302917298257814,
+    "macro_family_teacher_forced_top1": 0.7373320446856878,
+    "macro_family_always_open_low_top1": 0.7918321628561961,
+    "evaluated_families": 24,
+    "family_outcome_vs_open_low": {
+      "wins": 1,
+      "ties": 1,
+      "losses": 22
+    },
+    "family_outcome_vs_teacher_forced": {
+      "wins": 0,
+      "ties": 2,
+      "losses": 22
+    },
+    "family_context_divergence_vs_rollout_top1_correlation": -0.9770224723545474
+  },
+  "safety": {
+    "real_training_rows": 0,
+    "real_model_fit": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "real_xml_committed_to_git": false
+  },
+  "decision": {
+    "common_tone_self_rollout_promoted": false,
+    "common_tone_added_to_stage7d_a_router": false,
+    "reason": "Teacher-forced common-tone signal collapses when previous context is supplied by the system's own predictions. Error propagation causes high context divergence and a 47.47 percentage-point deficit versus always-open-low on the same events."
+  }
+}
