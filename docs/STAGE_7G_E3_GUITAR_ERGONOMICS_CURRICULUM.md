@@ -2,7 +2,9 @@
 
 ## Status
 
-**Architecture / research plan only. Training has not started.**
+**Active research architecture. Stage 7G-E3-A now freezes the curriculum/data contract; E3-B generation and all E3 model training have not started.**
+
+The authoritative E3-A details are in `docs/STAGE_7G_E3_A_CURRICULUM_CONTRACT.md` and `src/st_guitar_fingering_training/curriculum_contract.py` once that package is accepted on `main`.
 
 Stage 7G-E3 follows the negative Stage 7G-E1 Teacher-GOLD router result and the Stage 7G-E2 compact-preference diagnostic. It does not retroactively change E1 or retune the same 556 decisive labels.
 
@@ -100,35 +102,7 @@ Purpose: return to the real difficult problem only after the simpler representat
 
 ## Planned target-blind ergonomics representation
 
-The following groups are candidates for a preregistered E3 feature contract.
-
-### Current chord / candidate-set context
-
-- chord size;
-- pitch span;
-- candidate count;
-- candidate-set open-string prevalence;
-- candidate-set position/span summaries.
-
-### Proposal geometry
-
-For both `open_low` and `compact`:
-
-- open-note count;
-- fretted-note count;
-- minimum positive fret;
-- mean positive fret;
-- maximum fret;
-- positive-fret span;
-- unique positive-fret count;
-- maximum notes sharing one positive fret (barre-like proxy only);
-- string span;
-- adjacent-string ratio;
-- internal string gaps.
-
-### Pairwise proposal deltas
-
-Explicitly represent `compact - open_low` differences for the same descriptors. This allows the learner to model **how the alternative differs from the default**, rather than only describing each proposal independently.
+Stage 7G-E3-A freezes the raw representation at **40 descriptors**: 7 current-chord/candidate-set context values, 11 proposal-geometry values for each specialist, and 11 explicit `compact - open_low` deltas. Exact names and semantics live in the E3-A contract.
 
 No teacher response, source title, family identity, observed source TAB, or Stage 7E information may enter these features.
 
@@ -140,7 +114,7 @@ A curriculum can lower sample complexity by first presenting high-signal example
 
 The project therefore separates two roles:
 
-1. **rule-derived/synthetic curriculum data** — may teach physical/ergonomic structure cheaply;
+1. **rule-derived/synthetic curriculum data** — may teach measurable physical/ergonomic properties cheaply, but never claims teacher preference;
 2. **blind Teacher-GOLD data** — remains the authority for actual teacher preference.
 
 ## Planned stage breakdown
@@ -175,11 +149,11 @@ Test whether simpler tasks improve annotation speed/consistency while preserving
 
 The pilot must report annotation counts and agreement/uncertainty evidence without automatically fitting a production model.
 
-### 7G-E3-D — Nested/family-isolated development experiment
+### 7G-E3-D — Family-isolated development experiment
 
-Because E2 already exposed candidate hypotheses on the current 556 labels, any reuse of those labels for model development must be under a separately preregistered nested design. A model may not be tuned on the outer validation fold.
+The old 556 decisive labels are already development-consumed by E1/E2. They may support exploratory development, but they cannot supply a fresh E3 performance claim. New family-disjoint Teacher-GOLD development data is preferred.
 
-A cleaner alternative is new family-disjoint curriculum Teacher-GOLD development data.
+Any tuning on new development material must remain family-isolated and must not inspect the later E3-E validation set.
 
 ### 7G-E3-E — New untouched Teacher-GOLD validation
 
@@ -197,7 +171,8 @@ Only this later gate may authorize checkpoint retention. Production integration 
 
 At the time of this architecture update:
 
-- E3 curriculum generation: **not started**
+- E3-A curriculum contract: **prepared; merge gate required**
+- E3-B curriculum generation: **not started**
 - new E3 teacher labels: **0**
 - E3 model fit: **not started**
 - E3 checkpoint retained: **no**
