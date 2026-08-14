@@ -1,0 +1,35 @@
+{
+  "stage": "7G-C",
+  "status": "TARGET_FREE_MUSICXML_INTAKE_IMPLEMENTED",
+  "purpose": "Expand Teacher-GOLD source diversity without requiring pre-existing TAB or string/fret targets.",
+  "input_contract": {
+    "musicxml_root": "score-partwise",
+    "six_string_tuning_explicit": true,
+    "pitch_mode_explicit": true,
+    "supported_pitch_modes": [
+      "sounding_exact",
+      "written_octave_plus_12"
+    ],
+    "multi_part_requires_explicit_part_id": true,
+    "multi_staff_requires_explicit_staff_id": true,
+    "technical_string_fret_required": false,
+    "technical_string_fret_used": false
+  },
+  "candidate_contract": {
+    "physical_candidate_authority": "deterministic valid_chord_voicings()",
+    "minimum_candidates_for_annotation": 2,
+    "specialist_predictions_teacher_facing": false,
+    "source_observed_voicing_used": false
+  },
+  "quarantine": {
+    "stage7e_final_sources_allowed": false,
+    "enforced_by": "build_annotation_sampling_pool forbidden_source_hashes/origins"
+  },
+  "safety": {
+    "teacher_gold_labels": 0,
+    "model_fit": false,
+    "checkpoint_retained": false,
+    "production_integration": false
+  },
+  "next_gate": "Run independent target-free source intake and measure eligible family/event diversity before annotation."
+}
