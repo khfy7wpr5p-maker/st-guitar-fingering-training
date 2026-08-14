@@ -10,11 +10,15 @@ import numpy as np
 from .dataset import Voicing, valid_chord_voicings
 from .intake import ParsedSource
 from .synthetic_behavior import _feature_vector
+from .target_free_musicxml import TargetFreeSource
 from .teacher_gold import (
     STATELESS_SPECIALISTS,
     TeacherAnnotationTask,
     build_teacher_annotation_task,
 )
+
+
+SamplingSource = ParsedSource | TargetFreeSource
 
 
 @dataclass(frozen=True)
@@ -58,8 +62,22 @@ class TeacherAnnotationBatch:
     any_specialist_disagreement_selected: int
 
 
-def _event_id(source: ParsedSource, event, index: int) -> str:
+def _event_id(source: SamplingSource, event, index: int) -> str:
     return f"{source.source_sha256[:16]}:{event.measure}:{event.onset}:{event.voice}:{index}"
+
+
+def _event_pitches_midi(event) -> tuple[int, ...]:
+    if hasattr(event, "pitches_midi"):
+        pitches = tuple(sorted(int(pitch) for pitch in event.pitches_midi))
+    elif hasattr(event, "placements"):
+        pitches = tuple(sorted(int(placement.sounding_midi) for placement in event.placements))
+    else:
+        raise ValueError("annotation event exposes neither pitches_midi nor placements")
+    if len(pitches) < 2:
+        raise ValueError("annotation chord event must contain at least two pitches")
+    if any(pitch < 0 or pitch > 127 for pitch in pitches):
+        raise ValueError("annotation event pitch outside MIDI range")
+    return pitches
 
 
 def _validate_specialist_models(models: Mapping[str, object]) -> None:
@@ -68,7 +86,7 @@ def _validate_specialist_models(models: Mapping[str, object]) -> None:
 
 
 def _source_origin_map(
-    sources: tuple[ParsedSource, ...],
+    sources: tuple[SamplingSource, ...],
     source_origins: Mapping[str, str],
 ) -> dict[str, str]:
     expected = {source.source_sha256.lower() for source in sources}
@@ -100,18 +118,19 @@ def _specialist_predictions(
 
 
 def build_annotation_sampling_pool(
-    sources: Iterable[ParsedSource],
+    sources: Iterable[SamplingSource],
     *,
     source_origins: Mapping[str, str],
     specialist_models: Mapping[str, object],
     forbidden_source_hashes: Iterable[str] = (),
     forbidden_source_origins: Iterable[str] = (),
 ) -> tuple[AnnotationSamplingEnvelope, ...]:
-    """Build a target-blind pool from new sources without consulting observed voicings.
+    """Build a target-blind pool from GP/TAB or target-free MusicXML sources.
 
     Event eligibility and priority use pitches, tuning, deterministic physical
-    candidates, and frozen stateless specialist predictions only. The source's
-    observed string/fret placement is deliberately never read by this function.
+    candidates, and frozen stateless specialist predictions only. Existing source
+    string/fret placement is never read when present, and Stage 7G-C pitch-only
+    sources contain no observed placement at all.
     """
 
     _validate_specialist_models(specialist_models)
@@ -148,7 +167,7 @@ def build_annotation_sampling_pool(
         for index, event in enumerate(source.events):
             if not event.is_chord:
                 continue
-            pitches = tuple(sorted(int(placement.sounding_midi) for placement in event.placements))
+            pitches = _event_pitches_midi(event)
             candidates = valid_chord_voicings(pitches, event.tuning)
             if len(candidates) < 2:
                 continue
