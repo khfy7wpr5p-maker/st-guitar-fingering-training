@@ -1,0 +1,57 @@
+{
+  "schema": "st-guitar-stage7e-final-test-seal-v1",
+  "stage": "7E",
+  "status": "SEALED_RESULT_PENDING",
+  "sealed_against_main_sha": "5ffdc64bfb47ff8a59c8a2a862339bbd1df7180b",
+  "external_corpus": {
+    "repository": "robust-guitar-tabs/code",
+    "repository_commit": "f50309ad06dc734ddae5e3a0eda756fca221e2e7",
+    "license": "CC0-1.0",
+    "paths": [
+      {"path": "GuitarProConversor/tabs/1.gp3", "git_blob_sha1": "a2fe86746a28fea738cc6968a11f28ebeba7293e", "bytes": 5422},
+      {"path": "GuitarProConversor/tabs/2.gp3", "git_blob_sha1": "47555a2910e9654392c182ba563a687654837cd3", "bytes": 7573},
+      {"path": "GuitarProConversor/tabs/3.gp3", "git_blob_sha1": "ca42e287234069776630928577a349f43d42e85d", "bytes": 18302},
+      {"path": "GuitarProConversor/tabs/4.gp3", "git_blob_sha1": "983ff8b28b1964826c1190e242f3d540c21bd0bb", "bytes": 7111},
+      {"path": "GuitarProConversor/tabs/5.gp3", "git_blob_sha1": "85768e1f69ab7ed95af09e3832093f79cc5fc944", "bytes": 12104},
+      {"path": "GuitarProConversor/tabs/6.gp3", "git_blob_sha1": "aec76033853b53c6be853b9ee3588079c9a20417", "bytes": 5348},
+      {"path": "GuitarProConversor/tabs/7.gp3", "git_blob_sha1": "26246cd6276d6d5c9ec57cf5f452258e346b93a1", "bytes": 7853},
+      {"path": "GuitarProConversor/tabs/8.gp3", "git_blob_sha1": "7b787d65cd1e476f42bc22337215a8c1cab5e300", "bytes": 5551},
+      {"path": "GuitarProConversor/tabs/9.gp3", "git_blob_sha1": "a9f4062a180a15a4bff8ef9b60416186d003a0ae", "bytes": 5714},
+      {"path": "GuitarProConversor/tabs/10.gp3", "git_blob_sha1": "1145d6b86cf916adf367eecf025e26adda7ffe10", "bytes": 7530},
+      {"path": "GuitarProConversor/tabs/11.gp3", "git_blob_sha1": "776df108daed4a889139d6325d8c412961ece0be", "bytes": 5203},
+      {"path": "GuitarProConversor/tabs/12.gp3", "git_blob_sha1": "7d58f2c19d5f0761d82fb67d578eb44b945950b8", "bytes": 3912},
+      {"path": "GuitarProConversor/tabs/13.gp3", "git_blob_sha1": "9c5dd82d460a0da3d4107e6a5d2ef3a526e04de3", "bytes": 3433},
+      {"path": "GuitarProConversor/tabs/14.gp3", "git_blob_sha1": "194b653a30d6a5c5f9a7c43ae564dcb3a3b92da1", "bytes": 4082},
+      {"path": "GuitarProConversor/tabs/15.gp3", "git_blob_sha1": "f4b6134eaa00d049e9ab8bef5022dd8246e29bb0", "bytes": 2269},
+      {"path": "GuitarProConversor/tabs/16.gp3", "git_blob_sha1": "34d70390dfd9d95876e6f93987d87b8ac200698e", "bytes": 2375}
+    ]
+  },
+  "parser": {
+    "package": "PyGuitarPro",
+    "version": "0.10.2",
+    "wheel_sha256": "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2"
+  },
+  "contract": {
+    "source_family": "one GP3 file equals one final-test family; multiple eligible tracks remain in that family",
+    "eligible_track": "non-percussion track with exactly strings 1..6",
+    "eligible_event": "simultaneous beat with at least two notes, distinct strings, and every fret in 0..24",
+    "physical_candidates": "deterministic_only",
+    "development_corpus_allowed_in_final": false,
+    "final_targets_allowed_in_any_fit": false,
+    "router_fit": "all previously accepted 25 development families only, in-memory evaluation fit",
+    "specialists": ["open_low", "compact", "mid_position", "high_position"],
+    "common_tone_included": false,
+    "minimum_final_families_with_ambiguous_events": 8,
+    "minimum_final_ambiguous_events": 100,
+    "primary_metric": "event_weighted_router_top1",
+    "primary_baseline": "event_weighted_always_open_low_top1",
+    "promotion_gate": "router_top1 > always_open_low_top1 and macro_family_router_top1 >= macro_family_always_open_low_top1",
+    "single_evaluation": true
+  },
+  "safety": {
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "raw_final_gp3_committed_to_training_repo": false,
+    "final_result_read_before_seal": false
+  }
+}

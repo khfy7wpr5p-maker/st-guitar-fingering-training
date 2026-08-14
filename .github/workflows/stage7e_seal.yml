@@ -1,0 +1,36 @@
+name: stage7e-seal
+
+on:
+  push:
+    branches:
+      - agent/stage7e-untouched-final-seal-v1
+
+permissions:
+  contents: read
+
+jobs:
+  extract-sealed-corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned GP3 parser
+        run: |
+          python -m pip download --no-deps PyGuitarPro==0.10.2 -d /tmp/stage7e-wheel
+          echo "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2  /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl" | sha256sum -c -
+          python -m pip install /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl
+      - name: Extract sealed target-free GP3 corpus
+        run: |
+          python scripts/extract_stage7e_gp3_seal.py \
+            --seal evidence/stage7e_final_test_seal.json \
+            --output /tmp/stage7e-sealed-corpus.json \
+            --work-dir /tmp/stage7e-gp3
+      - name: Upload sealed extraction
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage7e-sealed-corpus
+          path: /tmp/stage7e-sealed-corpus.json
+          if-no-files-found: error
+          retention-days: 7
