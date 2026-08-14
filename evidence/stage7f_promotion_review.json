@@ -1,0 +1,83 @@
+{
+  "schema": "st-guitar-stage7f-promotion-review-v1",
+  "stage": "7F",
+  "status": "PROMOTE_RESEARCH_DIRECTION_NO_CHECKPOINT",
+  "base_main_sha": "c9b766c9caac3d496a85f772dadeca54168a7628",
+  "accepted_evidence": {
+    "stage7c_real_transfer": "DIAGNOSTIC_MIXED_TRANSFER",
+    "stage7d_a_router": "DIAGNOSTIC_POSITIVE_ROUTER",
+    "stage7d_b_common_tone_rollout": "FAIL_NO_PROMOTION",
+    "stage7e_untouched_final": "PASS_PROMOTION_GATE"
+  },
+  "final_evidence": {
+    "ambiguous_events": 3959,
+    "families": 13,
+    "event_weighted_router_top1": 0.45668098004546603,
+    "event_weighted_open_low_top1": 0.4311694872442536,
+    "event_weighted_delta_vs_open_low": 0.025511492801212454,
+    "macro_family_router_top1": 0.43413248464387444,
+    "macro_family_open_low_top1": 0.3950520337661793,
+    "macro_family_delta_vs_open_low": 0.03908045087769513,
+    "stateless_oracle_coverage": 0.9105834806769386,
+    "selected_style_counts": {
+      "open_low": 3845,
+      "compact": 114,
+      "mid_position": 0,
+      "high_position": 0
+    }
+  },
+  "promotion_decisions": {
+    "target_blind_stateless_router_architecture": "PROMOTE_TO_NEXT_RESEARCH_STAGE",
+    "current_router_checkpoint": "DO_NOT_RETAIN",
+    "open_low_specialist": "ACTIVE_CORE_RESEARCH_SPECIALIST",
+    "compact_specialist": "ACTIVE_SECONDARY_RESEARCH_SPECIALIST",
+    "mid_position_specialist": "RESEARCH_ONLY_NOT_PROMOTED",
+    "high_position_specialist": "RESEARCH_ONLY_NOT_PROMOTED",
+    "common_tone_self_rollout": "REJECTED",
+    "production_integration": "BLOCKED"
+  },
+  "decision_rationale": {
+    "relative_advantage_reproduced_on_untouched_data": true,
+    "absolute_accuracy_domain_shift_is_material": true,
+    "current_router_is_effectively_open_low_plus_sparse_compact_gate": true,
+    "oracle_gap_indicates_unrealized_target_blind_routing_opportunity": true,
+    "oracle_is_not_deployable": true,
+    "no_absolute_checkpoint_threshold_was_preregistered": true,
+    "checkpoint_promotion_requires_new_preregistered_criteria": true
+  },
+  "final_corpus_quarantine": {
+    "may_train": false,
+    "may_tune": false,
+    "may_calibrate": false,
+    "may_select_features": false,
+    "may_select_hyperparameters": false,
+    "role": "permanent_evaluation_only_reference"
+  },
+  "next_stage": {
+    "name": "Stage 7G — Teacher-GOLD Preference Corpus V1",
+    "goal": "increase absolute target-blind ranking accuracy using new human guitaristic preference labels without contaminating the Stage 7E final corpus",
+    "label_semantics": "teacher_preferred_guitaristic_choice_not_observed_behavior",
+    "minimum_independent_families": 30,
+    "minimum_teacher_labeled_ambiguous_events": 600,
+    "minimum_specialist_disagreement_events": 100,
+    "family_isolated_validation_required": true,
+    "final_test_sources_forbidden": true,
+    "development_source_hash_overlap_with_stage7e_forbidden": true,
+    "sequence_context_deferred": true,
+    "checkpoint_retention_preapproved": false,
+    "production_integration_preapproved": false
+  },
+  "sampling_priorities": [
+    "open_low_vs_compact_disagreement",
+    "events_where_stateless_specialists_disagree",
+    "high_candidate_count_or_large_position_choice_space",
+    "diverse_chord_size_pitch_span_and_register",
+    "candidate_sets_extending_above_synthetic_fret_12_without_assuming_high_fret_is_preferred"
+  ],
+  "safety": {
+    "model_algorithm_changed": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_final_reused_for_training": false
+  }
+}
