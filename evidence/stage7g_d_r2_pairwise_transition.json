@@ -1,0 +1,61 @@
+{
+  "schema": "st-guitar-stage7g-d-r2-pairwise-transition-v1",
+  "stage": "7G-D-R2",
+  "status": "PAIRWISE_ANNOTATION_TRANSITION_PENDING_MERGE",
+  "base_main_sha": "6825aa69fecf51024916a8a1f4c19a4e5e7d8b69",
+  "source_batch": {
+    "stage": "7G-D-R1",
+    "sealed_tasks": 600,
+    "sealed_teacher_manifest_sha256": "1617f7d584f22f1f357927c9cc00446f7fe95740e8987cb73fee5474cdcb1871",
+    "open_low_compact_disagreement_tasks": 600
+  },
+  "validated_full_candidate_choices": {
+    "teacher_export_schema": "st-guitar-stage7g-teacher-choice-export-v1",
+    "teacher_export_sha256": "9439b5720de24585f80f97189fafabf29000ca7e05604cc199f43c2ed0457e9e",
+    "annotator_id": "teacher_001",
+    "reported_selected_count": 38,
+    "validated_task_ids": 38,
+    "validated_candidate_ids": 38,
+    "duplicate_task_ids": 0,
+    "all_tasks_match_sealed_manifest": true,
+    "all_choices_are_members_of_their_deterministic_physical_candidate_sets": true,
+    "raw_choice_rows_committed_to_git": false,
+    "retention_policy": "preserve_as_blind_full_candidate_preference_data; attach withheld specialist/source audit before final TeacherGoldRecord finalization",
+    "finalized_teacher_gold_records": 0
+  },
+  "pairwise_transition": {
+    "completed_full_candidate_tasks_excluded": 38,
+    "remaining_sealed_tasks": 562,
+    "pair_source": "frozen open_low top1 versus frozen compact top1",
+    "pairwise_task_requires_open_low_compact_disagreement": true,
+    "teacher_visible_options_per_task": 2,
+    "teacher_visible_option_labels": ["A", "B"],
+    "allowed_responses": ["A", "B", "EQUAL_OR_UNSURE"],
+    "specialist_identity_visible_to_teacher": false,
+    "model_scores_visible_to_teacher": false,
+    "source_identity_visible_to_teacher": false,
+    "observed_source_voicing_visible_to_teacher": false,
+    "ab_order": "deterministic task-id hash fixed before teacher response",
+    "reselection_after_first_38_choices": false,
+    "pairwise_label_semantics": "teacher preference between open_low and compact proposals; not equivalent to full-candidate Teacher-GOLD"
+  },
+  "preregistered_pairwise_training_gate": {
+    "minimum_decisive_ab_labels": 400,
+    "minimum_independent_families_with_decisive_labels": 30,
+    "equal_or_unsure_is_preserved_and_never_coerced_to_a_or_b": true,
+    "family_isolated_validation_required": true,
+    "training_authorized_before_gate": false
+  },
+  "scientific_boundary": {
+    "full_candidate_choices_retained": 38,
+    "pairwise_labels_collected": 0,
+    "teacher_gold_corpus_gate_passed": false,
+    "pairwise_training_gate_passed": false,
+    "model_fit_started": false,
+    "colab_training_started": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_final_reused": false
+  },
+  "interpretation": "The first 38 blind full-candidate selections are valid members of the sealed physical candidate sets and are retained as richer preference evidence. Because full-candidate annotation proved impractical, the remaining 562 already-sealed open_low-vs-compact disagreement tasks transition to a separate blind pairwise label type. The two label semantics are kept distinct and no training starts until a preregistered pairwise gate is met."
+}
