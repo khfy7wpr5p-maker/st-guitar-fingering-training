@@ -1,0 +1,98 @@
+{
+  "schema": "st-guitar-stage7g-c-r1-animetab-batch01-result-v1",
+  "stage": "7G-C-R1",
+  "status": "CLEAN_SOURCE_POOL_READY_FOR_BLIND_ANNOTATION",
+  "base_main_sha": "0e19f5a594d22b8124c46dca95c3e65568ea1951",
+  "batch_identity": {
+    "clean_batch_zip_sha256": "2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710",
+    "source_files": 40,
+    "unique_source_sha256": 40,
+    "families": 40,
+    "historical_development_hash_overlap": 0,
+    "historical_development_family_key_overlap": 0,
+    "stage7e_final_reuse": false
+  },
+  "source_encoding_audit": {
+    "single_part_files": 40,
+    "files_with_staffs_1_and_2": 40,
+    "staff2_standard_six_string_tuning_files": 40,
+    "staff2_xml_minus_physical_pitch_relation_exact_zero_files": 40,
+    "technical_string_fret_used_only_for_encoding_audit": true,
+    "technical_string_fret_used_for_sampling_or_labels": false
+  },
+  "target_free_staff2_intake": {
+    "pitched_events": 24066,
+    "chord_events": 13542,
+    "ambiguous_chord_events": 12714,
+    "single_candidate_chord_events_excluded": 826,
+    "zero_candidate_chord_events_excluded": 2,
+    "families_with_ambiguous_events": 40,
+    "candidate_count_min": 2,
+    "candidate_count_mean": 23.99126946672959,
+    "candidate_count_max": 165,
+    "grace_notes_excluded_by_stage7g_c_v1": true
+  },
+  "frozen_specialist_reconstruction_guard": {
+    "balanced_synthetic_families": 100,
+    "events_per_family": 24,
+    "pairwise_specialists_rebuilt_in_memory_only": true,
+    "macro_top1": {
+      "open_low": 1.0,
+      "compact": 1.0,
+      "mid_position": 0.9458333333333332,
+      "high_position": 0.9541666666666668,
+      "common_tone": 0.9217391304347828
+    },
+    "matches_stage7b_c2": true,
+    "checkpoint_retained": false
+  },
+  "stateless_specialist_disagreement": {
+    "specialists": [
+      "open_low",
+      "compact",
+      "mid_position",
+      "high_position"
+    ],
+    "common_tone_included": false,
+    "eligible_ambiguous_events": 12714,
+    "open_low_compact_disagreement_events": 5626,
+    "open_low_compact_disagreement_rate": 0.44250432593990874,
+    "any_stateless_disagreement_events": 12358,
+    "any_stateless_disagreement_rate": 0.9719993707723769,
+    "four_specialist_consensus_events": 356,
+    "families_with_open_low_compact_disagreement": 40,
+    "families_with_any_stateless_disagreement": 40,
+    "minimum_open_low_compact_disagreement_per_family": 57,
+    "maximum_open_low_compact_disagreement_per_family": 505
+  },
+  "annotation_readiness": {
+    "stage7g_required_independent_families": 30,
+    "available_independent_families": 40,
+    "stage7g_required_teacher_gold_ambiguous_events": 600,
+    "available_unlabeled_ambiguous_tasks": 12714,
+    "stage7g_required_specialist_disagreement_events": 100,
+    "available_unlabeled_specialist_disagreement_tasks": 12358,
+    "deterministic_600_task_sampling_preview": {
+      "max_tasks": 600,
+      "selected_families": 40,
+      "tier0_rounds_per_family": 15,
+      "selected_open_low_compact_disagreement": 600,
+      "selected_any_stateless_disagreement": 600,
+      "tier1_or_consensus_needed": false
+    },
+    "teacher_gold_labels_created": 0,
+    "teacher_gold_corpus_gate_passed": false,
+    "source_pool_ready_for_annotation": true,
+    "training_authorized": false
+  },
+  "safety": {
+    "raw_musicxml_committed_to_git": false,
+    "observed_source_voicing_used_for_sampling": false,
+    "teacher_gold_labels_created": 0,
+    "teacher_gold_model_fit": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_final_corpus_reused": false
+  },
+  "interpretation": "Batch01 is large and diverse enough to begin blind Teacher-GOLD annotation. The source-pool and disagreement minimums are satisfied before labeling, but the Teacher-GOLD training gate remains closed because no human preference labels exist yet."
+}
