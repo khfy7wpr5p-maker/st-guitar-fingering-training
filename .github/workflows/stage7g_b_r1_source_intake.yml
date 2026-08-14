@@ -1,0 +1,38 @@
+name: stage7g-b-r1-source-intake
+
+on:
+  push:
+    branches:
+      - agent/stage7g-b-r1-source-intake-v1
+
+permissions:
+  contents: read
+
+jobs:
+  extract-source-intake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install project and pinned GP parser
+        run: |
+          python -m pip install -e .
+          python -m pip download --no-deps PyGuitarPro==0.10.2 -d /tmp/stage7g-wheel
+          echo "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2  /tmp/stage7g-wheel/pyguitarpro-0.10.2-py3-none-any.whl" | sha256sum -c -
+          python -m pip install /tmp/stage7g-wheel/pyguitarpro-0.10.2-py3-none-any.whl
+      - name: Extract pinned Stage 7G source intake
+        run: |
+          python scripts/extract_stage7g_b_r1_sources.py \
+            --manifest evidence/stage7g_b_r1_source_intake_manifest.json \
+            --stage7e-seal evidence/stage7e_final_test_seal.json \
+            --output /tmp/stage7g-b-r1-source-intake.json \
+            --work-dir /tmp/stage7g-b-r1-gp5
+      - name: Upload source intake artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage7g-b-r1-source-intake
+          path: /tmp/stage7g-b-r1-source-intake.json
+          if-no-files-found: error
+          retention-days: 7
