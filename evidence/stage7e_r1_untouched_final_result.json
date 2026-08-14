@@ -1,0 +1,67 @@
+{
+  "schema": "st-guitar-stage7e-r1-untouched-final-result-v1",
+  "stage": "7E-R1",
+  "status": "PASS_PROMOTION_GATE",
+  "seal_main_sha": "6aae2b694e23a8997d440ffa0ecc01c4d26608c2",
+  "sealed_artifact": {
+    "artifact_id": 9222264940,
+    "zip_sha256": "74ceaf2ea3c8425a6f4031a5dbf26807e7e997c5b9747c79327ffc85387c8781",
+    "source_repository": "robust-guitar-tabs/code",
+    "source_commit": "f50309ad06dc734ddae5e3a0eda756fca221e2e7",
+    "source_files": 16
+  },
+  "independence_and_intake": {
+    "development_source_hash_overlap": 0,
+    "structural_chord_events": 4550,
+    "observed_missing_from_deterministic_candidates": 0,
+    "no_candidate_events": 0,
+    "single_candidate_events_excluded": 591,
+    "final_ambiguous_events": 3959,
+    "final_families_with_ambiguous_events": 13,
+    "candidate_set_above_synthetic_fret_12_events": 3519,
+    "observed_above_synthetic_fret_12_events": 0,
+    "sufficiency_gate_passed": true
+  },
+  "reproduction_guard": {
+    "development_unique_xml": 33,
+    "development_families": 25,
+    "development_chord_events": 1879,
+    "development_open_low_top1": 0.7915754923413567,
+    "stage7d_a_cv_macro_router_top1": 0.8386507946895563,
+    "stage7d_a_cv_macro_open_low_top1": 0.7967706271049415,
+    "passed": true
+  },
+  "final": {
+    "event_weighted_router_top1": 0.45668098004546603,
+    "event_weighted_always_open_low_top1": 0.4311694872442536,
+    "event_weighted_delta_vs_open_low": 0.025511492801212454,
+    "macro_family_router_top1": 0.43413248464387444,
+    "macro_family_always_open_low_top1": 0.3950520337661793,
+    "macro_family_delta_vs_open_low": 0.03908045087769513,
+    "stateless_oracle_coverage": 0.9105834806769386,
+    "family_wins": 2,
+    "family_ties": 11,
+    "family_losses": 0,
+    "selected_style_counts": {
+      "open_low": 3845,
+      "compact": 114,
+      "mid_position": 0,
+      "high_position": 0
+    }
+  },
+  "promotion_gate": {
+    "event_weighted_router_must_exceed_open_low": true,
+    "macro_family_router_must_not_trail_open_low": true,
+    "passed": true,
+    "meaning": "evidence_supports_next_promotion_review_not_automatic_checkpoint_or_production_integration"
+  },
+  "safety": {
+    "final_training_rows": 0,
+    "final_targets_used_for_fit": false,
+    "common_tone_included": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "post_result_tuning": false
+  },
+  "interpretation": "The preregistered untouched-final promotion gate passed. Absolute Top-1 is substantially lower than on the development corpus, showing domain shift, but the target-blind router preserves a positive advantage over always-open_low on both event-weighted and macro-family metrics. This evidence supports a later promotion review; it does not itself authorize checkpoint retention or production integration."
+}
