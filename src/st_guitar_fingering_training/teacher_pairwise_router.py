@@ -172,7 +172,10 @@ def evaluate_teacher_pairwise_router(
     X = np.asarray([row.features for row in rows], dtype=np.float64)
     y = np.asarray([row.teacher_prefers_compact for row in rows], dtype=np.int64)
     probabilities = np.asarray(model.predict_proba(X), dtype=np.float64)
-    classes = list(model.classes_)
+    classifier = model.named_steps.get("logisticregression")
+    if classifier is None:
+        raise ValueError("pairwise router pipeline is missing logistic regression")
+    classes = list(classifier.classes_)
     if 1 not in classes or probabilities.shape != (len(rows), 2):
         raise ValueError("pairwise router must expose binary class probabilities")
     compact_column = classes.index(1)
