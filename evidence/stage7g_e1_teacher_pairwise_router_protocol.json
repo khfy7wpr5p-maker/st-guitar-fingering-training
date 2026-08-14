@@ -1,0 +1,109 @@
+{
+  "schema": "st-guitar-stage7g-e1-teacher-pairwise-router-protocol-v1",
+  "stage": "7G-E1",
+  "status": "PREREGISTERED_BEFORE_REAL_MODEL_FIT_PENDING_MERGE",
+  "base_main_sha": "f8cf2c45e747187fe96daec549e20a1c712158ce",
+  "source_teacher_evidence": {
+    "stage": "7G-D-R3",
+    "pairwise_teacher_manifest_sha256": "3d3fbf9d0107ef8a1a31e597820b687a072fa0f2cc5123b8e59adbbf07e4a167",
+    "raw_teacher_export_sha256": "87aecd6f26f3aa450bb71524fd4205afefa77cb9aee8b8741577f8a0f169afde",
+    "pairwise_tasks": 562,
+    "decisive_binary_labels": 556,
+    "equal_or_unsure": 6,
+    "families_with_decisive_labels": 40,
+    "decoded_open_low_preferences": 433,
+    "decoded_compact_preferences": 123,
+    "raw_teacher_rows_committed_to_git": false
+  },
+  "excluded_from_e1": {
+    "full_candidate_teacher_choices": 38,
+    "reason": "richer full-candidate preference semantics remain separate from binary open_low-vs-compact supervision"
+  },
+  "target": {
+    "semantics": "teacher_prefers_compact_over_open_low",
+    "open_low": 0,
+    "compact": 1,
+    "equal_or_unsure_coerced": false
+  },
+  "features": {
+    "count": 15,
+    "names": [
+      "chord_size",
+      "pitch_span",
+      "mean_pitch",
+      "candidate_count_log1p",
+      "candidate_open_fraction",
+      "candidate_mean_fret_mean",
+      "candidate_span_mean",
+      "open_top_open_ratio",
+      "open_top_mean_fret",
+      "open_top_max_fret",
+      "open_top_fret_span",
+      "compact_top_open_ratio",
+      "compact_top_mean_fret",
+      "compact_top_max_fret",
+      "compact_top_fret_span"
+    ],
+    "current_event_only": true,
+    "deterministic_physical_candidate_set_only": true,
+    "teacher_response_in_features": false,
+    "source_identity_in_features": false,
+    "family_identity_in_features": false,
+    "observed_source_tab_in_features": false,
+    "sequence_context_in_features": false
+  },
+  "model": {
+    "kind": "standard_scaler_plus_logistic_regression",
+    "class_weight": "balanced",
+    "C": 1.0,
+    "solver": "lbfgs",
+    "max_iter": 2000,
+    "random_state": 0,
+    "decision_threshold": 0.5,
+    "hyperparameter_search": false,
+    "feature_selection_after_validation": false,
+    "calibration": false
+  },
+  "validation": {
+    "kind": "deterministic_5_fold_family_isolated_cross_validation",
+    "fold_count": 5,
+    "family_count": 40,
+    "expected_train_families_per_fold": 32,
+    "expected_validation_families_per_fold": 8,
+    "event_level_random_split": false,
+    "family_leakage_allowed": false,
+    "equal_or_unsure_excluded_from_binary_fit": true
+  },
+  "metrics": {
+    "required_baseline": "always_open_low",
+    "primary": [
+      "macro_family_accuracy",
+      "macro_family_accuracy_delta_vs_always_open_low",
+      "event_weighted_accuracy",
+      "event_weighted_accuracy_delta_vs_always_open_low"
+    ],
+    "secondary": [
+      "balanced_accuracy",
+      "open_low_recall",
+      "compact_recall",
+      "predicted_compact_count",
+      "per_fold_metrics"
+    ],
+    "checkpoint_promotion_threshold_from_same_cv": null
+  },
+  "colab": {
+    "planned_after_protocol_merge": true,
+    "gpu_required": false,
+    "purpose": "reproducible execution of the fixed real Teacher-GOLD diagnostic experiment",
+    "raw_labels_remain_external": true
+  },
+  "scientific_boundary": {
+    "real_teacher_gold_model_fit_started": false,
+    "real_teacher_gold_cv_started": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_final_reused": false,
+    "sequence_context_enabled": false
+  },
+  "interpretation": "Stage 7G-E1 preregisters one fixed target-blind stateless logistic router for choosing between frozen open_low and compact proposals on decisive pairwise Teacher-GOLD labels. Five-fold family isolation and the always-open_low baseline are fixed before any real model fit. Cross-validation is development evidence only; checkpoint retention requires a later preregistered untouched final stage."
+}
