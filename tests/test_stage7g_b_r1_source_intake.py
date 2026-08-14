@@ -7,6 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "evidence" / "stage7g_b_r1_source_intake_manifest.json"
+RESULT = ROOT / "evidence" / "stage7g_b_r1_source_intake_result.json"
 FINAL_SEAL = ROOT / "evidence" / "stage7e_final_test_seal.json"
 WORKFLOW = ROOT / ".github" / "workflows" / "stage7g_b_r1_source_intake.yml"
 SCRIPT = ROOT / "scripts" / "extract_stage7g_b_r1_sources.py"
@@ -15,6 +16,7 @@ SCRIPT = ROOT / "scripts" / "extract_stage7g_b_r1_sources.py"
 class Stage7GBR1SourceIntakeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        self.result = json.loads(RESULT.read_text(encoding="utf-8"))
         self.final_seal = json.loads(FINAL_SEAL.read_text(encoding="utf-8"))
 
     def test_source_manifest_is_pinned_licensed_and_large_enough_for_pilot(self) -> None:
@@ -44,10 +46,12 @@ class Stage7GBR1SourceIntakeTests(unittest.TestCase):
         self.assertNotEqual(stage7g_repo, stage7e_repo)
         contract = self.manifest["contract"]
         self.assertFalse(contract["stage7e_final_sources_allowed"])
+        self.assertEqual(self.result["intake"]["stage7e_final_blob_overlap"], 0)
 
     def test_source_intake_cannot_generate_labels_fit_models_or_promote(self) -> None:
         contract = self.manifest["contract"]
         safety = self.manifest["safety"]
+        result_safety = self.result["safety"]
         self.assertFalse(contract["teacher_gold_labels_generated_in_source_intake"])
         self.assertFalse(contract["specialist_scoring_in_source_intake"])
         self.assertFalse(contract["source_observed_voicing_allowed_for_sampling"])
@@ -55,6 +59,31 @@ class Stage7GBR1SourceIntakeTests(unittest.TestCase):
         self.assertEqual(safety["teacher_gold_labels"], 0)
         self.assertFalse(safety["checkpoint_retained"])
         self.assertFalse(safety["production_integration"])
+        self.assertFalse(result_safety["contains_model_metrics"])
+        self.assertEqual(result_safety["teacher_gold_labels_generated"], 0)
+        self.assertFalse(result_safety["checkpoint_retained"])
+        self.assertFalse(result_safety["production_integration"])
+
+    def test_partial_pool_is_reported_honestly_and_training_gate_stays_closed(self) -> None:
+        intake = self.result["intake"]
+        readiness = self.result["readiness"]
+        self.assertEqual(self.result["status"], "PARTIAL_SOURCE_POOL")
+        self.assertEqual(intake["source_file_count"], 35)
+        self.assertEqual(intake["families_with_eligible_ambiguous_chords"], 8)
+        self.assertEqual(intake["eligible_ambiguous_chord_events"], 417)
+        self.assertEqual(intake["observed_missing_from_deterministic_candidates"], 0)
+        self.assertTrue(readiness["pilot_annotation_batch_possible"])
+        self.assertFalse(readiness["full_teacher_gold_training_gate_met"])
+        self.assertEqual(readiness["stage7g_minimum_independent_families"], 30)
+        self.assertEqual(readiness["stage7g_minimum_teacher_labeled_ambiguous_events"], 600)
+        self.assertEqual(readiness["stage7g_minimum_specialist_disagreement_events"], 100)
+
+    def test_large_fixture_cannot_be_mistaken_for_family_diversity(self) -> None:
+        families = self.result["eligible_families"]
+        by_path = {item["source_path"]: item["eligible_events"] for item in families}
+        self.assertEqual(by_path["packages/alphatab/test-data/guitarpro5/chord-name-overflow.gp5"], 384)
+        self.assertEqual(len(families), 8)
+        self.assertFalse(self.result["readiness"]["full_teacher_gold_training_gate_met"])
 
     def test_workflow_uses_pinned_parser_and_uploads_only_derived_artifact(self) -> None:
         text = WORKFLOW.read_text(encoding="utf-8")
