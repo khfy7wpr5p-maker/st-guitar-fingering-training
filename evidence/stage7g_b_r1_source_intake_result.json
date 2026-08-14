@@ -1,0 +1,57 @@
+{
+  "schema": "st-guitar-stage7g-b-r1-source-intake-result-v1",
+  "stage": "7G-B-R1",
+  "status": "PARTIAL_SOURCE_POOL",
+  "source_branch_head_evaluated": "ce362b8ea0e3df4b902ebf91ecfd250b84b73b73",
+  "workflow": {
+    "name": "stage7g-b-r1-source-intake",
+    "run_id": 31832170301,
+    "run_number": 2,
+    "conclusion": "success",
+    "artifact_id": 9231098741,
+    "artifact_zip_sha256": "dd2c648dfe95bdc9b42c61de2449e0133026830a8c1f12f6cd53d335b73a443d"
+  },
+  "source": {
+    "repository": "CoderLine/alphaTab",
+    "repository_commit": "6be0f20e4ef9327af69e19d12a1a605aedde7f1d",
+    "license": "MPL-2.0",
+    "allowlisted_source_files": 35
+  },
+  "intake": {
+    "source_file_count": 35,
+    "provisional_family_count": 35,
+    "families_with_eligible_ambiguous_chords": 8,
+    "eligible_ambiguous_chord_events": 417,
+    "single_candidate_chords_excluded": 25,
+    "unsupported_chord_beats": 0,
+    "observed_missing_from_deterministic_candidates": 0,
+    "stage7e_final_blob_overlap": 0
+  },
+  "eligible_families": [
+    {"family_id": "stage7g_alpha_008", "source_path": "packages/alphatab/test-data/guitarpro5/hammer.gp5", "eligible_events": 7},
+    {"family_id": "stage7g_alpha_011", "source_path": "packages/alphatab/test-data/guitarpro5/slides.gp5", "eligible_events": 2},
+    {"family_id": "stage7g_alpha_016", "source_path": "packages/alphatab/test-data/guitarpro5/strokes.gp5", "eligible_events": 2},
+    {"family_id": "stage7g_alpha_019", "source_path": "packages/alphatab/test-data/guitarpro5/effects.gp5", "eligible_events": 11},
+    {"family_id": "stage7g_alpha_020", "source_path": "packages/alphatab/test-data/guitarpro5/strings.gp5", "eligible_events": 1},
+    {"family_id": "stage7g_alpha_022", "source_path": "packages/alphatab/test-data/guitarpro5/chords.gp5", "eligible_events": 8},
+    {"family_id": "stage7g_alpha_028", "source_path": "packages/alphatab/test-data/guitarpro5/hide-diagrams.gp5", "eligible_events": 2},
+    {"family_id": "stage7g_alpha_035", "source_path": "packages/alphatab/test-data/guitarpro5/chord-name-overflow.gp5", "eligible_events": 384}
+  ],
+  "readiness": {
+    "pilot_annotation_batch_possible": true,
+    "stage7g_minimum_independent_families": 30,
+    "stage7g_minimum_teacher_labeled_ambiguous_events": 600,
+    "stage7g_minimum_specialist_disagreement_events": 100,
+    "full_teacher_gold_training_gate_met": false,
+    "reason": "Only 8 families currently contribute eligible ambiguous chord events; no Teacher-GOLD labels exist yet."
+  },
+  "safety": {
+    "contains_model_metrics": false,
+    "teacher_gold_labels_generated": 0,
+    "source_observed_voicing_used_for_sampling": false,
+    "raw_gp5_committed_to_training_repo": false,
+    "checkpoint_retained": false,
+    "production_integration": false
+  },
+  "next": "Create a small family-balanced blind pilot annotation batch from these eligible sources, while independently expanding the source pool toward at least 30 contributing families."
+}

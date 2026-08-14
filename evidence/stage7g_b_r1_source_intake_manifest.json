@@ -1,0 +1,76 @@
+{
+  "schema": "st-guitar-stage7g-b-r1-source-intake-v1",
+  "stage": "7G-B-R1",
+  "status": "SOURCE_INTAKE_PENDING",
+  "external_corpus": {
+    "repository": "CoderLine/alphaTab",
+    "repository_commit": "6be0f20e4ef9327af69e19d12a1a605aedde7f1d",
+    "license": "MPL-2.0",
+    "path_prefix": "packages/alphatab/test-data/guitarpro5/",
+    "paths": [
+      "packages/alphatab/test-data/guitarpro5/score-info.gp5",
+      "packages/alphatab/test-data/guitarpro5/notes.gp5",
+      "packages/alphatab/test-data/guitarpro5/time-signatures.gp5",
+      "packages/alphatab/test-data/guitarpro5/dead.gp5",
+      "packages/alphatab/test-data/guitarpro5/grace.gp5",
+      "packages/alphatab/test-data/guitarpro5/accentuations.gp5",
+      "packages/alphatab/test-data/guitarpro5/harmonics.gp5",
+      "packages/alphatab/test-data/guitarpro5/hammer.gp5",
+      "packages/alphatab/test-data/guitarpro5/bends.gp5",
+      "packages/alphatab/test-data/guitarpro5/tremolo.gp5",
+      "packages/alphatab/test-data/guitarpro5/slides.gp5",
+      "packages/alphatab/test-data/guitarpro5/vibrato.gp5",
+      "packages/alphatab/test-data/guitarpro5/trills.gp5",
+      "packages/alphatab/test-data/guitarpro5/other-effects.gp5",
+      "packages/alphatab/test-data/guitarpro5/fingering.gp5",
+      "packages/alphatab/test-data/guitarpro5/strokes.gp5",
+      "packages/alphatab/test-data/guitarpro5/tuplets.gp5",
+      "packages/alphatab/test-data/guitarpro5/ranges.gp5",
+      "packages/alphatab/test-data/guitarpro5/effects.gp5",
+      "packages/alphatab/test-data/guitarpro5/strings.gp5",
+      "packages/alphatab/test-data/guitarpro5/key-signatures.gp5",
+      "packages/alphatab/test-data/guitarpro5/chords.gp5",
+      "packages/alphatab/test-data/guitarpro5/colors.gp5",
+      "packages/alphatab/test-data/guitarpro5/alternate-endings-section-error.gp5",
+      "packages/alphatab/test-data/guitarpro5/layout-configuration-multi-track-all.gp5",
+      "packages/alphatab/test-data/guitarpro5/hide-tuning.gp5",
+      "packages/alphatab/test-data/guitarpro5/staves.gp5",
+      "packages/alphatab/test-data/guitarpro5/hide-diagrams.gp5",
+      "packages/alphatab/test-data/guitarpro5/directions.gp5",
+      "packages/alphatab/test-data/guitarpro5/beaming-mode.gp5",
+      "packages/alphatab/test-data/guitarpro5/ottavia.gp5",
+      "packages/alphatab/test-data/guitarpro5/wah-wah.gp5",
+      "packages/alphatab/test-data/guitarpro5/header-footer.gp5",
+      "packages/alphatab/test-data/guitarpro5/bank.gp5",
+      "packages/alphatab/test-data/guitarpro5/chord-name-overflow.gp5"
+    ],
+    "explicitly_excluded": [
+      "packages/alphatab/test-data/guitarpro5/canon.gp5",
+      "packages/alphatab/test-data/guitarpro5/beat-text-lyrics.gp5",
+      "packages/alphatab/test-data/guitarpro5/serenade.gp5",
+      "packages/alphatab/test-data/guitarpro5/bass-tuning.gp5",
+      "packages/alphatab/test-data/guitarpro5/percussion-all.gp5"
+    ]
+  },
+  "parser": {
+    "package": "PyGuitarPro",
+    "version": "0.10.2",
+    "wheel_sha256": "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2"
+  },
+  "contract": {
+    "family_rule": "one allowlisted GP5 fixture equals one provisional Stage 7G source family",
+    "eligible_track": "non-percussion track with exactly strings 1..6",
+    "eligible_event": "simultaneous beat with at least two notes, distinct strings, every fret in 0..24, and at least two deterministic physical candidates",
+    "source_observed_voicing_allowed_for_sampling": false,
+    "teacher_gold_labels_generated_in_source_intake": false,
+    "specialist_scoring_in_source_intake": false,
+    "stage7e_final_sources_allowed": false,
+    "raw_gp5_committed_to_training_repo": false
+  },
+  "safety": {
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "model_fit": false,
+    "teacher_gold_labels": 0
+  }
+}
