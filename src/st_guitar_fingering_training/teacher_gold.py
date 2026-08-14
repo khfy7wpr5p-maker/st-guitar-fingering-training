@@ -126,11 +126,13 @@ def finalize_teacher_gold_record(
     specialists and is never allowed to include `common_tone` in Stage 7G v1.
     """
 
+    if set(specialist_top1) != set(STATELESS_SPECIALISTS):
+        raise ValueError("specialist_top1 must contain exactly the four stateless specialists")
+
     preferred = _canonical_voicing(teacher_preferred)
     predictions = tuple(
         (style, _canonical_voicing(specialist_top1[style]))
         for style in STATELESS_SPECIALISTS
-        if style in specialist_top1
     )
     record = TeacherGoldRecord(
         source_sha256=task.source_sha256,
