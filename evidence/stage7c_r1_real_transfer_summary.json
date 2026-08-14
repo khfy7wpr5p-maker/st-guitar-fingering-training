@@ -1,0 +1,100 @@
+{
+  "schema": "st-guitar-stage7c-r1-real-transfer-v1",
+  "run_date": "2026-08-14",
+  "stage": "7C-R1",
+  "status": "DIAGNOSTIC_MIXED_TRANSFER",
+  "base_main_sha": "2b4beaf1e7fae64dfab2855d9ec0bdadcd9e5949",
+  "corpus": {
+    "drive_source_groups": 2,
+    "raw_xml_files": 42,
+    "parser_accepted_files": 37,
+    "parser_rejected_files": 5,
+    "duplicate_extra_files": 4,
+    "unique_admitted_xml": 33,
+    "families": 25,
+    "families_with_ambiguous_chord_evaluation": 24,
+    "chord_events": 1879,
+    "historical_stage6_chord_crosscheck": {
+      "train_raw_chord_events": 1561,
+      "validation_raw_chord_events": 318,
+      "sum": 1879,
+      "matches": true
+    },
+    "reject_reason_counts": {
+      "unresolved_xml_vs_physical_pitch_relation_[3]": 4,
+      "non_positive_note_or_rest_duration": 1
+    }
+  },
+  "synthetic_reconstruction_check": {
+    "families": 100,
+    "events": 2400,
+    "open_low_top1": 1.0,
+    "compact_top1": 1.0,
+    "mid_position_top1": 0.9458333333333332,
+    "high_position_top1": 0.9541666666666668,
+    "common_tone_top1": 0.9217391304347828,
+    "matches_stage7b_c2_evidence": true
+  },
+  "specialists": {
+    "open_low": {
+      "events": 1828,
+      "event_weighted_top1": 0.7915754923413567,
+      "event_weighted_mrr": 0.8683504314795343,
+      "macro_family_top1": 0.7987829517217305,
+      "macro_family_mrr": 0.8697357870654265,
+      "uniform_random_top1": 0.11254032685884197
+    },
+    "compact": {
+      "events": 1828,
+      "event_weighted_top1": 0.6203501094091903,
+      "event_weighted_mrr": 0.7824738460542617,
+      "macro_family_top1": 0.5986904345837449,
+      "macro_family_mrr": 0.7705306329873668,
+      "uniform_random_top1": 0.11254032685884197
+    },
+    "mid_position": {
+      "events": 1828,
+      "event_weighted_top1": 0.13074398249452954,
+      "event_weighted_mrr": 0.3093528967808592,
+      "macro_family_top1": 0.11128906885430644,
+      "macro_family_mrr": 0.2937769824814389,
+      "uniform_random_top1": 0.11254032685884197
+    },
+    "high_position": {
+      "events": 1828,
+      "event_weighted_top1": 0.05908096280087528,
+      "event_weighted_mrr": 0.18878176840563993,
+      "macro_family_top1": 0.09082710978718618,
+      "macro_family_mrr": 0.21016366370076445,
+      "uniform_random_top1": 0.11254032685884197
+    },
+    "common_tone": {
+      "events": 1797,
+      "event_weighted_top1": 0.7473567056204786,
+      "event_weighted_mrr": 0.8308979569775359,
+      "macro_family_top1": 0.7373320446856878,
+      "macro_family_mrr": 0.8208683870256257,
+      "uniform_random_top1": 0.11275440357236739,
+      "previous_context": "observed_previous_real_voicing_diagnostic"
+    }
+  },
+  "range_audit": {
+    "candidate_set_above_synthetic_fret_12_events": 1680,
+    "observed_voicing_above_synthetic_fret_12_events": 3,
+    "real_candidate_range_was_not_truncated": true
+  },
+  "specialist_coverage": {
+    "meaning": "oracle_like_diagnostic_not_deployment_policy",
+    "common_events": 1797,
+    "any_specialist_top1_matches_observed": 1740,
+    "top1_coverage": 0.9682804674457429
+  },
+  "safety": {
+    "real_training_rows": 0,
+    "real_model_fit": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "real_xml_committed_to_git": false
+  },
+  "interpretation": "Real transfer is heterogeneous: open_low and common_tone transfer strongly, compact transfers moderately, mid_position is near random Top-1, and high_position is below random Top-1. Oracle-like specialist coverage is high but cannot be used as a deployed selector because it depends on the observed outcome. No model is promoted by this evidence alone."
+}
