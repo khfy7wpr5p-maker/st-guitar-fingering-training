@@ -107,6 +107,17 @@ def build_real_transfer_rows(
     return tuple(rows), audit
 
 
+def _normalize_synthetic_groups(
+    synthetic_sources_by_style: Mapping[str, Iterable[ParsedSource]],
+) -> dict[str, tuple[ParsedSource, ...]]:
+    if set(synthetic_sources_by_style) != set(STYLES):
+        raise ValueError("Stage 7C requires exactly one synthetic source group for each specialist")
+    groups = {style: tuple(synthetic_sources_by_style[style]) for style in STYLES}
+    if any(not groups[style] for style in STYLES):
+        raise ValueError("every Stage 7C specialist requires synthetic training sources")
+    return groups
+
+
 def train_frozen_synthetic_specialists(
     synthetic_sources_by_style: Mapping[str, Iterable[ParsedSource]],
 ) -> dict[str, object]:
@@ -115,16 +126,13 @@ def train_frozen_synthetic_specialists(
     The returned estimators are in-memory diagnostic models. No checkpoint is
     serialized or promoted by Stage 7C.
     """
-    if set(synthetic_sources_by_style) != set(STYLES):
-        raise ValueError("Stage 7C requires exactly one synthetic source group for each specialist")
+    groups = _normalize_synthetic_groups(synthetic_sources_by_style)
 
     models: dict[str, object] = {}
     seen_families: set[str] = set()
     seen_hashes: set[str] = set()
     for style in STYLES:
-        sources = tuple(synthetic_sources_by_style[style])
-        if not sources:
-            raise ValueError(f"no synthetic training sources for specialist: {style}")
+        sources = groups[style]
         family_ids = {source.family_id for source in sources}
         source_hashes = {source.source_sha256 for source in sources}
         if seen_families & family_ids or seen_hashes & source_hashes:
@@ -185,8 +193,9 @@ def real_transfer_report(
     behavior-bank coverage diagnostic and must not be used as a deployed gating
     policy because it asks whether *any* specialist matched the observed choice.
     """
-    if set(models) != set(STYLES) or set(synthetic_sources_by_style) != set(STYLES):
-        raise ValueError("Stage 7C requires all five specialists")
+    if set(models) != set(STYLES):
+        raise ValueError("Stage 7C requires all five fitted specialists")
+    groups = _normalize_synthetic_groups(synthetic_sources_by_style)
 
     real_sources = tuple(real_sources)
     if not real_sources:
@@ -195,12 +204,12 @@ def real_transfer_report(
     synthetic_families = {
         source.family_id
         for style in STYLES
-        for source in tuple(synthetic_sources_by_style[style])
+        for source in groups[style]
     }
     synthetic_hashes = {
         source.source_sha256
         for style in STYLES
-        for source in tuple(synthetic_sources_by_style[style])
+        for source in groups[style]
     }
     real_families = {source.family_id for source in real_sources}
     real_hashes = {source.source_sha256 for source in real_sources}
@@ -220,6 +229,7 @@ def real_transfer_report(
         top1_matches_by_style[style] = _top1_observed_by_event(models[style], rows)
         specialist_reports[style] = {
             "events": metrics.events,
+            "evaluated_families": len(families),
             "event_weighted_top1": metrics.top1_accuracy,
             "event_weighted_mrr": metrics.mean_reciprocal_rank,
             "uniform_random_top1": metrics.uniform_top1_baseline,
