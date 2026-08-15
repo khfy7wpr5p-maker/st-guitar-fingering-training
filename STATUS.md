@@ -47,12 +47,19 @@
   - validation: 5-fold outer / 4-fold inner family-isolated nested development CV
   - compact threshold candidates: `[0.50, 0.60, 0.70, 0.80, 0.90, 0.95]`, selected on inner OOF only
   - if no threshold satisfies the frozen precision/baseline-safety gate: `NO_SWITCH → OPEN_LOW`
-  - model fit: **not yet executed**
-- Current next execution — Stage 7G-E3-D-R1 manual Colab development run: 🟡 ready to prepare/run
-  - pin exact merged Git SHA
-  - verify external artifact hashes and split/leakage preflight
-  - STOP before fit
-  - user manually runs TRAIN cell
+- Stage 7G-E3-D-R1A — Colab execution harness: ✅ merged
+  - loader/preflight/nested-CV execution code merged at `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`
+  - no real E3-D fit was executed during R1A
+- Stage 7G-E3-D-R1B — exact execution SHA pin: ✅ merged
+  - Colab notebook pins `PINNED_EXECUTION_SHA` to R1A merge SHA `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`
+  - pin PR changed one notebook line only; no model/training behavior changed
+- Current next execution — Stage 7G-E3-D-R1 user-operated Colab run: 🟡 ready for preflight
+  - open the pinned notebook from current `main`
+  - verify repository SHA and sealed artifact hashes
+  - reproduce 400 tasks / 40 families / L1–L4 counts / 399 decisive rows
+  - verify family-isolated split preflight
+  - STOP before fit and inspect the report
+  - user manually runs the separate TRAIN cell only after preflight passes
   - frozen nested-CV evaluation only
   - export aggregate evidence JSON
 - Stage 7G-E3-E — new untouched family-disjoint Teacher-GOLD validation: ⏳ future; only designed if E3-D development gate is positive
@@ -65,4 +72,4 @@ The architecture has moved from a symmetric `open_low`/`compact` router toward a
 
 The new 400-task curriculum batch supplies additional blind Teacher-GOLD development evidence and shows the intended easy→hard pattern: L1 strongly favors `open_low`, while L4 is nearly balanced. This supports the curriculum as a useful development structure, but it is not a fresh final benchmark because the same 40 source families overlap earlier development work.
 
-The training protocol is now frozen before any E3-D fit. No threshold has been selected, no E3-D model has been trained, no checkpoint is retained, and no production integration is authorized.
+The training protocol and execution harness are now frozen before any real E3-D fit. The Colab notebook is pinned to the exact R1A execution SHA and is ready to reach the hash/preflight STOP gate. No E3-D result has been observed yet, no threshold has been selected from the real Teacher-GOLD run, no checkpoint is retained, and no production integration is authorized.
