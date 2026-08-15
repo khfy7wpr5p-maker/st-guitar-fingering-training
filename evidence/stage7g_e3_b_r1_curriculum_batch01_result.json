@@ -1,0 +1,107 @@
+{
+  "schema": "st-guitar-stage7g-e3-b-r1-result-v1",
+  "stage": "7G-E3-B-R1",
+  "status": "SEALED_CURRICULUM_BATCH_READY_PENDING_MERGE",
+  "base_main_sha": "5a8d38071a265eeb984a8560586dca31cf0b5eac",
+  "source_batch": {
+    "name": "ST_Guitar_Stage7G_C_R1_AnimeTAB_Batch01_CLEAN.zip",
+    "sha256": "2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710",
+    "source_families_available": 40,
+    "development_family_overlap_with_prior_teacher_gold": true,
+    "future_untouched_validation_eligible": false
+  },
+  "target_blind_inventory": {
+    "source_files": 40,
+    "parsed_pitched_events": 24066,
+    "chord_events": 13542,
+    "ambiguous_events": 12714,
+    "open_low_compact_disagreements": 5626,
+    "previously_sealed_task_ids_excluded": 600,
+    "remaining_unlabeled_disagreements": 5026,
+    "level_counts": {
+      "L1": 788,
+      "L2": 1482,
+      "L3": 1202,
+      "L4": 1554
+    },
+    "families_per_level": {
+      "L1": 33,
+      "L2": 38,
+      "L3": 39,
+      "L4": 38
+    }
+  },
+  "quota_freeze": {
+    "L1": 140,
+    "L2": 120,
+    "L3": 80,
+    "L4": 60,
+    "total": 400,
+    "rationale": "curriculum-weighted pilot: 65% L1/L2 simple/basic ergonomics, while preserving L3/L4 coverage; frozen before any new Teacher-GOLD response"
+  },
+  "selected": {
+    "tasks": 400,
+    "families": 40,
+    "families_by_level": {
+      "L1": 33,
+      "L2": 38,
+      "L3": 39,
+      "L4": 38
+    },
+    "level_counts": {
+      "L1": 140,
+      "L2": 120,
+      "L3": 80,
+      "L4": 60
+    },
+    "source_hash_set_digest_sha256": "0a357177b92504f28d01b7622652e18ea16e314c4987d367bf60731a4edca8a2",
+    "family_id_set_digest_sha256": "2a0467979ec29e8fc88bcb16e826e6873cb92aecbb2c08045929399f873f52fd",
+    "task_id_set_digest_sha256": "d7a45c08e5fd4bc2c4e8773f45ba1f54ab5d5794b7ca69877c8f8c7a2d4980f7"
+  },
+  "external_package": {
+    "filename": "ST_Guitar_Stage7G_E3_B_R1_Curriculum_Batch01_400.zip",
+    "sha256": "e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef",
+    "bytes": 97856,
+    "raw_package_committed_to_git": false,
+    "artifacts": {
+      "teacher_tasks_e3_batch01_400.json": {
+        "sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+        "bytes": 426564
+      },
+      "internal_audit_e3_batch01_400.json": {
+        "sha256": "e8fa34998a409a275d372ae089b9a3f3ed1ea5b53de5c15e58a61de0210a2915",
+        "bytes": 1137475
+      },
+      "rule_property_records_e3_batch01.json": {
+        "sha256": "c869ca2f4cd043e0a5c10f1cacf097031affc2f3eb21072c2a4b30ffaa128d6c",
+        "bytes": 440829
+      },
+      "README.txt": {
+        "sha256": "5f63ef080ecc07a61ce9082bc62f5c2c3694e375cf57b5944089e8127e1f6a95",
+        "bytes": 821
+      }
+    }
+  },
+  "specialist_reconstruction_guard": {
+    "pairwise_tasks_checked": 562,
+    "both_options_match": 562,
+    "open_low_match": 562,
+    "compact_match": 562,
+    "open_low_training_events": 480,
+    "compact_training_events": 480,
+    "open_low_pairwise_matrix_shape": [6900, 4],
+    "compact_pairwise_matrix_shape": [7708, 4]
+  },
+  "scientific_boundary": {
+    "teacher_responses_used_for_generation": false,
+    "new_teacher_labels_created": 0,
+    "old_556_labels_used_for_selection": false,
+    "old_600_task_ids_reused": false,
+    "stage7e_used": false,
+    "model_fit": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "rule_property_records_are_teacher_gold": false
+  },
+  "interpretation": "A 400-task curriculum-weighted development batch was sealed before any new Teacher-GOLD response. The batch intentionally emphasizes L1/L2 while preserving L3/L4 and all 40 source families. It overlaps prior development families and is not eligible as untouched validation."
+}
