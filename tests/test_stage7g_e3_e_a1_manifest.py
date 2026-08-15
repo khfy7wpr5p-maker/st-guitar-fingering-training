@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from hashlib import sha256
 import json
 from pathlib import Path
 import unittest
@@ -11,6 +12,10 @@ from st_guitar_fingering_training.stage7g_e3_d_execution import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _set_digest(values: set[str]) -> str:
+    return sha256("\n".join(sorted(values)).encode("utf-8")).hexdigest()
 
 
 class Stage7GE3EA1ManifestTests(unittest.TestCase):
@@ -50,6 +55,22 @@ class Stage7GE3EA1ManifestTests(unittest.TestCase):
             quarantine["development_audit_sha256"],
             STAGE7G_E3_D_EXPECTED_AUDIT_SHA256,
         )
+        self.assertEqual(
+            quarantine["development_source_manifest_path"],
+            "evidence/stage7g_c_r1_animetab_batch01_manifest.json",
+        )
+        self.assertEqual(
+            quarantine["development_source_hash_set_digest_sha256"],
+            "0a357177b92504f28d01b7622652e18ea16e314c4987d367bf60731a4edca8a2",
+        )
+        self.assertEqual(
+            quarantine["development_family_id_set_digest_sha256"],
+            "2a0467979ec29e8fc88bcb16e826e6873cb92aecbb2c08045929399f873f52fd",
+        )
+        self.assertEqual(
+            quarantine["development_clean_batch_zip_sha256"],
+            "2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710",
+        )
         self.assertEqual(quarantine["development_family_count"], 40)
 
         boundary = manifest["scientific_boundary"]
@@ -62,6 +83,37 @@ class Stage7GE3EA1ManifestTests(unittest.TestCase):
         self.assertFalse(boundary["checkpoint_retained"])
         self.assertFalse(boundary["production_integration"])
         self.assertFalse(boundary["raw_external_mxl_committed_to_training_repo"])
+
+    def test_stage7g_c_source_manifest_matches_frozen_e3_b_r1_identity_digests(self) -> None:
+        intake = json.loads(
+            (ROOT / "evidence" / "stage7g_e3_e_a1_source_manifest.json").read_text(encoding="utf-8")
+        )
+        source_manifest = json.loads(
+            (ROOT / intake["quarantine_inputs"]["development_source_manifest_path"]).read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(source_manifest["schema"], "st-guitar-stage7g-c-r1-animetab-batch01-manifest-v1")
+        self.assertEqual(source_manifest["stage"], "7G-C-R1")
+        self.assertEqual(source_manifest["status"], "PINNED_RESEARCH_SOURCE_BATCH")
+        self.assertEqual(source_manifest["family_count"], 40)
+        self.assertEqual(
+            source_manifest["clean_batch_zip_sha256"],
+            intake["quarantine_inputs"]["development_clean_batch_zip_sha256"],
+        )
+
+        source_hashes = {row["sha256"].lower() for row in source_manifest["sources"]}
+        family_ids = {row["family_id"] for row in source_manifest["sources"]}
+        self.assertEqual(len(source_hashes), 40)
+        self.assertEqual(len(family_ids), 40)
+        self.assertEqual(
+            _set_digest(source_hashes),
+            intake["quarantine_inputs"]["development_source_hash_set_digest_sha256"],
+        )
+        self.assertEqual(
+            _set_digest(family_ids),
+            intake["quarantine_inputs"]["development_family_id_set_digest_sha256"],
+        )
 
     def test_manifest_repository_is_disjoint_from_sealed_stage7e_repository(self) -> None:
         manifest = json.loads(
