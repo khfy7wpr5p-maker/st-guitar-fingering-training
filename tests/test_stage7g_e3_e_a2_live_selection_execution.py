@@ -40,6 +40,7 @@ class Stage7GE3EA2LiveSelectionExecutionTests(unittest.TestCase):
         repository = corpus["repository"]
         commit = corpus["repository_commit"]
         rows = []
+        failures = []
         with TemporaryDirectory() as tmp:
             for index, item in enumerate(corpus["paths"], start=1):
                 relative = item["path"]
@@ -51,33 +52,51 @@ class Stage7GE3EA2LiveSelectionExecutionTests(unittest.TestCase):
                 local = Path(tmp) / f"{index:03d}.mxl"
                 local.write_bytes(data)
                 selection = select_target_free_part_staff(local)
-                parsed = parse_target_free_mxl(
-                    local,
-                    family_id=f"e3e_musetrainer_{index:03d}",
-                    tuning=STANDARD_TUNING_MIDI,
-                    pitch_mode=PITCH_MODE,
-                    part_id=selection.part_id,
-                    staff_id=selection.staff_id,
-                )
-                self.assertEqual(parsed.source_sha256, selection.source_sha256)
-                self.assertEqual(parsed.part_id, selection.part_id)
-                self.assertEqual(parsed.selected_staff, selection.staff_id)
-                self.assertTrue(parsed.events)
+                parse_status = "PASS"
+                try:
+                    parsed = parse_target_free_mxl(
+                        local,
+                        family_id=f"e3e_musetrainer_{index:03d}",
+                        tuning=STANDARD_TUNING_MIDI,
+                        pitch_mode=PITCH_MODE,
+                        part_id=selection.part_id,
+                        staff_id=selection.staff_id,
+                    )
+                    self.assertEqual(parsed.source_sha256, selection.source_sha256)
+                    self.assertEqual(parsed.part_id, selection.part_id)
+                    self.assertEqual(parsed.selected_staff, selection.staff_id)
+                    self.assertTrue(parsed.events)
+                except Exception as exc:
+                    parse_status = f"FAIL:{type(exc).__name__}:{exc}"
+                    failures.append(
+                        {
+                            "index": index,
+                            "family_key": item["family_key"],
+                            "source_path": relative,
+                            "part_id": selection.part_id,
+                            "staff_id": selection.staff_id,
+                            "error_type": type(exc).__name__,
+                            "error": str(exc),
+                        }
+                    )
                 rows.append(
                     {
                         "family_key": item["family_key"],
                         "source_path": relative,
-                        "target_free_parse": "PASS",
+                        "target_free_parse": parse_status,
                         **selection.as_dict(),
                     }
                 )
 
         self.assertEqual(len(rows), 32)
         self.assertEqual(len({row["source_sha256"] for row in rows}), 32)
-        self.assertTrue(all(row["target_free_parse"] == "PASS" for row in rows))
+        print("E3E_A2_PARSE_FAILURES_BEGIN")
+        print(json.dumps(failures, ensure_ascii=False, sort_keys=True))
+        print("E3E_A2_PARSE_FAILURES_END")
         print("E3E_A2_SELECTIONS_BEGIN")
         print(json.dumps(rows, ensure_ascii=False, sort_keys=True))
         print("E3E_A2_SELECTIONS_END")
+        self.assertFalse(failures, f"target-free parse failures: {failures}")
 
 
 if __name__ == "__main__":
