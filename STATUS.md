@@ -49,27 +49,34 @@
   - if no threshold satisfies the frozen precision/baseline-safety gate: `NO_SWITCH → OPEN_LOW`
 - Stage 7G-E3-D-R1A — Colab execution harness: ✅ merged
   - loader/preflight/nested-CV execution code merged at `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`
-  - no real E3-D fit was executed during R1A
 - Stage 7G-E3-D-R1B — exact execution SHA pin: ✅ merged
   - Colab notebook pins `PINNED_EXECUTION_SHA` to R1A merge SHA `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`
-  - pin PR changed one notebook line only; no model/training behavior changed
-- Current next execution — Stage 7G-E3-D-R1 user-operated Colab run: 🟡 ready for preflight
-  - open the pinned notebook from current `main`
-  - verify repository SHA and sealed artifact hashes
-  - reproduce 400 tasks / 40 families / L1–L4 counts / 399 decisive rows
-  - verify family-isolated split preflight
-  - STOP before fit and inspect the report
-  - user manually runs the separate TRAIN cell only after preflight passes
-  - frozen nested-CV evaluation only
-  - export aggregate evidence JSON
-- Stage 7G-E3-E — new untouched family-disjoint Teacher-GOLD validation: ⏳ future; only designed if E3-D development gate is positive
+- Stage 7G-E3-D-R1 — manual Colab development execution: ✅ completed with **positive development signal**
+  - preflight: `PREFLIGHT_PASS_STOP_BEFORE_TRAIN`
+  - exact user-exported result SHA-256: `5626a1ea70a2bc285d3585ec2f155eb86040ece6507a03dd6a477dd073ec67d3`
+  - event accuracy: **86.22%** vs `always_open_low` **77.94%** → **+8.27 pp**
+  - macro-family accuracy: **86.18%** vs baseline **78.34%** → **+7.84 pp**
+  - compact precision / recall: **77.97% / 52.27%**
+  - compact TP / FP / FN: **46 / 13 / 42**
+  - family win / tie / loss: **22 / 13 / 5**
+  - outer selected thresholds: `[0.5, 0.5, 0.6, 0.5, 0.5]`
+  - frozen continuation status: `POSITIVE_DEVELOPMENT_SIGNAL_ELIGIBLE_FOR_E3E_DESIGN`
+  - scientific scope remains **development CV, not untouched validation**
+- Stage 7G-E3-E — new untouched family-disjoint Teacher-GOLD validation: 🟡 design opened
+  - current substage: **E3-E-A new-family intake audit**
+  - only genuinely new source families may enter
+  - zero overlap required with prior Teacher-GOLD development families and consumed Stage 7E material
+  - no E3-E Teacher-GOLD labels have been collected or observed
+  - validation quota/pass criteria must be frozen before E3-E answers are opened
 - Checkpoint retention: 🔒 closed
 - Production / GuitarTab Engine integration: 🔒 closed
 
 ## Current interpretation
 
-The architecture has moved from a symmetric `open_low`/`compact` router toward a precision-first conservative compact gate. `open_low` remains the default because Teacher-GOLD evidence shows that unnecessary compact switches were the dominant E1 failure mode.
+The architecture has moved from a symmetric `open_low`/`compact` router toward a precision-first conservative compact gate. `open_low` remains the default because Teacher-GOLD evidence showed that unnecessary compact switches were the dominant E1 failure mode.
 
-The new 400-task curriculum batch supplies additional blind Teacher-GOLD development evidence and shows the intended easy→hard pattern: L1 strongly favors `open_low`, while L4 is nearly balanced. This supports the curriculum as a useful development structure, but it is not a fresh final benchmark because the same 40 source families overlap earlier development work.
+Stage 7G-E3-D-R1 is the first frozen nested-CV test of the ergonomics-based conservative gate on the new 399-row Teacher-GOLD development batch. The preregistered continuation gate passed on every required condition: event and macro-family deltas were positive, pooled compact precision exceeded 0.5, compact TP exceeded FP, and family wins exceeded losses.
 
-The training protocol and execution harness are now frozen before any real E3-D fit. The Colab notebook is pinned to the exact R1A execution SHA and is ready to reach the hash/preflight STOP gate. No E3-D result has been observed yet, no threshold has been selected from the real Teacher-GOLD run, no checkpoint is retained, and no production integration is authorized.
+This is meaningful development evidence but is not a promotion result. The same 40-family development domain influenced earlier E1/E2/E3 reasoning, so it cannot establish untouched transfer. No checkpoint has been retained and no production or shadow integration is authorized.
+
+The next controlled scientific step is Stage 7G-E3-E-A: acquire and audit genuinely new family-disjoint source material target-blindly, prove separation before annotation, then seal a validation batch and numeric pass/fail gate before any new Teacher-GOLD answers are opened.
