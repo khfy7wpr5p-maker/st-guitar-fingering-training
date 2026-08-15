@@ -1,0 +1,142 @@
+{
+  "schema": "st-guitar-stage7g-e3-e-b-validation-batch-seal-v1",
+  "stage": "7G-E3-E-B",
+  "status": "BLIND_240_TASK_UNTOUCHED_VALIDATION_BATCH_SEALED_NO_TEACHER_ANSWERS",
+  "base_main_sha": "555e7a8c26954d638e1c4fb06372bb519d94180b",
+  "inputs": {
+    "a3_inventory": {
+      "path": "evidence/stage7g_e3_e_a3_disagreement_inventory.json",
+      "git_blob_sha1": "98304ba29777dec594f5d674e66a9d37ed4fac1d",
+      "disagreement_events": 1937,
+      "disagreement_families": 24,
+      "event_id_set_sha256": "2d2d712b5c95b19f249aa950947062d78ab7f774a9b027b9b2386ef29d833ee1"
+    },
+    "feature_contract": {
+      "count": 40,
+      "ordered_name_sha256": "6e1d26e566a36e473f4f11b065df3e9eb282e06be7bdd3deb65a1160d440bfc3"
+    }
+  },
+  "execution": {
+    "draft_pr": 53,
+    "execution_head_sha": "418af0d14caff0374eaf4053e597383141ca9282",
+    "workflow_run_number": 131,
+    "workflow_run_id": 31884553676,
+    "job_id": 95011840676,
+    "unit_tests": "SUCCESS",
+    "compile_validation": "SUCCESS",
+    "stage7b_c2_workflow_step": "SKIPPED",
+    "specialist_reconstruction_status": "PASS_STAGE7B_C2_OPEN_LOW_COMPACT_RECONSTRUCTION"
+  },
+  "selection": {
+    "policy": "deterministic_family_balanced_round_robin_all_24_disagreement_families",
+    "teacher_task_quota": 240,
+    "selected_tasks": 240,
+    "selected_families": 24,
+    "selected_family_task_count_min": 1,
+    "selected_family_task_count_max": 12,
+    "selected_event_id_set_sha256": "293ac5116a9c4b94993f150640c5113deaf213b7d59ddd6cebfdbec82cc9c7d7",
+    "curriculum_level_diagnostic_counts": {
+      "L1": 25,
+      "L2": 135,
+      "L3": 43,
+      "L4": 37
+    },
+    "curriculum_level_used_for_selection": false,
+    "teacher_response_used_for_selection": false,
+    "e3e_model_outcome_used_for_selection": false
+  },
+  "sealed_artifacts": {
+    "teacher_manifest": {
+      "external": true,
+      "sha256": "17cf5513d1068b18b975a579da591540126e50c8fd9c89b59baaaee3e22ae352",
+      "teacher_facing": true,
+      "specialist_identity_withheld": true,
+      "family_identity_withheld": true,
+      "source_identity_withheld": true,
+      "curriculum_level_withheld": true,
+      "feature_values_withheld": true,
+      "model_prediction_withheld": true,
+      "threshold_withheld": true
+    },
+    "internal_audit": {
+      "external": true,
+      "sha256": "75440e8e97c1ab80c27d93f8f37d1545a776e7fc8d9d0ddc6de5fdad9d98f7ee",
+      "teacher_facing": false
+    },
+    "response_template": {
+      "external": true,
+      "sha256": "00054dc4b669822ba885d5db7c8f2dcb46e29667b0b793148029006d23ffa550",
+      "contains_answers": false
+    },
+    "teacher_package": {
+      "filename": "ST_Guitar_E3E_Teacher_GOLD_240.zip",
+      "external": true,
+      "committed_to_git": false,
+      "bytes": 373739,
+      "sha256": "d9c74e247d9fcab684b4965a7c0018ccb8beafb8fbfc92c09687ff3d494c858f",
+      "contains_internal_audit": false,
+      "contains_offline_html_ui": true
+    }
+  },
+  "untouched_evaluation_gate": {
+    "frozen_before_teacher_answers": true,
+    "required_completed_tasks": 240,
+    "equal_or_unsure_policy": "retain_for_audit_exclude_from_binary_metrics",
+    "evaluable_family_definition": "family_with_at_least_one_decisive_A_or_B_response",
+    "evidence_sufficiency": {
+      "minimum_decisive_events": 200,
+      "minimum_evaluable_families": 20,
+      "if_not_met": "INSUFFICIENT_UNTOUCHED_EVIDENCE_NO_PROMOTION"
+    },
+    "development_only_finalization": {
+      "fit_rows": 399,
+      "pipeline": ["StandardScaler", "LogisticRegression"],
+      "max_iter": 2000,
+      "class_weight": null,
+      "C": 1.0,
+      "solver": "lbfgs",
+      "random_state": 0,
+      "positive_class": "COMPACT",
+      "default_decision": "OPEN_LOW",
+      "compact_probability_threshold": 0.5,
+      "threshold_origin": "mode_of_frozen_E3D_outer_selected_thresholds_[0.5,0.5,0.6,0.5,0.5]",
+      "threshold_selected_from_e3e_labels": false,
+      "threshold_search_on_e3e": false
+    },
+    "family_metric_definition": {
+      "macro_family_accuracy": "mean_binary_accuracy_over_evaluable_families",
+      "win": "frozen_model_family_accuracy_gt_always_open_low_family_accuracy",
+      "tie": "frozen_model_family_accuracy_eq_always_open_low_family_accuracy",
+      "loss": "frozen_model_family_accuracy_lt_always_open_low_family_accuracy"
+    },
+    "positive_status": "POSITIVE_UNTOUCHED_SIGNAL_ELIGIBLE_FOR_PROMOTION_DESIGN",
+    "negative_status": "NEGATIVE_UNTOUCHED_VALIDATION_NO_PROMOTION",
+    "positive_requirements": {
+      "event_accuracy_delta_gt": 0.0,
+      "macro_family_accuracy_delta_gt": 0.0,
+      "compact_precision_gte": 0.6666666666666666,
+      "compact_true_positives_gt_false_positives": true,
+      "family_wins_gt_losses": true
+    },
+    "all_positive_requirements_must_pass": true,
+    "no_posthoc_rescue_or_retuning": true,
+    "authorizes_checkpoint": false,
+    "authorizes_production": false
+  },
+  "provenance_and_rights": {
+    "source_corpus": "musetrainer/library",
+    "source_commit": "9128876f6164d96997c877a2be843349a32bdabb",
+    "research_only": true,
+    "commercial_or_production_clearance": false
+  },
+  "scientific_boundary": {
+    "teacher_gold_answers_read": false,
+    "teacher_gold_answers_exist_at_seal": false,
+    "e3e_model_fit": false,
+    "e3e_threshold_tuned": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_reused_for_modeling": false
+  },
+  "next_gate": "E3E_C_BLIND_TEACHER_GOLD_COLLECTION_AFTER_SEAL_MERGE"
+}
