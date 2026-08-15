@@ -1,0 +1,69 @@
+{
+  "schema": "st-guitar-stage7g-e3-b-generator-protocol-v1",
+  "stage": "7G-E3-B",
+  "status": "GENERATOR_IMPLEMENTED_PENDING_MERGE",
+  "base_main_sha": "c3b6942fc6e5987d5a1cb8e78a608dcb906db8fc",
+  "purpose": "target_blind_easy_to_hard_curriculum_generation",
+  "eligibility": {
+    "requires_open_low_compact_disagreement": true,
+    "teacher_response_used": false,
+    "observed_source_tab_used": false,
+    "stage7e_used": false
+  },
+  "feature_contract": {
+    "source": "Stage 7G-E3-A",
+    "raw_feature_count": 40,
+    "difficulty_levels": ["L1", "L2", "L3", "L4"],
+    "difficulty_assignment_target_blind": true
+  },
+  "selection": {
+    "explicit_quota_required_for_every_level": true,
+    "data_dependent_default_quotas": false,
+    "family_balanced_within_level": true,
+    "deterministic_family_order": "sha256(family_id)",
+    "deterministic_event_order": "sha256(event_id)"
+  },
+  "teacher_manifest": {
+    "blind_ab": true,
+    "source_identity_withheld": true,
+    "family_identity_withheld": true,
+    "specialist_identity_withheld": true,
+    "curriculum_level_withheld": true,
+    "feature_values_withheld": true,
+    "responses": ["A", "B", "EQUAL_OR_UNSURE"]
+  },
+  "rule_derived_property_supervision": {
+    "levels": ["L1", "L2"],
+    "teacher_gold": false,
+    "semantic_boundary": "descriptive_geometry_only_not_guitaristic_preference",
+    "targets": [
+      "more_open_notes",
+      "fewer_fretted_notes",
+      "lower_mean_positive_fret",
+      "narrower_positive_fret_span",
+      "smaller_string_span",
+      "fewer_internal_string_gaps"
+    ]
+  },
+  "execution_policy": {
+    "preferred_training_execution": "github_pinned_protocol_plus_manual_colab",
+    "colab_run_requires_exact_git_sha": true,
+    "colab_run_requires_input_sha256": true,
+    "colab_run_requires_pre_fit_report": true,
+    "colab_training_cell_manual": true,
+    "aggregate_evidence_returns_to_github": true
+  },
+  "scientific_boundary": {
+    "real_curriculum_batch_generated": false,
+    "new_teacher_labels_collected": 0,
+    "model_fit_performed": false,
+    "threshold_tuning": false,
+    "hyperparameter_search": false,
+    "old_556_used_as_fresh_benchmark": false,
+    "first_38_full_candidate_choices_mixed": false,
+    "stage7e_reused": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "automatic_learning_from_user_correction": false
+  }
+}
