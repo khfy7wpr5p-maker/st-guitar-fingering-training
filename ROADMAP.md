@@ -18,24 +18,29 @@
 | 7G-E3-B-R1 | First sealed curriculum batch | ✅ 400 tasks, all 40 development families, prior-task overlap 0 |
 | 7G-E3-C | Teacher-GOLD Batch01 response seal | ✅ 400/400 validated; 399 decisive; open_low=311, compact=88, equal=1 |
 | 7G-E3-D | Conservative compact-gate training protocol | ✅ merged/frozen before fit; `open_low` default; nested family-isolated CV + inner-only threshold selection |
-| 7G-E3-D-R1 | Manual Colab development execution | **next**: exact-SHA/hash preflight → STOP → manual TRAIN → frozen nested-CV evidence |
+| 7G-E3-D-R1A | Colab execution harness | ✅ merged at `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`; no real fit executed |
+| 7G-E3-D-R1B | Exact execution SHA pin | ✅ notebook pinned to R1A merge SHA; one-line pin only |
+| 7G-E3-D-R1 | Manual Colab development execution | **next**: pinned notebook → hash/split preflight → STOP → manual TRAIN → frozen nested-CV evidence |
 | 7G-E3-E | New untouched Teacher-GOLD validation | future: new family-disjoint material only if E3-D development gate is positive |
 | 8 | Context/transition ranking + GuitarTab Engine shadow integration | future; blocked until a valid untouched-validation checkpoint gate passes |
 
 ## Immediate next step
 
-Prepare the Stage 7G-E3-D-R1 Colab execution package pinned to the exact merged E3-D Git commit. Before any fit, the notebook must verify code identity, package/input hashes, 400 task IDs, 40 families, L1/L2/L3/L4 counts, 399 decisive binary rows, finite frozen features, and family isolation.
+Run the already-pinned Stage 7G-E3-D-R1 notebook manually in Google Colab. The notebook itself comes from current `main`, while its execution code is intentionally pinned to R1A merge SHA `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`.
 
 The user-visible run sequence is:
 
-1. clone + checkout exact approved Git SHA;
-2. install package and print dependency versions;
-3. upload the sealed curriculum package and completed Teacher-GOLD choice export;
-4. verify all preregistered SHA-256 values and preflight counts;
-5. STOP before training;
-6. user manually executes the TRAIN cell;
-7. run only the frozen 5×4 nested family-isolated evaluation;
-8. export aggregate evidence with `checkpoint_retained=false` and `production_integration=false`.
+1. open `notebooks/ST_Guitar_Stage7G_E3_D_R1_Colab.ipynb` from current `main` in Colab;
+2. let the notebook clone the repository and checkout exact execution SHA `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`;
+3. install the pinned repository package and print dependency versions;
+4. upload the sealed curriculum package and completed Teacher-GOLD choice export;
+5. verify all preregistered SHA-256 values, 400 task IDs, 40 families, L1/L2/L3/L4 counts, 399 decisive rows, finite frozen features, and family-isolated splits;
+6. STOP before training and inspect the preflight output;
+7. only after preflight passes, manually execute the separate TRAIN cell;
+8. run only the frozen 5×4 nested family-isolated evaluation;
+9. export aggregate evidence with `checkpoint_retained=false` and `production_integration=false`.
+
+No E3-D result has been observed yet. If preflight fails, do not run TRAIN.
 
 ## Scientific rules that remain fixed
 
