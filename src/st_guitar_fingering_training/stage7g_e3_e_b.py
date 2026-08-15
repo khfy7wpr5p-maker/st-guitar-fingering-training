@@ -3,8 +3,10 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 from hashlib import sha256
+from io import BytesIO
 import json
 from typing import Iterable, Mapping
+from zipfile import ZIP_STORED, ZipFile, ZipInfo
 
 import numpy as np
 
@@ -347,3 +349,70 @@ def e3e_internal_audit(batch: Iterable[E3EBValidationItem]) -> dict:
 
 def canonical_json_bytes(value: object) -> bytes:
     return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def e3e_teacher_ui_html(manifest: Mapping[str, object]) -> bytes:
+    """Build an offline blind A/B annotation UI with JSON export only."""
+
+    if manifest.get("schema") != E3E_B_TEACHER_MANIFEST_SCHEMA:
+        raise ValueError("unexpected E3-E-B teacher manifest schema")
+    if manifest.get("task_count") != E3E_B_TASK_QUOTA:
+        raise ValueError("E3-E-B UI requires the exact 240-task manifest")
+    embedded = json.dumps(manifest, sort_keys=True, separators=(",", ":")).replace("</", "<\\/")
+    html = """<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ST Guitar E3-E Teacher-GOLD</title>
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:0 auto;padding:18px;background:#f7f7f7;color:#111}
+.card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{border:2px solid #ddd;border-radius:10px;padding:12px}.chosen{border-color:#111}.row{padding:3px 0;font-variant-numeric:tabular-nums}
+button{font-size:16px;padding:10px 14px;margin:4px;border-radius:8px;border:1px solid #999;background:white}.primary{background:#111;color:white}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.muted{color:#666;font-size:14px}@media(max-width:650px){.opts{grid-template-columns:1fr}}
+</style></head><body>
+<h1>E3-E Teacher-GOLD</h1><p class="muted">Her görevde daha gitaristik/doğal olan seçeneği seç. Uzman kimlikleri ve eser bilgileri bilinçli olarak gizlidir.</p>
+<div class="nav"><span id="progress"></span><button onclick="exportChoices()" class="primary">Cevapları JSON olarak dışa aktar</button></div>
+<div id="app"></div>
+<div class="nav"><button onclick="move(-1)">← Önceki</button><button onclick="move(1)">Sonraki →</button></div>
+<script>
+const manifest=__MANIFEST__;
+let idx=0; const answers={};
+function placementText(p){return `MIDI ${p.pitch_midi} → Tel ${p.string}, Perde ${p.fret}`}
+function render(){const t=manifest.tasks[idx], choice=answers[t.task_id]||""; document.getElementById('progress').textContent=`${idx+1} / ${manifest.task_count} — cevaplanan ${Object.keys(answers).length}`;
+const option=o=>`<div class="opt ${choice===o.option_id?'chosen':''}"><h2>Seçenek ${o.option_id}</h2>${o.placements.map(p=>`<div class="row">${placementText(p)}</div>`).join('')}<button onclick="choose('${o.option_id}')">${o.option_id} seç</button></div>`;
+document.getElementById('app').innerHTML=`<div class="card"><div><b>Sesler:</b> ${t.pitches_midi.join(', ')}</div><div class="opts">${t.options.map(option).join('')}</div><div style="margin-top:10px"><button onclick="choose('EQUAL_OR_UNSURE')">Eşit / Emin değilim</button></div></div>`;}
+function choose(c){answers[manifest.tasks[idx].task_id]=c; render(); if(idx<manifest.tasks.length-1){setTimeout(()=>{idx++;render()},120)}}
+function move(d){idx=Math.max(0,Math.min(manifest.tasks.length-1,idx+d));render()}
+function exportChoices(){const rows=manifest.tasks.map(t=>({task_id:t.task_id,choice:answers[t.task_id]||""})); const out={schema:'st-guitar-stage7g-e3-e-b-teacher-responses-v1',stage:'7G-E3-E-C',task_count:manifest.task_count,choices:rows}; const blob=new Blob([JSON.stringify(out,null,2)+'\\n'],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ST_Guitar_E3E_choices_240.json';a.click();URL.revokeObjectURL(a.href)}
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='a')choose('A');if(e.key.toLowerCase()==='b')choose('B');if(e.key.toLowerCase()==='e')choose('EQUAL_OR_UNSURE');if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1)});render();
+</script></body></html>""".replace("__MANIFEST__", embedded)
+    forbidden = ("blind_A_specialist", "blind_B_specialist", "feature_record", "family_id", "source_sha256")
+    if any(token in html for token in forbidden):
+        raise AssertionError("teacher UI leaked internal audit metadata")
+    return html.encode("utf-8")
+
+
+def e3e_teacher_package_bytes(batch: Iterable[E3EBValidationItem]) -> bytes:
+    """Create a deterministic teacher-facing ZIP; internal audit is intentionally excluded."""
+
+    items = tuple(batch)
+    manifest = e3e_teacher_manifest(items)
+    template = e3e_response_template(items)
+    files = {
+        "README.txt": (
+            "ST Guitar Stage 7G-E3-E Teacher-GOLD untouched validation\n"
+            "Open ST_Guitar_E3E_Teacher_UI.html in a browser.\n"
+            "Choose A, B, or Equal/Unsure for all 240 tasks, then export the JSON file.\n"
+            "Do not edit task IDs. Specialist, family, source, feature, and threshold identities are withheld.\n"
+        ).encode("utf-8"),
+        "ST_Guitar_E3E_Teacher_UI.html": e3e_teacher_ui_html(manifest),
+        "choices_template.json": canonical_json_bytes(template),
+        "teacher_manifest.json": canonical_json_bytes(manifest),
+    }
+    buffer = BytesIO()
+    with ZipFile(buffer, "w", compression=ZIP_STORED) as archive:
+        for name in sorted(files):
+            info = ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = ZIP_STORED
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, files[name])
+    return buffer.getvalue()
