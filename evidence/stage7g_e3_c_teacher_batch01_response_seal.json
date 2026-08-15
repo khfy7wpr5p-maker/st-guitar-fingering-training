@@ -1,0 +1,86 @@
+{
+  "schema": "st-guitar-stage7g-e3-c-response-seal-v1",
+  "stage": "7G-E3-C",
+  "status": "SEALED_TEACHER_BATCH01_RESPONSE_READY_PENDING_MERGE",
+  "base_main_sha": "00dea6e5da5fef44ea14a0ae59193ba7deed7b73",
+  "external_inputs": {
+    "choices_filename": "ST_Guitar_E3_Batch01_choices_400of400.json",
+    "choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "validated_filename": "ST_Guitar_E3_Batch01_choices_400_VALIDATED.json",
+    "manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "raw_choices_committed_to_git": false,
+    "validated_rows_committed_to_git": false
+  },
+  "validation": {
+    "status": "PASS",
+    "declared_choices": 400,
+    "actual_choices": 400,
+    "unique_task_ids": 400,
+    "exact_manifest_task_set_match": true,
+    "duplicate_task_ids": 0,
+    "missing_task_ids": 0,
+    "invalid_responses": 0,
+    "annotation_blinded": true,
+    "manifest_sha256_match": true
+  },
+  "blind_response_counts": {
+    "A": 201,
+    "B": 198,
+    "EQUAL_OR_UNSURE": 1,
+    "total": 400
+  },
+  "decoded_teacher_preference_counts": {
+    "open_low": 311,
+    "compact": 88,
+    "EQUAL_OR_UNSURE": 1,
+    "decisive": 399,
+    "total": 400
+  },
+  "curriculum_level_results": {
+    "L1": {
+      "tasks": 140,
+      "open_low": 131,
+      "compact": 9,
+      "equal_or_unsure": 0,
+      "compact_rate_decisive": 0.06428571428571428
+    },
+    "L2": {
+      "tasks": 120,
+      "open_low": 88,
+      "compact": 32,
+      "equal_or_unsure": 0,
+      "compact_rate_decisive": 0.26666666666666666
+    },
+    "L3": {
+      "tasks": 80,
+      "open_low": 63,
+      "compact": 17,
+      "equal_or_unsure": 0,
+      "compact_rate_decisive": 0.2125
+    },
+    "L4": {
+      "tasks": 60,
+      "open_low": 29,
+      "compact": 30,
+      "equal_or_unsure": 1,
+      "compact_rate_decisive": 0.5084745762711864
+    }
+  },
+  "teacher_gold_semantics": "pairwise_guitaristic_preference",
+  "scientific_boundary": {
+    "new_teacher_gold_labels": 400,
+    "source_families": 40,
+    "development_family_overlap_with_prior_teacher_gold": true,
+    "untouched_final_validation": false,
+    "eligible_for_final_validation_claim": false,
+    "stage7e_used": false,
+    "model_fit": false,
+    "threshold_tuned": false,
+    "hyperparameters_tuned": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "raw_teacher_rows_committed_to_git": false,
+    "full_candidate_first_38_mixed_into_pairwise_batch": false
+  },
+  "interpretation": "The 400 newly collected blind pairwise Teacher-GOLD responses are complete and validation-clean. L1 strongly favors open_low while L4 is nearly balanced between open_low and compact, which is consistent with the target-blind curriculum ordering carrying preference-ambiguity signal. These labels come from development-overlapping families, so they may support E3 model development but must not be treated as untouched final validation. No model was fitted and no checkpoint was retained in this stage."
+}
