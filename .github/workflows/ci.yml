@@ -25,3 +25,14 @@ jobs:
         run: python scripts/evaluate_synthetic_behavior_cv.py --families 100 --events-per-family 24 --folds 5
       - name: Compile validation
         run: python -m compileall -q src scripts tests
+      - name: Rebuild label-free E3 feature audits
+        if: startsWith(github.head_ref, 'agent/stage7g-e3-e-c-untouched-execution')
+        run: python scripts/rebuild_stage7g_e3_feature_audits.py
+      - name: Upload label-free E3 feature audits
+        if: startsWith(github.head_ref, 'agent/stage7g-e3-e-c-untouched-execution')
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage7g-e3-e-feature-audits
+          path: artifacts/e3_feature_audits/*.json
+          if-no-files-found: error
+          retention-days: 1
