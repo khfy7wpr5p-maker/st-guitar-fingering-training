@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_REPOSITORY = "robust-guitar-tabs/code"
 EXPECTED_COMMIT = "f50309ad06dc734ddae5e3a0eda756fca221e2e7"
 EXPECTED_VERSION = "FICHIER GUITAR PRO v3.00"
+DUMMY_PREFIX = "GuitarProConversor/DummyTabs/"
 FIELDS = (
     "title",
     "subtitle",
@@ -35,6 +36,10 @@ def _download(url: str) -> bytes:
     )
     with urllib.request.urlopen(request, timeout=30) as response:
         return response.read()
+
+
+def _download_json(url: str):
+    return json.loads(_download(url).decode("utf-8"))
 
 
 def _take(data: bytes, offset: int, count: int) -> tuple[bytes, int]:
@@ -89,6 +94,14 @@ def _read_metadata_prefix(data: bytes) -> dict:
     return values
 
 
+def _generator_source_path(path: str) -> bool:
+    if not path.startswith(DUMMY_PREFIX):
+        return False
+    # Mirrors the effective MasterExtraction.ipynb predicate: the notebook's
+    # .gp5 clause is unsatisfiable because file.split('.') is a list.
+    return path.endswith((".gp", ".gp2", ".gp3", ".gp4"))
+
+
 class Stage7GE3EA2Stage7EMetadataExecutionTests(unittest.TestCase):
     def test_stage7e_semantic_metadata_only(self) -> None:
         seal = json.loads(
@@ -120,6 +133,32 @@ class Stage7GE3EA2Stage7EMetadataExecutionTests(unittest.TestCase):
         print(json.dumps(rows, ensure_ascii=False, sort_keys=True))
         print("STAGE7E_METADATA_AUDIT_END")
         self.assertEqual(len(rows), 16)
+
+    def test_generator_source_path_inventory_only(self) -> None:
+        tree_url = (
+            f"https://api.github.com/repos/{EXPECTED_REPOSITORY}/git/trees/"
+            f"{EXPECTED_COMMIT}?recursive=1"
+        )
+        tree = _download_json(tree_url)
+        self.assertEqual(tree["sha"], EXPECTED_COMMIT)
+        self.assertFalse(tree.get("truncated", False))
+        rows = tree.get("tree")
+        self.assertIsInstance(rows, list)
+
+        source_paths = sorted(
+            item["path"]
+            for item in rows
+            if isinstance(item, dict)
+            and item.get("type") == "blob"
+            and isinstance(item.get("path"), str)
+            and _generator_source_path(item["path"])
+        )
+        self.assertTrue(source_paths)
+        self.assertEqual(len(source_paths), len(set(source_paths)))
+
+        print("STAGE7E_GENERATOR_SOURCE_PATHS_BEGIN")
+        print(json.dumps(source_paths, ensure_ascii=False))
+        print("STAGE7E_GENERATOR_SOURCE_PATHS_END")
 
 
 if __name__ == "__main__":
