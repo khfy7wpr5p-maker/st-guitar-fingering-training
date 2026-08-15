@@ -8,28 +8,49 @@
 | 3 | Physical validation + event extraction | ✅ independent pitch/string/fret veto |
 | 4 | Dataset Builder v1 | ✅ family split + deterministic candidate generation |
 | 5 | First bounded single-note training | ✅ executed; no retained production checkpoint |
-| 6 | Chord voicing specialists + context experiments | ✅ research completed through stateless/transition experiments; failed rollout paths retained as negative evidence |
-| 7D-A / 7E | Target-blind stateless specialist routing | ✅ positive research direction; relative advantage survived untouched Stage 7E, but no checkpoint retained |
-| 7G-A → 7G-D | Teacher-GOLD corpus, blind annotation, pairwise transition | ✅ 556 decisive blind pairwise labels across 40 families |
-| 7G-E1 | First real Teacher-GOLD pairwise router | ✅ negative development CV: 70.50% vs 77.88% `always_open_low`; no promotion |
-| 7G-E2 | Compact-preference error diagnostic | ✅ dominant error identified: 107 compact false positives vs 66 recovered compact preferences |
-| 7G-E3 | Guitar Ergonomics Curriculum | 🟡 active research direction; training not started |
-| 7G-E3-A | Curriculum/data contract | ✅ merged: L1–L4, 40 target-blind descriptors, strict provenance split |
-| 7G-E3-B | Curriculum task generator | 🟡 implementation prepared; real batch generation requires a separate execution gate |
-| 7G-E3-B-R1 | First sealed curriculum batch | next after generator merge: inspect target-blind level counts, freeze explicit quotas, then generate hashed artifacts |
-| 7G-E3-C | Teacher annotation pilot | planned: faster, simpler blind Teacher-GOLD collection; rule-derived property targets remain non-preference labels |
-| 7G-E3-D | Family-isolated development experiment | planned: simple-property pretraining + explicit ergonomics + conservative compact detector; old 556 labels development-only |
-| 7G-E3-E | New untouched Teacher-GOLD validation | future: new family-disjoint material; checkpoint criterion must be preregistered before scoring |
-| 8 | Context/transition ranking + GuitarTab Engine shadow integration | future; blocked until a valid stateless Teacher-GOLD checkpoint exists |
+| 6 | Chord voicing specialists + context experiments | ✅ research completed; failed rollout paths retained as negative evidence |
+| 7D-A / 7E | Target-blind stateless specialist routing | ✅ relative research advantage survived Stage 7E; Stage 7E now permanently consumed |
+| 7G-A → 7G-D | Teacher-GOLD corpus + blind pairwise annotation | ✅ 556 decisive labels / 40 families; 38 richer full-candidate labels remain separate |
+| 7G-E1 | First real Teacher-GOLD pairwise router | ✅ negative: 70.50% vs 77.88% `always_open_low`; no promotion |
+| 7G-E2 | Compact-preference error diagnostic | ✅ 107 compact false positives vs 66 recovered compact preferences |
+| 7G-E3-A | Guitar ergonomics curriculum contract | ✅ merged: L1–L4 + frozen 40 target-blind descriptors |
+| 7G-E3-B | Target-blind curriculum generator | ✅ merged |
+| 7G-E3-B-R1 | First sealed curriculum batch | ✅ 400 tasks, all 40 development families, prior-task overlap 0 |
+| 7G-E3-C | Teacher-GOLD Batch01 response seal | ✅ 400/400 validated; 399 decisive; open_low=311, compact=88, equal=1 |
+| 7G-E3-D | Conservative compact-gate training protocol | ✅ merged/frozen before fit; `open_low` default; nested family-isolated CV + inner-only threshold selection |
+| 7G-E3-D-R1 | Manual Colab development execution | **next**: exact-SHA/hash preflight → STOP → manual TRAIN → frozen nested-CV evidence |
+| 7G-E3-E | New untouched Teacher-GOLD validation | future: new family-disjoint material only if E3-D development gate is positive |
+| 8 | Context/transition ranking + GuitarTab Engine shadow integration | future; blocked until a valid untouched-validation checkpoint gate passes |
 
-## Current rule
+## Immediate next step
 
-The next step is **not** to retune Stage 7G-E1 on the same 556 labels. Stage 7G-E3-A freezes a curriculum contract in which rule-derived L1/L2 supervision teaches only measurable guitar geometry; it cannot masquerade as Teacher-GOLD preference.
+Prepare the Stage 7G-E3-D-R1 Colab execution package pinned to the exact merged E3-D Git commit. Before any fit, the notebook must verify code identity, package/input hashes, 400 task IDs, 40 families, L1/L2/L3/L4 counts, 399 decisive binary rows, finite frozen features, and family isolation.
 
-Stage 7G-E3-B generates tasks without teacher labels, requires explicit per-level quotas, and balances families inside each level. A real curriculum batch must be generated only after E3-B is merged and its quotas/source identities are separately frozen.
+The user-visible run sequence is:
 
-For future model fitting, the preferred execution path is **GitHub-pinned protocol + manually operated Colab**: exact Git SHA and data hashes are verified before fit, the user controls the training cell, and aggregate run evidence returns to GitHub for review/CI.
+1. clone + checkout exact approved Git SHA;
+2. install package and print dependency versions;
+3. upload the sealed curriculum package and completed Teacher-GOLD choice export;
+4. verify all preregistered SHA-256 values and preflight counts;
+5. STOP before training;
+6. user manually executes the TRAIN cell;
+7. run only the frozen 5×4 nested family-isolated evaluation;
+8. export aggregate evidence with `checkpoint_retained=false` and `production_integration=false`.
 
-Any claimed preference improvement requires new family-disjoint blind Teacher-GOLD evidence. The existing 556 decisive labels may support exploratory E3 development but are already consumed for E1/E2 and are not a fresh benchmark.
+## Scientific rules that remain fixed
 
-Stage 7E remains permanently consumed/evaluation-only and is forbidden for training, tuning, calibration, feature selection, or new validation.
+- Deterministic guitar physics owns physical validity.
+- `open_low` is the default decision; `compact` is a gated alternative.
+- The E3-D fit uses only the new E3 Batch01 399 decisive pairwise Teacher-GOLD rows.
+- The earlier 556 decisive E1/E2 labels are consumed hypothesis-development evidence and are excluded from the E3-D fit.
+- The first 38 full-candidate Teacher-GOLD choices remain a separate semantic label type.
+- Stage 7E is permanently forbidden for training, tuning, calibration, feature selection, or new validation.
+- Threshold selection occurs only on inner out-of-fold predictions; outer labels cannot change thresholds.
+- E3-D is development CV, not untouched validation and cannot authorize checkpoint retention or production.
+- A positive E3-D result authorizes only the design of E3-E; E3-E must use new family-disjoint blind Teacher-GOLD material.
+
+## Development-control rule
+
+Routine read-only analysis, branch creation, implementation inside an already approved bounded stage, tests, CI checks, and PR preparation do not require separate approval messages. One explicit approval remains at meaningful risk gates rather than at every mechanical step.
+
+Code/model-behavior merges, checkpoint retention/promotion, production or shadow integration, destructive history operations, and other materially irreversible changes still require an explicit gate. Documentation-only maintenance explicitly requested by the user may be implemented and merged under that same bounded authorization after scope and CI are verified.
