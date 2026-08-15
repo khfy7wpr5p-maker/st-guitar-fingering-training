@@ -4,20 +4,37 @@ Training and evaluation lab for guitar polyphony, voicing, string/fret selection
 
 ## Current scope
 
-The project has moved beyond the original single-note pilot into bounded chord-voicing and Teacher-GOLD preference research. Deterministic guitar physics remains authoritative: learned components may score or route only among physically valid string/fret candidates and never create or legitimize impossible placements.
+The project is now in Stage 7G-E3, where deterministic physically valid guitar candidates are combined with blind Teacher-GOLD preference learning. Deterministic guitar physics remains authoritative: learned components may score or route only among candidates already accepted by the physical engine and never create or legitimize impossible placements.
 
 The current research core is:
 
 1. deterministic physically-valid candidate generation;
-2. frozen stateless voicing specialists, with `open_low` as the strongest simple default and `compact` as the main alternative under study;
-3. blind Teacher-GOLD pairwise preference supervision;
-4. family-isolated evaluation of target-blind specialist routing;
-5. diagnostic analysis before any new model or checkpoint is promoted.
+2. frozen stateless `open_low` and `compact` specialists;
+3. a frozen 40-descriptor target-blind guitar-ergonomics representation;
+4. blind pairwise Teacher-GOLD preference supervision;
+5. a conservative `compact` gate with `open_low` as the default;
+6. family-isolated nested development evaluation before any untouched validation or checkpoint decision.
 
-The first real Teacher-GOLD router did **not** beat `always_open_low`: 70.50% event-weighted teacher agreement versus 77.88% for the baseline. Stage 7G-E2 traced the main loss to excessive `compact` selection. No Teacher-GOLD checkpoint is retained and production integration remains closed.
+The first Teacher-GOLD router was negative: 70.50% event-weighted agreement versus 77.88% for `always_open_low`. Stage 7G-E2 showed that excessive `compact` switching was the dominant error source: 66 true compact recoveries versus 107 false compact switches.
 
-The next planned research package is **Stage 7G-E3 — Guitar Ergonomics Curriculum**. It will investigate simpler-to-harder curriculum data, explicit string-topology and left-hand-geometry descriptors, pairwise proposal-delta features, and a conservative `compact` detector that falls back to `open_low` unless there is sufficient evidence. This is an architecture/research plan only; E3 training has not started.
+Stage 7G-E3 has since advanced through data and protocol preparation:
 
-The repository intentionally excludes OMR/PDF recognition, production GuitarTab Engine writes, automatic learning from user feedback, rights-unclear raw corpora in Git, and large checkpoints.
+- E3-A curriculum/feature contract: merged;
+- E3-B target-blind generator: merged;
+- E3-B-R1 first sealed curriculum batch: 400 tasks across all 40 development families;
+- E3-C blind Teacher-GOLD responses: 400/400 validated, with `open_low=311`, `compact=88`, `EQUAL_OR_UNSURE=1`;
+- E3-D conservative training protocol: merged and frozen before fit.
 
-See `ARCHITECTURE.md`, `SAFETY.md`, `DATASET_CONTRACT.md`, `ROADMAP.md`, `STATUS.md`, and `docs/STAGE_7G_E3_GUITAR_ERGONOMICS_CURRICULUM.md`.
+The E3-D fit will use only the new 399 decisive E3 Batch01 Teacher-GOLD rows. The earlier 556 decisive E1/E2 rows are consumed hypothesis-development evidence and are excluded from the E3-D fit. Stage 7E remains permanently consumed and forbidden for training/tuning/new validation.
+
+## Immediate next step
+
+Prepare and manually execute Stage 7G-E3-D-R1 in Google Colab under the merged protocol:
+
+`exact Git SHA → artifact SHA-256 preflight → family/leakage checks → STOP → manual TRAIN → frozen nested-CV evaluation → aggregate evidence export`
+
+No E3-D model has been fitted yet. No threshold has been selected from results, no checkpoint is retained, and production/GuitarTab Engine integration remains closed.
+
+The repository intentionally excludes OMR/PDF recognition, automatic learning from user feedback, rights-unclear raw corpora in Git, production GuitarTab Engine writes, and large retained checkpoints.
+
+See `ARCHITECTURE.md`, `SAFETY.md`, `DATASET_CONTRACT.md`, `ROADMAP.md`, `STATUS.md`, `docs/STAGE_7G_E3_D_CONSERVATIVE_TRAINING_PROTOCOL.md`, and `docs/COLAB_MANUAL_TRAINING_CONTROL.md`.
