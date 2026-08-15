@@ -1,0 +1,126 @@
+{
+  "schema": "st-guitar-stage7g-e3-e-a3-disagreement-inventory-seal-v1",
+  "stage": "7G-E3-E-A3",
+  "status": "TARGET_BLIND_OPEN_LOW_COMPACT_INVENTORY_SEALED",
+  "base_main_sha": "2ca1e18621fbdb8f99ad4e9e14d9236c49ffa750",
+  "inputs": {
+    "a1_source_manifest": {
+      "path": "evidence/stage7g_e3_e_a1_source_manifest.json",
+      "git_blob_sha1": "7b61c5dc6ce60cec27087bda8fdad7058a4e0669",
+      "repository": "musetrainer/library",
+      "repository_commit": "9128876f6164d96997c877a2be843349a32bdabb",
+      "candidate_families": 32
+    },
+    "a2_family_selection_seal": {
+      "path": "evidence/stage7g_e3_e_a2_family_selection_seal.json",
+      "git_blob_sha1": "7b357fdfc9b2f1a685cdc1c574e0c01110b32f9e",
+      "eligible_families": 31,
+      "parser_quarantined_families": ["chopin_ballade1_op23"]
+    },
+    "untouched_validation_design": {
+      "path": "docs/STAGE_7G_E3_E_UNTOUCHED_VALIDATION_DESIGN.md",
+      "git_blob_sha1": "76aae64e571e6f949f66e386ce9234f02098fb47",
+      "inventory_contract": "only events where open_low != compact",
+      "numeric_validation_quota_pre_frozen": false
+    }
+  },
+  "execution": {
+    "draft_pr": 52,
+    "execution_head_sha": "7c7ed8528e40943ce0b80ac4ecc00d011ce82501",
+    "workflow_run_number": 123,
+    "workflow_run_id": 31883699570,
+    "job_id": 95009720181,
+    "unit_tests": "SUCCESS",
+    "compile_validation": "SUCCESS",
+    "stage7b_c2_workflow_step": "SKIPPED"
+  },
+  "specialist_reconstruction_guard": {
+    "status": "PASS_STAGE7B_C2_OPEN_LOW_COMPACT_RECONSTRUCTION",
+    "balanced_synthetic_families": 100,
+    "open_low": {
+      "synthetic_families": 20,
+      "training_events": 480,
+      "pairwise_matrix_shape": [6900, 4],
+      "stage7b_c2_macro_top1": 1.0
+    },
+    "compact": {
+      "synthetic_families": 20,
+      "training_events": 480,
+      "pairwise_matrix_shape": [7708, 4],
+      "stage7b_c2_macro_top1": 1.0
+    },
+    "training_source": "synthetic_RULE_PREFERRED_only",
+    "e3e_teacher_gold_used": false,
+    "checkpoint_retained": false
+  },
+  "inventory": {
+    "eligible_families": 31,
+    "families_with_open_low_compact_disagreement": 24,
+    "families_without_open_low_compact_disagreement": 7,
+    "pitched_events": 18664,
+    "chord_events": 4159,
+    "zero_candidate_chords": 647,
+    "single_candidate_chords": 74,
+    "ambiguous_chords": 3438,
+    "open_low_compact_disagreements": 1937,
+    "disagreement_rate_among_ambiguous": 0.5634089586969168,
+    "ambiguous_candidate_count_min": 2,
+    "ambiguous_candidate_count_max": 165,
+    "ambiguous_candidate_count_mean": 21.562536358347877,
+    "disagreement_event_id_set_digest_sha256": "2d2d712b5c95b19f249aa950947062d78ab7f774a9b027b9b2386ef29d833ee1",
+    "disagreement_event_id_digest_method": "sha256(newline-joined sorted exact event ids; no trailing newline)",
+    "families": {
+      "bach_air_orchestral_suite3_bwv1068": {"pitched_events":248,"chord_events":44,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":44,"open_low_compact_disagreements":23,"disagreement_rate_among_ambiguous":0.5227272727272727},
+      "bach_minuet_g_bwv_anh114": {"pitched_events":127,"chord_events":1,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":1,"open_low_compact_disagreements":1,"disagreement_rate_among_ambiguous":1.0},
+      "bach_toccata_fugue_d_minor_bwv565": {"pitched_events":1881,"chord_events":260,"zero_candidate_chords":0,"single_candidate_chords":3,"ambiguous_chords":257,"open_low_compact_disagreements":124,"disagreement_rate_among_ambiguous":0.48249027237354086},
+      "bach_wtc1_prelude1_bwv846": {"pitched_events":401,"chord_events":1,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":1,"open_low_compact_disagreements":1,"disagreement_rate_among_ambiguous":1.0},
+      "bach_wtc1_prelude2_bwv847": {"pitched_events":577,"chord_events":5,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":5,"open_low_compact_disagreements":2,"disagreement_rate_among_ambiguous":0.4},
+      "beethoven_fur_elise_woo59": {"pitched_events":463,"chord_events":35,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":35,"open_low_compact_disagreements":17,"disagreement_rate_among_ambiguous":0.4857142857142857},
+      "beethoven_moonlight_op27_no2_mvt1": {"pitched_events":632,"chord_events":0,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":0,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0},
+      "beethoven_symphony5_mvt1": {"pitched_events":1432,"chord_events":712,"zero_candidate_chords":90,"single_candidate_chords":19,"ambiguous_chords":603,"open_low_compact_disagreements":432,"disagreement_rate_among_ambiguous":0.7164179104477612},
+      "brahms_hungarian_dance5": {"pitched_events":375,"chord_events":199,"zero_candidate_chords":8,"single_candidate_chords":3,"ambiguous_chords":188,"open_low_compact_disagreements":75,"disagreement_rate_among_ambiguous":0.39893617021276595},
+      "burgmuller_arabesque_op100_no2": {"pitched_events":768,"chord_events":34,"zero_candidate_chords":3,"single_candidate_chords":0,"ambiguous_chords":31,"open_low_compact_disagreements":21,"disagreement_rate_among_ambiguous":0.6774193548387096},
+      "chopin_nocturne20_csharp_minor": {"pitched_events":529,"chord_events":32,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":32,"open_low_compact_disagreements":22,"disagreement_rate_among_ambiguous":0.6875},
+      "chopin_nocturne_op9_no1": {"pitched_events":1003,"chord_events":11,"zero_candidate_chords":5,"single_candidate_chords":0,"ambiguous_chords":6,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0},
+      "chopin_prelude_op28_no4": {"pitched_events":176,"chord_events":175,"zero_candidate_chords":4,"single_candidate_chords":0,"ambiguous_chords":171,"open_low_compact_disagreements":56,"disagreement_rate_among_ambiguous":0.32748538011695905},
+      "chopin_waltz_a_minor_b150": {"pitched_events":161,"chord_events":105,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":105,"open_low_compact_disagreements":51,"disagreement_rate_among_ambiguous":0.4857142857142857},
+      "chopin_waltz_op64_no2": {"pitched_events":925,"chord_events":94,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":94,"open_low_compact_disagreements":68,"disagreement_rate_among_ambiguous":0.723404255319149},
+      "joplin_entertainer_1902": {"pitched_events":544,"chord_events":284,"zero_candidate_chords":4,"single_candidate_chords":4,"ambiguous_chords":276,"open_low_compact_disagreements":207,"disagreement_rate_among_ambiguous":0.75},
+      "joplin_maple_leaf_rag": {"pitched_events":334,"chord_events":306,"zero_candidate_chords":56,"single_candidate_chords":0,"ambiguous_chords":250,"open_low_compact_disagreements":100,"disagreement_rate_among_ambiguous":0.4},
+      "liszt_la_campanella_s141_no3": {"pitched_events":2408,"chord_events":394,"zero_candidate_chords":213,"single_candidate_chords":4,"ambiguous_chords":177,"open_low_compact_disagreements":126,"disagreement_rate_among_ambiguous":0.711864406779661},
+      "liszt_liebestraum3_s541": {"pitched_events":943,"chord_events":176,"zero_candidate_chords":74,"single_candidate_chords":13,"ambiguous_chords":89,"open_low_compact_disagreements":56,"disagreement_rate_among_ambiguous":0.6292134831460674},
+      "mozart_requiem_lacrimosa_k626": {"pitched_events":198,"chord_events":113,"zero_candidate_chords":0,"single_candidate_chords":1,"ambiguous_chords":112,"open_low_compact_disagreements":54,"disagreement_rate_among_ambiguous":0.48214285714285715},
+      "mozart_sonata_k331_mvt3": {"pitched_events":646,"chord_events":158,"zero_candidate_chords":0,"single_candidate_chords":15,"ambiguous_chords":143,"open_low_compact_disagreements":124,"disagreement_rate_among_ambiguous":0.8671328671328671},
+      "mozart_sonata_k545_mvt1": {"pitched_events":573,"chord_events":68,"zero_candidate_chords":2,"single_candidate_chords":0,"ambiguous_chords":66,"open_low_compact_disagreements":38,"disagreement_rate_among_ambiguous":0.5757575757575758},
+      "pachelbel_canon_d": {"pitched_events":803,"chord_events":2,"zero_candidate_chords":2,"single_candidate_chords":0,"ambiguous_chords":0,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0},
+      "rimsky_korsakov_flight_bumblebee": {"pitched_events":681,"chord_events":7,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":7,"open_low_compact_disagreements":4,"disagreement_rate_among_ambiguous":0.5714285714285714},
+      "satie_gnossienne1": {"pitched_events":25,"chord_events":25,"zero_candidate_chords":24,"single_candidate_chords":0,"ambiguous_chords":1,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0},
+      "schubert_ave_maria_d839": {"pitched_events":285,"chord_events":21,"zero_candidate_chords":21,"single_candidate_chords":0,"ambiguous_chords":0,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0},
+      "schubert_standchen_d957_no4_liszt_arr": {"pitched_events":680,"chord_events":574,"zero_candidate_chords":45,"single_candidate_chords":0,"ambiguous_chords":529,"open_low_compact_disagreements":252,"disagreement_rate_among_ambiguous":0.4763705103969754},
+      "tchaikovsky_sugar_plum_fairy": {"pitched_events":322,"chord_events":172,"zero_candidate_chords":95,"single_candidate_chords":12,"ambiguous_chords":65,"open_low_compact_disagreements":26,"disagreement_rate_among_ambiguous":0.4},
+      "tchaikovsky_swan_lake": {"pitched_events":210,"chord_events":0,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":0,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0},
+      "tchaikovsky_waltz_flowers": {"pitched_events":222,"chord_events":151,"zero_candidate_chords":1,"single_candidate_chords":0,"ambiguous_chords":150,"open_low_compact_disagreements":57,"disagreement_rate_among_ambiguous":0.38},
+      "traditional_greensleeves": {"pitched_events":92,"chord_events":0,"zero_candidate_chords":0,"single_candidate_chords":0,"ambiguous_chords":0,"open_low_compact_disagreements":0,"disagreement_rate_among_ambiguous":0.0}
+    }
+  },
+  "interpretation": {
+    "disagreement_events_are_sufficient_for_later_quota_design": true,
+    "maximum_family_coverage_from_disagreement_only_pool": 24,
+    "numeric_e3e_validation_family_floor_pre_registered": false,
+    "numeric_e3e_event_quota_pre_registered": false,
+    "quota_or_family_coverage_decision_made_in_a3": false,
+    "next_gate": "E3E_B_PREREGISTER_QUOTA_FAMILY_ALLOCATION_AND_BLIND_PACKAGE_BEFORE_TEACHER_LABELS"
+  },
+  "scientific_boundary": {
+    "e3e_teacher_gold_generated": false,
+    "e3e_teacher_gold_answers_read": false,
+    "teacher_facing_manifest_created": false,
+    "router_scored": false,
+    "e3e_model_fit": false,
+    "threshold_selected": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_musical_content_reused": false,
+    "raw_external_mxl_committed": false
+  }
+}
