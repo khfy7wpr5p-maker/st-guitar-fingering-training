@@ -63,7 +63,7 @@ The resulting report is expected to expose whether a later target-blind part/sta
 
 ## Development quarantine
 
-The E3-E-A1 audit requires the already sealed external E3 curriculum package:
+The preferred E3-E-A1 quarantine input remains the already sealed external E3 curriculum package:
 
 `ST_Guitar_Stage7G_E3_B_R1_Curriculum_Batch01_400.zip`
 
@@ -71,7 +71,15 @@ Expected SHA-256:
 
 `e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef`
 
-The harness uses the existing frozen package reader to reconstruct the exact 40 development source SHA-256 values and family IDs from `internal_audit_e3_batch01_400.json`. It does **not** require or read the Teacher-GOLD answer file.
+The package path reconstructs the exact 40 development source SHA-256 values, family IDs, and source origins from `internal_audit_e3_batch01_400.json`. It does **not** require or read the Teacher-GOLD answer file.
+
+A cryptographically equivalent, label-free fallback is also allowed when the external package is unavailable. The pinned Stage 7G-C source manifest `evidence/stage7g_c_r1_animetab_batch01_manifest.json` is accepted only when all of these frozen identities match E3-B-R1:
+
+- clean Batch01 ZIP SHA-256: `2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710`
+- sorted-newline 40-source SHA-256 set digest: `0a357177b92504f28d01b7622652e18ea16e314c4987d367bf60731a4edca8a2`
+- sorted-newline 40-family-ID set digest: `2a0467979ec29e8fc88bcb16e826e6873cb92aecbb2c08045929399f873f52fd`
+
+The fallback exposes no Teacher responses and cannot silently substitute another development family set: any digest mismatch aborts the audit. Source origins are not reconstructed by this fallback because they are not required for exact SHA-256 overlap rejection.
 
 Any exact new-source SHA-256 overlap with those 40 development sources aborts A1.
 
@@ -112,7 +120,7 @@ A1 does not:
 
 ## Next gate after this harness
 
-After this PR is accepted, run the source structure audit with the sealed E3 development package present. Then, before any Teacher-GOLD annotation, resolve two target-blind questions from the audit evidence:
+After this harness is accepted, run the source structure audit using either the sealed E3 development package or the digest-equivalent pinned Stage 7G-C source manifest. Then, before any Teacher-GOLD annotation, resolve two target-blind questions from the audit evidence:
 
 1. complete the conservative semantic family-overlap proof against both the 40 development families and Stage 7E;
 2. freeze a deterministic part/staff selection policy if the new source structures require one.
