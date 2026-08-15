@@ -54,6 +54,10 @@
     "development_package_filename": "ST_Guitar_Stage7G_E3_B_R1_Curriculum_Batch01_400.zip",
     "development_package_sha256": "e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef",
     "development_audit_sha256": "e8fa34998a409a275d372ae089b9a3f3ed1ea5b53de5c15e58a61de0210a2915",
+    "development_source_manifest_path": "evidence/stage7g_c_r1_animetab_batch01_manifest.json",
+    "development_source_hash_set_digest_sha256": "0a357177b92504f28d01b7622652e18ea16e314c4987d367bf60731a4edca8a2",
+    "development_family_id_set_digest_sha256": "2a0467979ec29e8fc88bcb16e826e6873cb92aecbb2c08045929399f873f52fd",
+    "development_clean_batch_zip_sha256": "2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710",
     "development_family_count": 40,
     "stage7e_seal_path": "evidence/stage7e_final_test_seal.json"
   },

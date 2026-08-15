@@ -17,6 +17,10 @@ from st_guitar_fingering_training.stage7g_e3_d_execution import (
 EXPECTED_SCHEMA = "st-guitar-stage7g-e3-e-a1-source-manifest-v1"
 EXPECTED_STAGE = "7G-E3-E-A1"
 EXPECTED_STATUS = "SOURCE_STRUCTURE_AUDIT_PENDING"
+EXPECTED_DEVELOPMENT_SOURCE_MANIFEST_SCHEMA = "st-guitar-stage7g-c-r1-animetab-batch01-manifest-v1"
+EXPECTED_DEVELOPMENT_SOURCE_HASH_SET_DIGEST_SHA256 = "0a357177b92504f28d01b7622652e18ea16e314c4987d367bf60731a4edca8a2"
+EXPECTED_DEVELOPMENT_FAMILY_ID_SET_DIGEST_SHA256 = "2a0467979ec29e8fc88bcb16e826e6873cb92aecbb2c08045929399f873f52fd"
+EXPECTED_DEVELOPMENT_CLEAN_BATCH_ZIP_SHA256 = "2105c0ca1f11c80fbf2a096014cee77c905e94bdc13898820ad5d6fea4298710"
 
 
 def git_blob_sha1(data: bytes) -> str:
@@ -36,7 +40,15 @@ def _load_json(path: str | Path) -> dict:
     return value
 
 
-def _development_quarantine(package_path: str | Path) -> tuple[set[str], set[str], set[str]]:
+def _set_digest(values: set[str]) -> str:
+    if not values:
+        raise ValueError("cannot digest an empty identity set")
+    return sha256("\n".join(sorted(values)).encode("utf-8")).hexdigest()
+
+
+def _development_quarantine_from_package(
+    package_path: str | Path,
+) -> tuple[set[str], set[str], set[str], dict]:
     audit, _ = read_stage7g_e3_package_json(package_path)
     rows = audit.get("rows")
     if not isinstance(rows, list) or not rows:
@@ -61,7 +73,69 @@ def _development_quarantine(package_path: str | Path) -> tuple[set[str], set[str
         source_origins.add(origin)
     if len(family_ids) != 40 or len(source_hashes) != 40:
         raise ValueError("E3 development quarantine must reconstruct exactly 40 source families")
-    return source_hashes, family_ids, source_origins
+    if _set_digest(source_hashes) != EXPECTED_DEVELOPMENT_SOURCE_HASH_SET_DIGEST_SHA256:
+        raise ValueError("sealed E3 package source-hash set does not match the E3-B-R1 frozen digest")
+    if _set_digest(family_ids) != EXPECTED_DEVELOPMENT_FAMILY_ID_SET_DIGEST_SHA256:
+        raise ValueError("sealed E3 package family-id set does not match the E3-B-R1 frozen digest")
+    return source_hashes, family_ids, source_origins, {
+        "mode": "SEALED_E3_B_R1_PACKAGE_INTERNAL_AUDIT",
+        "source_hash_set_digest_sha256": _set_digest(source_hashes),
+        "family_id_set_digest_sha256": _set_digest(family_ids),
+        "source_origins_available": True,
+    }
+
+
+def _development_quarantine_from_source_manifest(
+    source_manifest_path: str | Path,
+) -> tuple[set[str], set[str], set[str], dict]:
+    source_manifest = _load_json(source_manifest_path)
+    if source_manifest.get("schema") != EXPECTED_DEVELOPMENT_SOURCE_MANIFEST_SCHEMA:
+        raise ValueError("unexpected Stage 7G-C development source manifest schema")
+    if source_manifest.get("stage") != "7G-C-R1" or source_manifest.get("status") != "PINNED_RESEARCH_SOURCE_BATCH":
+        raise ValueError("Stage 7G-C development source manifest is not the pinned research batch")
+    if source_manifest.get("family_count") != 40:
+        raise ValueError("Stage 7G-C development source manifest must contain exactly 40 families")
+    if source_manifest.get("clean_batch_zip_sha256") != EXPECTED_DEVELOPMENT_CLEAN_BATCH_ZIP_SHA256:
+        raise ValueError("Stage 7G-C development source manifest references the wrong clean batch")
+
+    rows = source_manifest.get("sources")
+    if not isinstance(rows, list) or len(rows) != 40:
+        raise ValueError("Stage 7G-C development source manifest must list exactly 40 sources")
+    source_hashes: set[str] = set()
+    family_ids: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("Stage 7G-C source row must be an object")
+        digest = row.get("sha256")
+        family_id = row.get("family_id")
+        filename = row.get("filename")
+        if not isinstance(digest, str) or len(digest) != 64 or any(
+            char not in "0123456789abcdef" for char in digest.lower()
+        ):
+            raise ValueError("Stage 7G-C source SHA-256 is invalid")
+        if not isinstance(family_id, str) or not family_id:
+            raise ValueError("Stage 7G-C family id is invalid")
+        if not isinstance(filename, str) or not filename:
+            raise ValueError("Stage 7G-C source filename is invalid")
+        source_hashes.add(digest.lower())
+        family_ids.add(family_id)
+    if len(source_hashes) != 40 or len(family_ids) != 40:
+        raise ValueError("Stage 7G-C development source identities must be unique")
+
+    source_digest = _set_digest(source_hashes)
+    family_digest = _set_digest(family_ids)
+    if source_digest != EXPECTED_DEVELOPMENT_SOURCE_HASH_SET_DIGEST_SHA256:
+        raise ValueError("Stage 7G-C source-hash set does not match the E3-B-R1 frozen digest")
+    if family_digest != EXPECTED_DEVELOPMENT_FAMILY_ID_SET_DIGEST_SHA256:
+        raise ValueError("Stage 7G-C family-id set does not match the E3-B-R1 frozen digest")
+
+    return source_hashes, family_ids, set(), {
+        "mode": "PINNED_STAGE7G_C_SOURCE_MANIFEST_WITH_E3_B_R1_SET_DIGESTS",
+        "source_hash_set_digest_sha256": source_digest,
+        "family_id_set_digest_sha256": family_digest,
+        "clean_batch_zip_sha256": source_manifest["clean_batch_zip_sha256"],
+        "source_origins_available": False,
+    }
 
 
 def main() -> None:
@@ -69,7 +143,9 @@ def main() -> None:
         description="Audit Stage 7G-E3-E-A1 pinned MXL sources before any Teacher-GOLD or model scoring"
     )
     parser.add_argument("--manifest", required=True)
-    parser.add_argument("--development-package", required=True)
+    development = parser.add_mutually_exclusive_group(required=True)
+    development.add_argument("--development-package")
+    development.add_argument("--development-source-manifest")
     parser.add_argument("--stage7e-seal", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--work-dir", required=True)
@@ -88,9 +164,21 @@ def main() -> None:
         raise ValueError("E3-E-A1 manifest references the wrong E3 development package")
     if quarantine.get("development_audit_sha256") != STAGE7G_E3_D_EXPECTED_AUDIT_SHA256:
         raise ValueError("E3-E-A1 manifest references the wrong E3 development audit")
-    development_hashes, development_family_ids, development_origins = _development_quarantine(
-        args.development_package
-    )
+    if quarantine.get("development_source_hash_set_digest_sha256") != EXPECTED_DEVELOPMENT_SOURCE_HASH_SET_DIGEST_SHA256:
+        raise ValueError("E3-E-A1 manifest references the wrong development source-hash set digest")
+    if quarantine.get("development_family_id_set_digest_sha256") != EXPECTED_DEVELOPMENT_FAMILY_ID_SET_DIGEST_SHA256:
+        raise ValueError("E3-E-A1 manifest references the wrong development family-id set digest")
+    if quarantine.get("development_clean_batch_zip_sha256") != EXPECTED_DEVELOPMENT_CLEAN_BATCH_ZIP_SHA256:
+        raise ValueError("E3-E-A1 manifest references the wrong Stage 7G-C clean batch")
+
+    if args.development_package is not None:
+        development_hashes, development_family_ids, development_origins, development_proof = (
+            _development_quarantine_from_package(args.development_package)
+        )
+    else:
+        development_hashes, development_family_ids, development_origins, development_proof = (
+            _development_quarantine_from_source_manifest(args.development_source_manifest)
+        )
 
     stage7e = _load_json(args.stage7e_seal)
     final_corpus = stage7e.get("external_corpus")
@@ -201,9 +289,12 @@ def main() -> None:
         "multi_part_sources": multi_part,
         "sources_with_multi_staff_part": multi_staff_parts,
         "development_quarantine": {
+            "proof": development_proof,
             "sealed_source_hashes": len(development_hashes),
             "sealed_family_ids": len(development_family_ids),
-            "sealed_source_origins": len(development_origins),
+            "sealed_source_origins": (
+                len(development_origins) if development_proof["source_origins_available"] else None
+            ),
             "exact_source_sha256_overlap": development_source_overlap,
         },
         "stage7e_quarantine": {
@@ -234,6 +325,7 @@ def main() -> None:
         "single_part_sources": single_part,
         "multi_part_sources": multi_part,
         "sources_with_multi_staff_part": multi_staff_parts,
+        "development_quarantine_mode": development_proof["mode"],
         "development_source_sha256_overlap": development_source_overlap,
         "stage7e_exact_git_blob_overlap": stage7e_blob_overlap,
         "family_identity_gate": report["family_identity_gate"],
