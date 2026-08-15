@@ -136,7 +136,7 @@ class Stage7GE3DExecutionTests(unittest.TestCase):
             "".join(cell.get("source", []))
             for cell in notebook["cells"]
             if cell.get("cell_type") == "code"
-            and "MANUAL TRAIN CELL" in "".join(cell.get("source", []))
+            and "".join(cell.get("source", [])).lstrip().startswith("# MANUAL TRAIN CELL")
         ]
         self.assertEqual(len(train_cells), 1)
         self.assertIn("stage7g_e3_d_nested_cv_report(rows)", train_cells[0])
