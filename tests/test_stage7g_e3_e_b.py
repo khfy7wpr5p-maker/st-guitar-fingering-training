@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from io import BytesIO
 import unittest
+from zipfile import ZipFile
 
 from st_guitar_fingering_training.stage7g_e3_e_b import (
     E3E_B_EVALUATION_GATE,
@@ -11,6 +13,7 @@ from st_guitar_fingering_training.stage7g_e3_e_b import (
     e3e_internal_audit,
     e3e_response_template,
     e3e_teacher_manifest,
+    e3e_teacher_package_bytes,
     select_e3e_validation_batch,
 )
 from st_guitar_fingering_training.teacher_gold import TeacherAnnotationTask
@@ -73,6 +76,35 @@ class Stage7GE3EBTests(unittest.TestCase):
         template = e3e_response_template(batch)
         self.assertEqual(template["task_count"], 240)
         self.assertTrue(all(row["choice"] == "" for row in template["choices"]))
+
+    def test_teacher_package_is_deterministic_and_contains_no_internal_audit(self) -> None:
+        batch = select_e3e_validation_batch(_pool())
+        first = e3e_teacher_package_bytes(batch)
+        second = e3e_teacher_package_bytes(batch)
+        self.assertEqual(first, second)
+        with ZipFile(BytesIO(first)) as archive:
+            self.assertEqual(
+                sorted(archive.namelist()),
+                [
+                    "README.txt",
+                    "ST_Guitar_E3E_Teacher_UI.html",
+                    "choices_template.json",
+                    "teacher_manifest.json",
+                ],
+            )
+            html = archive.read("ST_Guitar_E3E_Teacher_UI.html").decode("utf-8")
+            manifest = archive.read("teacher_manifest.json").decode("utf-8")
+            for sensitive in (
+                '"family_id":',
+                '"source_sha256":',
+                '"source_origin":',
+                '"blind_A_specialist":',
+                '"blind_B_specialist":',
+                '"feature_record":',
+            ):
+                self.assertNotIn(sensitive, html)
+                self.assertNotIn(sensitive, manifest)
+            self.assertNotIn("internal_audit", archive.namelist())
 
     def test_internal_audit_keeps_mapping_separate_and_gate_is_frozen(self) -> None:
         batch = select_e3e_validation_batch(_pool())
