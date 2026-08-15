@@ -132,7 +132,12 @@ class Stage7GE3DExecutionTests(unittest.TestCase):
         all_source = "\n".join(sources)
         self.assertIn("__PIN_AFTER_R1A_MERGE__", all_source)
         self.assertIn("PREFLIGHT_PASS_STOP_BEFORE_TRAIN", all_source)
-        train_cells = [source for source in sources if "MANUAL TRAIN CELL" in source]
+        train_cells = [
+            "".join(cell.get("source", []))
+            for cell in notebook["cells"]
+            if cell.get("cell_type") == "code"
+            and "MANUAL TRAIN CELL" in "".join(cell.get("source", []))
+        ]
         self.assertEqual(len(train_cells), 1)
         self.assertIn("stage7g_e3_d_nested_cv_report(rows)", train_cells[0])
         self.assertNotIn("joblib.dump", all_source)
