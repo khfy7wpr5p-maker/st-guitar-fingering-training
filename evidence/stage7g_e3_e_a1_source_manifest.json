@@ -1,0 +1,72 @@
+{
+  "schema": "st-guitar-stage7g-e3-e-a1-source-manifest-v1",
+  "stage": "7G-E3-E-A1",
+  "status": "SOURCE_STRUCTURE_AUDIT_PENDING",
+  "external_corpus": {
+    "repository": "musetrainer/library",
+    "repository_commit": "9128876f6164d96997c877a2be843349a32bdabb",
+    "path_prefix": "scores/",
+    "format": "compressed_musicxml_mxl",
+    "provenance": {
+      "repository_readme_blob_sha1": "17dd6dc03f159f6bfe7c7d630660ca40b86a68d0",
+      "repository_claim": "MuseTrainer public domain MusicXML library",
+      "standalone_license_file_observed_at_pinned_root": false,
+      "research_use_status": "RESEARCH_ONLY_FROM_REPOSITORY_PUBLIC_DOMAIN_CLAIM",
+      "commercial_or_production_clearance": false
+    },
+    "family_contract": "one pinned source MXL file equals one candidate E3-E source family; duplicate work variants are excluded from this manifest",
+    "paths": [
+      {"path":"scores/Arabesque_L._66_No._1_in_E_Major.mxl","family_key":"burgmuller_arabesque_op100_no2","git_blob_sha1":"8a360308b50e8a89057c7b6e497b072fc862644d","bytes":33710},
+      {"path":"scores/Ave_Maria_D839_-_Schubert_-_Solo_Piano_Arrg..mxl","family_key":"schubert_ave_maria_d839","git_blob_sha1":"cbf1240b4bc751aacd91525498daf2c72eb8bf28","bytes":11543},
+      {"path":"scores/Bach_Minuet_in_G_Major_BWV_Anh._114.mxl","family_key":"bach_minuet_g_bwv_anh114","git_blob_sha1":"dd7f1b37b37d8a031a71379b4ee1bb4ceaddd968","bytes":4745},
+      {"path":"scores/Bach_Toccata_and_Fugue_in_D_Minor_Piano_solo.mxl","family_key":"bach_toccata_fugue_d_minor_bwv565","git_blob_sha1":"10b2d8b09491f5fb716ea787b2bdc3a4568c4cb9","bytes":66697},
+      {"path":"scores/Beethoven_Symphony_No._5_1st_movement_Piano_solo.mxl","family_key":"beethoven_symphony5_mvt1","git_blob_sha1":"0c83281debb70a0c7c295410db67aad3058d74cd","bytes":56279},
+      {"path":"scores/Canon_in_D.mxl","family_key":"pachelbel_canon_d","git_blob_sha1":"414983e063e05176bf873084da4a2bf14138c316","bytes":16797},
+      {"path":"scores/Chopin_-_Ballade_no._1_in_G_minor_Op._23.mxl","family_key":"chopin_ballade1_op23","git_blob_sha1":"0550197452e1c6175c4bd8c857a219141b009a95","bytes":58085},
+      {"path":"scores/Chopin_-_Nocturne_Op._9_No._1.mxl","family_key":"chopin_nocturne_op9_no1","git_blob_sha1":"df70e9dcb72815c6267d7a68cedd734af79ee855","bytes":25776},
+      {"path":"scores/Dance_of_the_sugar_plum_fairy.mxl","family_key":"tchaikovsky_sugar_plum_fairy","git_blob_sha1":"9d2311efb58fe03a4529c036e84c6ef0c62cbcf0","bytes":17286},
+      {"path":"scores/Flight_of_the_Bumblebee.mxl","family_key":"rimsky_korsakov_flight_bumblebee","git_blob_sha1":"efa8203ceee7ae3963f578aac6f718a7a486177f","bytes":18271},
+      {"path":"scores/Fur_Elise.mxl","family_key":"beethoven_fur_elise_woo59","git_blob_sha1":"3650e302b256339d833eef40618a7991daa2b50d","bytes":15021},
+      {"path":"scores/Gnossienne_No._1.mxl","family_key":"satie_gnossienne1","git_blob_sha1":"1f2987002ebd8ff6b07ec99b2d0c5b7b61d56ffe","bytes":11659},
+      {"path":"scores/Greensleeves_for_Piano_easy_and_beautiful.mxl","family_key":"traditional_greensleeves","git_blob_sha1":"d67c11fbc66afb333e20b1bc8f2780be409dbfda","bytes":4918},
+      {"path":"scores/Hungarian_Dance_No_5_in_G_Minor.mxl","family_key":"brahms_hungarian_dance5","git_blob_sha1":"9c1102a1577a0a943e124d1492a4948319fd2404","bytes":18383},
+      {"path":"scores/J._S._Bach_-_Air_on_the_G_String_Piano_arrangement.mxl","family_key":"bach_air_orchestral_suite3_bwv1068","git_blob_sha1":"4e9b1a67051efe3d93aacc277eeeafaf906553f3","bytes":7965},
+      {"path":"scores/La_Campanella_-_Grandes_Etudes_de_Paganini_No._3_-_Franz_Liszt.mxl","family_key":"liszt_la_campanella_s141_no3","git_blob_sha1":"cc83c15b285ad5046e7380c0c1f173578ffed2c1","bytes":77616},
+      {"path":"scores/Lacrimosa_-_Requiem.mxl","family_key":"mozart_requiem_lacrimosa_k626","git_blob_sha1":"741b43aaeb640f06e268ad4732acd6eeab3bdc9b","bytes":11440},
+      {"path":"scores/Liebestraum_No._3_in_A_Major.mxl","family_key":"liszt_liebestraum3_s541","git_blob_sha1":"332699a70b57469cb86f450e67ca8fac0ea4346a","bytes":35463},
+      {"path":"scores/Maple_Leaf_Rag_Scott_Joplin.mxl","family_key":"joplin_maple_leaf_rag","git_blob_sha1":"4318d052903e1144c678c77e7f5e05bd0578ffb2","bytes":21974},
+      {"path":"scores/Mozart_-_Piano_Sonata_No._16_-_Allegro.mxl","family_key":"mozart_sonata_k545_mvt1","git_blob_sha1":"040d0bd8f8c56dda2001d617df8dacba410a6393","bytes":8736},
+      {"path":"scores/Nocturne_No._20_in_C_Minor.mxl","family_key":"chopin_nocturne20_csharp_minor","git_blob_sha1":"bb0cf5179f64848cbdeca96293245cfdd925bb98","bytes":18701},
+      {"path":"scores/Piano_Sonata_No._11_K._331_3rd_Movement_Rondo_alla_Turca.mxl","family_key":"mozart_sonata_k331_mvt3","git_blob_sha1":"041bba517f0899eae9c5f26f7aff10496d9a57ca","bytes":23296},
+      {"path":"scores/Prelude_I_in_C_major_BWV_846_-_Well_Tempered_Clavier_First_Book.mxl","family_key":"bach_wtc1_prelude1_bwv846","git_blob_sha1":"134e9d1555ca324530b71ced0f6a1c3c598c6780","bytes":7726},
+      {"path":"scores/Prelude_No._2_BWV_847_in_C_Minor.mxl","family_key":"bach_wtc1_prelude2_bwv847","git_blob_sha1":"e28af439323b595d1cfebcb168f7b9a5835fa014","bytes":14773},
+      {"path":"scores/Prlude_No._4_in_E_Minor_Op._28_-_Frdric_Chopin.mxl","family_key":"chopin_prelude_op28_no4","git_blob_sha1":"7d8abbd432591eca4a74160bdb735d1fa546310e","bytes":10281},
+      {"path":"scores/Schubert_Serenade_-_Standchen_-_By_Lizst.mxl","family_key":"schubert_standchen_d957_no4_liszt_arr","git_blob_sha1":"b8d6fdaad48f273592725cecc9f9821b830d597e","bytes":29353},
+      {"path":"scores/Sonate_No._14_Moonlight_1st_Movement.mxl","family_key":"beethoven_moonlight_op27_no2_mvt1","git_blob_sha1":"0cb13c413c31ec698607cef102a3ed9058ab1814","bytes":22160},
+      {"path":"scores/Swan_Lake.mxl","family_key":"tchaikovsky_swan_lake","git_blob_sha1":"49b16d76dd7b3bc4e929108a90a7731b5b87ca37","bytes":5706},
+      {"path":"scores/The_Entertainer_-_Scott_Joplin_-_1902.mxl","family_key":"joplin_entertainer_1902","git_blob_sha1":"f1aa9855bed3d31808e47ea02b340d2e8d0dce22","bytes":23414},
+      {"path":"scores/Waltz_Opus_64_No._2_in_C_Minor.mxl","family_key":"chopin_waltz_op64_no2","git_blob_sha1":"979e8cb2f1ad956751a09c32146f463366ba4a2e","bytes":25713},
+      {"path":"scores/Waltz_in_A_MinorChopin.mxl","family_key":"chopin_waltz_a_minor_b150","git_blob_sha1":"fbf5ee6a8d2edaf42529512b69840da419f0610e","bytes":10408},
+      {"path":"scores/Waltz_of_the_Flowers.mxl","family_key":"tchaikovsky_waltz_flowers","git_blob_sha1":"acc3d12a192b99914f31586a5b83f4fca3c7b380","bytes":12604}
+    ]
+  },
+  "quarantine_inputs": {
+    "development_package_filename": "ST_Guitar_Stage7G_E3_B_R1_Curriculum_Batch01_400.zip",
+    "development_package_sha256": "e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef",
+    "development_audit_sha256": "e8fa34998a409a275d372ae089b9a3f3ed1ea5b53de5c15e58a61de0210a2915",
+    "development_family_count": 40,
+    "stage7e_seal_path": "evidence/stage7e_final_test_seal.json"
+  },
+  "scientific_boundary": {
+    "teacher_gold_labels_available_to_audit": false,
+    "teacher_gold_answers_required": false,
+    "specialist_scoring": false,
+    "router_scoring": false,
+    "model_fit": false,
+    "threshold_selection": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_reused_for_modeling": false,
+    "raw_external_mxl_committed_to_training_repo": false
+  }
+}
