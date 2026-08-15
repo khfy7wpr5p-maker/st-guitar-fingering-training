@@ -1,0 +1,177 @@
+{
+  "schema": "st-guitar-stage7g-e3-e-a2-family-selection-seal-v1",
+  "stage": "7G-E3-E-A2",
+  "status": "FAMILY_DISJOINTNESS_PASS_SELECTION_POLICY_FROZEN_31_ELIGIBLE",
+  "base_main_sha": "2761cc54b3082c092306ba66ae80e0e65b7b32e8",
+  "inputs": {
+    "candidate_manifest": {
+      "path": "evidence/stage7g_e3_e_a1_source_manifest.json",
+      "git_blob_sha1": "7b61c5dc6ce60cec27087bda8fdad7058a4e0669",
+      "repository": "musetrainer/library",
+      "repository_commit": "9128876f6164d96997c877a2be843349a32bdabb",
+      "candidate_families": 32
+    },
+    "development_manifest": {
+      "path": "evidence/stage7g_c_r1_animetab_batch01_manifest.json",
+      "git_blob_sha1": "cd6ca9d0d7beff5b3f98c900dac7825d2ef11470",
+      "families": 40,
+      "source_hash_set_digest_sha256": "0a357177b92504f28d01b7622652e18ea16e314c4987d367bf60731a4edca8a2",
+      "family_id_set_digest_sha256": "2a0467979ec29e8fc88bcb16e826e6873cb92aecbb2c08045929399f873f52fd"
+    },
+    "stage7e_seal": {
+      "path": "evidence/stage7e_final_test_seal.json",
+      "git_blob_sha1": "4aa107abfb2d11aab938d128b4b41f0dffbc4277",
+      "repository": "robust-guitar-tabs/code",
+      "repository_commit": "f50309ad06dc734ddae5e3a0eda756fca221e2e7",
+      "sealed_output_blobs": 16
+    }
+  },
+  "semantic_family_audit": {
+    "method": "CONSERVATIVE_MANUAL_TITLE_ARTIST_COMPOSER_WORK_IDENTITY_REVIEW_BEFORE_SPECIALIST_SCORING",
+    "candidate_identity_source": "the 32 frozen MuseTrainer family_key values and pinned source filenames",
+    "development_identity_source": "the 40 frozen AnimeTAB source filenames in the pinned development manifest",
+    "development_semantic_overlap_with_candidates": [],
+    "development_semantic_overlap_count": 0,
+    "stage7e_header_metadata": {
+      "execution_pr": 50,
+      "execution_head_sha": "6ae0b8d67a7feca8db901e27fea0e2133bcf619a",
+      "workflow_run_number": 114,
+      "workflow_run_id": 31882860598,
+      "job_id": 95007746846,
+      "exact_gp3_blobs_checked": 16,
+      "all_title_artist_album_and_related_info_fields_empty": true,
+      "musical_content_parsed": false,
+      "interpretation": "header metadata alone cannot prove family identity; no no-overlap claim is taken from the empty headers"
+    },
+    "stage7e_generator_provenance": {
+      "repository_readme_git_blob_sha1": "0ab556f527c038b589cf2c2b1a53750b052e97eb",
+      "generator_notebook_path": "GuitarProConversor/MasterExtraction.ipynb",
+      "generator_notebook_git_blob_sha1": "b93aa610f025f98dd916f89f43e1b910bf34041c",
+      "dummy_tabs_tree_sha1": "ab7a77ea0e870eee32e702b636519e77cae4cbe0",
+      "generator_behavior": "walk DummyTabs; effective accepted suffixes .gp/.gp2/.gp3/.gp4; select MIDI guitar instruments 24..31; write sequential tabs/<counter>.gp3 outputs",
+      "possible_source_paths_complete_at_pinned_commit": [
+        "GuitarProConversor/DummyTabs/50 Cent/50 Cent - In Da Club.gp4",
+        "GuitarProConversor/DummyTabs/500 and China Blue/500 And China Blue - Mon A Bo Ya Gar Ki.gp4",
+        "GuitarProConversor/DummyTabs/500 and China Blue/500 and China Blue - Flower of Spring and Moon of Fall.gp3",
+        "GuitarProConversor/DummyTabs/59 Times The Pain/59 Times The Pain - Time To Chill.gp3",
+        "GuitarProConversor/DummyTabs/59 Times The Pain/59 Times The Pain - Weekend revolution.gp3",
+        "GuitarProConversor/DummyTabs/5nizza/5nizza - Coldat.gp4",
+        "GuitarProConversor/DummyTabs/5nizza/5nizza - Hemae Kyl.gp4",
+        "GuitarProConversor/DummyTabs/5th Prokurator/5th Prokurator - Turkish Delight.gp3",
+        "GuitarProConversor/DummyTabs/5th Prokurator/5th Prokurator - Turkish Delight.gp4"
+      ],
+      "possible_distinct_work_identities": [
+        "50 Cent - In Da Club",
+        "500 and China Blue - Mon A Bo Ya Gar Ki",
+        "500 and China Blue - Flower of Spring and Moon of Fall",
+        "59 Times The Pain - Time To Chill",
+        "59 Times The Pain - Weekend Revolution",
+        "5nizza - Coldat",
+        "5nizza - Hemae Kyl",
+        "5th Prokurator - Turkish Delight"
+      ],
+      "possible_source_file_count": 9,
+      "possible_distinct_work_count": 8,
+      "direct_numbered_output_to_input_mapping_reconstructed": false,
+      "conservative_comparison_scope": "all possible generator input work identities, so per-output mapping is not needed for overlap exclusion",
+      "semantic_overlap_with_candidates": [],
+      "semantic_overlap_count": 0
+    },
+    "family_identity_gate": "PASS_CONSERVATIVE_DEVELOPMENT_AND_STAGE7E_SEMANTIC_DISJOINTNESS"
+  },
+  "target_free_selection_policy": {
+    "policy_version": "e3e-a2-v1",
+    "implementation": "src/st_guitar_fingering_training/stage7g_e3_e_a2.py",
+    "counted_note": "non-grace MusicXML note with pitch",
+    "part_rule": "select part with greatest counted pitched-note count; lexical part_id tie-break",
+    "staff_rule": "within selected part, if all counted pitched notes have explicit staff ids select staff with greatest counted pitched-note count; lexical staff_id tie-break; if none have staff ids use null",
+    "mixed_explicit_and_unstaffed_rule": "FAIL_CLOSED",
+    "pitch_mode": "sounding_exact",
+    "tuning_midi": [64, 59, 55, 50, 45, 40],
+    "uses_physical_candidate_counts": false,
+    "uses_specialist_scores": false,
+    "uses_router_outputs": false,
+    "uses_teacher_gold": false,
+    "selection_execution": {
+      "workflow_run_number": 115,
+      "workflow_run_id": 31883006247,
+      "job_id": 95008094649,
+      "execution_head_sha": "cb3dbce9e6f138d23420a4bdfebedaa577bbc527",
+      "sources_selected": 32,
+      "selection_failures": 0
+    },
+    "target_free_parser_preflight": {
+      "workflow_run_number": 117,
+      "workflow_run_id": 31883148046,
+      "job_id": 95008418052,
+      "execution_head_sha": "0b8fc0f74168f674d9c3de1b85e360cf0c750758",
+      "sources_checked": 32,
+      "passes": 31,
+      "failures": 1,
+      "failure": {
+        "family_key": "chopin_ballade1_op23",
+        "source_path": "scores/Chopin_-_Ballade_no._1_in_G_minor_Op._23.mxl",
+        "selected_part_id": "P1",
+        "selected_staff_id": "1",
+        "error_type": "ValueError",
+        "error": "backup moved cursor before measure start",
+        "resolution": "QUARANTINE_SOURCE_BEFORE_SPECIALIST_SCORING_NO_PARSER_RELAXATION"
+      }
+    }
+  },
+  "eligible_source_set": {
+    "candidate_families_before_parser_preflight": 32,
+    "parser_incompatible_quarantined": 1,
+    "eligible_families": 31,
+    "excluded_family_keys": ["chopin_ballade1_op23"],
+    "selected_part_counts": {"P1": 30, "P2": 1},
+    "selected_staff_counts": {"1": 18, "2": 12, "null": 1},
+    "selections": [
+      {"family_key":"burgmuller_arabesque_op100_no2","part_id":"P1","staff_id":"1"},
+      {"family_key":"schubert_ave_maria_d839","part_id":"P1","staff_id":"2"},
+      {"family_key":"bach_minuet_g_bwv_anh114","part_id":"P1","staff_id":"1"},
+      {"family_key":"bach_toccata_fugue_d_minor_bwv565","part_id":"P1","staff_id":"1"},
+      {"family_key":"beethoven_symphony5_mvt1","part_id":"P1","staff_id":"1"},
+      {"family_key":"pachelbel_canon_d","part_id":"P1","staff_id":"2"},
+      {"family_key":"chopin_nocturne_op9_no1","part_id":"P1","staff_id":"2"},
+      {"family_key":"tchaikovsky_sugar_plum_fairy","part_id":"P1","staff_id":"1"},
+      {"family_key":"rimsky_korsakov_flight_bumblebee","part_id":"P1","staff_id":"1"},
+      {"family_key":"beethoven_fur_elise_woo59","part_id":"P1","staff_id":"1"},
+      {"family_key":"satie_gnossienne1","part_id":"P1","staff_id":"2"},
+      {"family_key":"traditional_greensleeves","part_id":"P1","staff_id":"2"},
+      {"family_key":"brahms_hungarian_dance5","part_id":"P1","staff_id":"2"},
+      {"family_key":"bach_air_orchestral_suite3_bwv1068","part_id":"P1","staff_id":"1"},
+      {"family_key":"liszt_la_campanella_s141_no3","part_id":"P1","staff_id":"1"},
+      {"family_key":"mozart_requiem_lacrimosa_k626","part_id":"P1","staff_id":"1"},
+      {"family_key":"liszt_liebestraum3_s541","part_id":"P1","staff_id":"1"},
+      {"family_key":"joplin_maple_leaf_rag","part_id":"P1","staff_id":"2"},
+      {"family_key":"mozart_sonata_k545_mvt1","part_id":"P1","staff_id":"2"},
+      {"family_key":"chopin_nocturne20_csharp_minor","part_id":"P1","staff_id":"1"},
+      {"family_key":"mozart_sonata_k331_mvt3","part_id":"P1","staff_id":"1"},
+      {"family_key":"bach_wtc1_prelude1_bwv846","part_id":"P1","staff_id":"1"},
+      {"family_key":"bach_wtc1_prelude2_bwv847","part_id":"P1","staff_id":"1"},
+      {"family_key":"chopin_prelude_op28_no4","part_id":"P1","staff_id":"2"},
+      {"family_key":"schubert_standchen_d957_no4_liszt_arr","part_id":"P2","staff_id":null},
+      {"family_key":"beethoven_moonlight_op27_no2_mvt1","part_id":"P1","staff_id":"1"},
+      {"family_key":"tchaikovsky_swan_lake","part_id":"P1","staff_id":"2"},
+      {"family_key":"joplin_entertainer_1902","part_id":"P1","staff_id":"1"},
+      {"family_key":"chopin_waltz_op64_no2","part_id":"P1","staff_id":"1"},
+      {"family_key":"chopin_waltz_a_minor_b150","part_id":"P1","staff_id":"2"},
+      {"family_key":"tchaikovsky_waltz_flowers","part_id":"P1","staff_id":"2"}
+    ]
+  },
+  "next_gate": "ELIGIBLE_FOR_FROZEN_SPECIALIST_RECONSTRUCTION_AND_OPEN_LOW_COMPACT_DISAGREEMENT_INVENTORY_NO_TEACHER_GOLD",
+  "scientific_boundary": {
+    "teacher_gold_generated": false,
+    "teacher_gold_answers_read": false,
+    "specialist_scored": false,
+    "router_scored": false,
+    "model_fit": false,
+    "threshold_selected": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "stage7e_musical_content_used_for_development": false,
+    "stage7e_header_metadata_only": true,
+    "commercial_or_production_clearance": false
+  }
+}
