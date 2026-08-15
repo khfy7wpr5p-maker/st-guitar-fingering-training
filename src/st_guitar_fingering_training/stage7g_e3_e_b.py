@@ -22,13 +22,10 @@ from .stage7g_e3_e_a3 import A3_STYLES, _event_id, _winner
 from .target_free_musicxml import TargetFreeSource
 from .teacher_gold import TeacherAnnotationTask, build_teacher_annotation_task
 
-
 E3E_B_TASK_QUOTA = 240
 E3E_B_EXPECTED_DISAGREEMENT_EVENTS = 1937
 E3E_B_EXPECTED_DISAGREEMENT_FAMILIES = 24
-E3E_B_EXPECTED_A3_EVENT_SET_SHA256 = (
-    "2d2d712b5c95b19f249aa950947062d78ab7f774a9b027b9b2386ef29d833ee1"
-)
+E3E_B_EXPECTED_A3_EVENT_SET_SHA256 = "2d2d712b5c95b19f249aa950947062d78ab7f774a9b027b9b2386ef29d833ee1"
 E3E_B_RESPONSES = ("A", "B", "EQUAL_OR_UNSURE")
 E3E_B_TEACHER_MANIFEST_SCHEMA = "st-guitar-stage7g-e3-e-b-teacher-manifest-v1"
 E3E_B_INTERNAL_AUDIT_SCHEMA = "st-guitar-stage7g-e3-e-b-internal-audit-v1"
@@ -86,9 +83,7 @@ def _stable_family_order(family_ids: Iterable[str]) -> tuple[str, ...]:
 
 def _blind_style_order(task_id: str) -> tuple[str, str]:
     digest = sha256((task_id + "|stage7g-e3-e-b-pairwise-v1").encode()).digest()
-    if digest[0] & 1:
-        return "compact", "open_low"
-    return "open_low", "compact"
+    return ("compact", "open_low") if digest[0] & 1 else ("open_low", "compact")
 
 
 def _placements(candidate: Voicing) -> list[dict[str, int]]:
@@ -104,13 +99,7 @@ def build_e3e_disagreement_pool(
     source_origins: Mapping[str, str],
     specialist_models: Mapping[str, object],
 ) -> tuple[E3EBValidationItem, ...]:
-    """Reconstruct the exact A3 disagreement set with frozen 40-feature diagnostics.
-
-    This is target-blind. It never accepts a Teacher response, observed TAB target,
-    router score, E3-E model, or threshold. The exact A3 count/family/digest guard
-    prevents a later batch from silently drifting away from the sealed inventory.
-    """
-
+    """Reconstruct exact sealed A3 disagreements plus frozen 40-feature diagnostics."""
     if set(specialist_models) != set(A3_STYLES):
         raise ValueError("E3-E-B requires exactly frozen open_low and compact specialists")
     source_rows = tuple(sources)
@@ -137,7 +126,6 @@ def build_e3e_disagreement_pool(
             compact = _winner(candidates, specialist_models["compact"], "compact")
             if open_low == compact:
                 continue
-
             event_id = _event_id(source, event, index)
             task = build_teacher_annotation_task(
                 source_sha256=source.source_sha256.lower(),
@@ -149,17 +137,8 @@ def build_e3e_disagreement_pool(
             )
             if task.candidates != candidates:
                 raise AssertionError("E3-E-B deterministic candidate boundary drift")
-
-            record = stage7g_e3_feature_record(
-                task.pitches_midi,
-                task.tuning,
-                open_low,
-                compact,
-            )
-            values = np.asarray(
-                [record[name] for name in STAGE7G_E3_FEATURE_NAMES],
-                dtype=np.float64,
-            )
+            record = stage7g_e3_feature_record(task.pitches_midi, task.tuning, open_low, compact)
+            values = np.asarray([record[name] for name in STAGE7G_E3_FEATURE_NAMES], dtype=np.float64)
             if values.shape != (40,) or not np.isfinite(values).all():
                 raise ValueError("non-finite or wrong-dimensional E3-E-B feature vector")
             geometry_delta = {
@@ -182,44 +161,31 @@ def build_e3e_disagreement_pool(
 
     if len(event_ids) != len(set(event_ids)):
         raise ValueError("duplicate E3-E-B disagreement event id")
-    family_ids = {item.task.family_id for item in items}
-    digest = sha256("\n".join(sorted(event_ids)).encode()).hexdigest()
     if len(items) != E3E_B_EXPECTED_DISAGREEMENT_EVENTS:
         raise AssertionError("E3-E-B disagreement count drift from sealed A3")
-    if len(family_ids) != E3E_B_EXPECTED_DISAGREEMENT_FAMILIES:
+    if len({item.task.family_id for item in items}) != E3E_B_EXPECTED_DISAGREEMENT_FAMILIES:
         raise AssertionError("E3-E-B disagreement family count drift from sealed A3")
+    digest = sha256("\n".join(sorted(event_ids)).encode()).hexdigest()
     if digest != E3E_B_EXPECTED_A3_EVENT_SET_SHA256:
         raise AssertionError("E3-E-B disagreement event-set digest drift from sealed A3")
     return tuple(items)
 
 
-def select_e3e_validation_batch(
-    pool: Iterable[E3EBValidationItem],
-) -> tuple[E3EBValidationItem, ...]:
-    """Select exactly 240 tasks in deterministic family-balanced round-robin rounds.
-
-    The nominal design is 10 tasks x the 24 disagreement families. Families with
-    fewer than 10 events are exhausted naturally and their unused slots are filled
-    by later round-robin rounds from the remaining families. No label or model
-    outcome participates in selection. Curriculum level remains diagnostic only.
-    """
-
+def select_e3e_validation_batch(pool: Iterable[E3EBValidationItem]) -> tuple[E3EBValidationItem, ...]:
+    """Freeze 240 tasks by family-balanced round robin; labels and model outcomes are absent."""
     items = tuple(pool)
     if len(items) != E3E_B_EXPECTED_DISAGREEMENT_EVENTS:
         raise ValueError("E3-E-B selection requires the exact sealed A3 disagreement pool")
     event_ids = [item.task.event_id for item in items]
     if len(event_ids) != len(set(event_ids)):
         raise ValueError("E3-E-B pool contains duplicate event ids")
-
     by_family: dict[str, list[E3EBValidationItem]] = defaultdict(list)
     for item in items:
         by_family[item.task.family_id].append(item)
     if len(by_family) != E3E_B_EXPECTED_DISAGREEMENT_FAMILIES:
         raise ValueError("E3-E-B pool must contain exactly 24 disagreement families")
     for family in by_family:
-        by_family[family].sort(
-            key=lambda item: sha256(item.task.event_id.encode()).hexdigest()
-        )
+        by_family[family].sort(key=lambda item: sha256(item.task.event_id.encode()).hexdigest())
 
     families = _stable_family_order(by_family)
     selected: list[E3EBValidationItem] = []
@@ -228,18 +194,16 @@ def select_e3e_validation_batch(
         progressed = False
         for family in families:
             rows = by_family[family]
-            if cursor >= len(rows):
-                continue
-            selected.append(rows[cursor])
-            progressed = True
-            if len(selected) >= E3E_B_TASK_QUOTA:
-                break
+            if cursor < len(rows):
+                selected.append(rows[cursor])
+                progressed = True
+                if len(selected) == E3E_B_TASK_QUOTA:
+                    break
         if not progressed:
             break
         cursor += 1
-
     if len(selected) != E3E_B_TASK_QUOTA:
-        raise ValueError("sealed E3-E disagreement pool cannot fill the frozen 240-task quota")
+        raise ValueError("sealed E3-E pool cannot fill frozen 240-task quota")
     if len({item.task.family_id for item in selected}) != E3E_B_EXPECTED_DISAGREEMENT_FAMILIES:
         raise AssertionError("E3-E-B selection failed to cover all 24 disagreement families")
     if len({item.task.event_id for item in selected}) != E3E_B_TASK_QUOTA:
@@ -291,10 +255,7 @@ def e3e_response_template(batch: Iterable[E3EBValidationItem]) -> dict:
         "stage": "7G-E3-E-C",
         "allowed_choices": list(E3E_B_RESPONSES),
         "task_count": len(items),
-        "choices": [
-            {"task_id": item.task.event_id, "choice": ""}
-            for item in items
-        ],
+        "choices": [{"task_id": item.task.event_id, "choice": ""} for item in items],
     }
 
 
@@ -318,14 +279,9 @@ def e3e_internal_audit(batch: Iterable[E3EBValidationItem]) -> dict:
             "compact": _placements(item.compact_top1),
             "feature_record": item.feature_record,
         })
-    family_counts = {
-        family: sum(item.task.family_id == family for item in items)
-        for family in sorted({item.task.family_id for item in items})
-    }
-    level_counts = {
-        level: sum(item.curriculum_level == level for item in items)
-        for level in STAGE7G_E3_LEVELS
-    }
+    families = sorted({item.task.family_id for item in items})
+    family_counts = {family: sum(item.task.family_id == family for item in items) for family in families}
+    level_counts = {level: sum(item.curriculum_level == level for item in items) for level in STAGE7G_E3_LEVELS}
     return {
         "schema": E3E_B_INTERNAL_AUDIT_SCHEMA,
         "stage": "7G-E3-E-B",
@@ -353,47 +309,21 @@ def canonical_json_bytes(value: object) -> bytes:
 
 def e3e_teacher_ui_html(manifest: Mapping[str, object]) -> bytes:
     """Build an offline blind A/B annotation UI with JSON export only."""
-
-    if manifest.get("schema") != E3E_B_TEACHER_MANIFEST_SCHEMA:
-        raise ValueError("unexpected E3-E-B teacher manifest schema")
-    if manifest.get("task_count") != E3E_B_TASK_QUOTA:
-        raise ValueError("E3-E-B UI requires the exact 240-task manifest")
+    if manifest.get("schema") != E3E_B_TEACHER_MANIFEST_SCHEMA or manifest.get("task_count") != 240:
+        raise ValueError("unexpected E3-E-B teacher manifest")
     embedded = json.dumps(manifest, sort_keys=True, separators=(",", ":")).replace("</", "<\\/")
-    html = """<!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ST Guitar E3-E Teacher-GOLD</title>
-<style>
-body{font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:0 auto;padding:18px;background:#f7f7f7;color:#111}
-.card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.opt{border:2px solid #ddd;border-radius:10px;padding:12px}.chosen{border-color:#111}.row{padding:3px 0;font-variant-numeric:tabular-nums}
-button{font-size:16px;padding:10px 14px;margin:4px;border-radius:8px;border:1px solid #999;background:white}.primary{background:#111;color:white}
-.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.muted{color:#666;font-size:14px}@media(max-width:650px){.opts{grid-template-columns:1fr}}
-</style></head><body>
-<h1>E3-E Teacher-GOLD</h1><p class="muted">Her görevde daha gitaristik/doğal olan seçeneği seç. Uzman kimlikleri ve eser bilgileri bilinçli olarak gizlidir.</p>
-<div class="nav"><span id="progress"></span><button onclick="exportChoices()" class="primary">Cevapları JSON olarak dışa aktar</button></div>
-<div id="app"></div>
-<div class="nav"><button onclick="move(-1)">← Önceki</button><button onclick="move(1)">Sonraki →</button></div>
-<script>
-const manifest=__MANIFEST__;
-let idx=0; const answers={};
-function placementText(p){return `MIDI ${p.pitch_midi} → Tel ${p.string}, Perde ${p.fret}`}
-function render(){const t=manifest.tasks[idx], choice=answers[t.task_id]||""; document.getElementById('progress').textContent=`${idx+1} / ${manifest.task_count} — cevaplanan ${Object.keys(answers).length}`;
-const option=o=>`<div class="opt ${choice===o.option_id?'chosen':''}"><h2>Seçenek ${o.option_id}</h2>${o.placements.map(p=>`<div class="row">${placementText(p)}</div>`).join('')}<button onclick="choose('${o.option_id}')">${o.option_id} seç</button></div>`;
-document.getElementById('app').innerHTML=`<div class="card"><div><b>Sesler:</b> ${t.pitches_midi.join(', ')}</div><div class="opts">${t.options.map(option).join('')}</div><div style="margin-top:10px"><button onclick="choose('EQUAL_OR_UNSURE')">Eşit / Emin değilim</button></div></div>`;}
-function choose(c){answers[manifest.tasks[idx].task_id]=c; render(); if(idx<manifest.tasks.length-1){setTimeout(()=>{idx++;render()},120)}}
-function move(d){idx=Math.max(0,Math.min(manifest.tasks.length-1,idx+d));render()}
-function exportChoices(){const rows=manifest.tasks.map(t=>({task_id:t.task_id,choice:answers[t.task_id]||""})); const out={schema:'st-guitar-stage7g-e3-e-b-teacher-responses-v1',stage:'7G-E3-E-C',task_count:manifest.task_count,choices:rows}; const blob=new Blob([JSON.stringify(out,null,2)+'\\n'],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ST_Guitar_E3E_choices_240.json';a.click();URL.revokeObjectURL(a.href)}
-document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='a')choose('A');if(e.key.toLowerCase()==='b')choose('B');if(e.key.toLowerCase()==='e')choose('EQUAL_OR_UNSURE');if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1)});render();
-</script></body></html>""".replace("__MANIFEST__", embedded)
-    forbidden = ("blind_A_specialist", "blind_B_specialist", "feature_record", "family_id", "source_sha256")
-    if any(token in html for token in forbidden):
+    html = """<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ST Guitar E3-E Teacher-GOLD</title><style>body{font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:0 auto;padding:18px;background:#f7f7f7;color:#111}.card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}.opt{border:2px solid #ddd;border-radius:10px;padding:12px}.chosen{border-color:#111}.row{padding:3px 0;font-variant-numeric:tabular-nums}button{font-size:16px;padding:10px 14px;margin:4px;border-radius:8px;border:1px solid #999;background:white}.primary{background:#111;color:white}.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.muted{color:#666;font-size:14px}@media(max-width:650px){.opts{grid-template-columns:1fr}}</style></head><body><h1>E3-E Teacher-GOLD</h1><p class="muted">Her görevde daha gitaristik/doğal olan seçeneği seç. Uzman kimlikleri ve eser bilgileri bilinçli olarak gizlidir.</p><div class="nav"><span id="progress"></span><button onclick="exportChoices()" class="primary">Cevapları JSON olarak dışa aktar</button></div><div id="app"></div><div class="nav"><button onclick="move(-1)">← Önceki</button><button onclick="move(1)">Sonraki →</button></div><script>const manifest=__MANIFEST__;let idx=0;const answers={};function placementText(p){return `MIDI ${p.pitch_midi} → Tel ${p.string}, Perde ${p.fret}`}function render(){const t=manifest.tasks[idx],choice=answers[t.task_id]||"";document.getElementById('progress').textContent=`${idx+1} / ${manifest.task_count} — cevaplanan ${Object.keys(answers).length}`;const option=o=>`<div class="opt ${choice===o.option_id?'chosen':''}"><h2>Seçenek ${o.option_id}</h2>${o.placements.map(p=>`<div class="row">${placementText(p)}</div>`).join('')}<button onclick="choose('${o.option_id}')">${o.option_id} seç</button></div>`;document.getElementById('app').innerHTML=`<div class="card"><div><b>Sesler:</b> ${t.pitches_midi.join(', ')}</div><div class="opts">${t.options.map(option).join('')}</div><div style="margin-top:10px"><button onclick="choose('EQUAL_OR_UNSURE')">Eşit / Emin değilim</button></div></div>`}function choose(c){answers[manifest.tasks[idx].task_id]=c;render();if(idx<manifest.tasks.length-1){setTimeout(()=>{idx++;render()},120)}}function move(d){idx=Math.max(0,Math.min(manifest.tasks.length-1,idx+d));render()}function exportChoices(){const rows=manifest.tasks.map(t=>({task_id:t.task_id,choice:answers[t.task_id]||""}));const out={schema:'st-guitar-stage7g-e3-e-b-teacher-responses-v1',stage:'7G-E3-E-C',task_count:manifest.task_count,choices:rows};const blob=new Blob([JSON.stringify(out,null,2)+'\\n'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ST_Guitar_E3E_choices_240.json';a.click();URL.revokeObjectURL(a.href)}document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='a')choose('A');if(e.key.toLowerCase()==='b')choose('B');if(e.key.toLowerCase()==='e')choose('EQUAL_OR_UNSURE');if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1)});render();</script></body></html>""".replace("__MANIFEST__", embedded)
+    sensitive_fragments = (
+        '"family_id":', '"source_sha256":', '"source_origin":',
+        '"blind_A_specialist":', '"blind_B_specialist":', '"feature_record":',
+    )
+    if any(token in html for token in sensitive_fragments):
         raise AssertionError("teacher UI leaked internal audit metadata")
     return html.encode("utf-8")
 
 
 def e3e_teacher_package_bytes(batch: Iterable[E3EBValidationItem]) -> bytes:
-    """Create a deterministic teacher-facing ZIP; internal audit is intentionally excluded."""
-
+    """Create deterministic teacher-facing ZIP; internal audit is intentionally excluded."""
     items = tuple(batch)
     manifest = e3e_teacher_manifest(items)
     template = e3e_response_template(items)
