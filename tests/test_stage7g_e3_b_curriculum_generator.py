@@ -138,7 +138,10 @@ class Stage7GE3BCurriculumGeneratorTests(unittest.TestCase):
         self.assertEqual({row["event_id"] for row in result["records"]}, {"event_e"})
         self.assertEqual({row["provenance"] for row in result["records"]}, {"RULE_DERIVED_PROPERTY"})
         self.assertTrue(all(row["teacher_gold"] is False for row in result["records"]))
-        self.assertNotIn("preference", result["semantic_boundary"])
+        self.assertEqual(
+            result["semantic_boundary"],
+            "descriptive_geometry_only_not_guitaristic_preference",
+        )
 
 
 if __name__ == "__main__":
