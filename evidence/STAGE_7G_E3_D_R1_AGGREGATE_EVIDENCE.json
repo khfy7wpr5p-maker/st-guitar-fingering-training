@@ -1,0 +1,89 @@
+{
+  "schema": "st-guitar-stage7g-e3-d-r1-aggregate-evidence-v1",
+  "protocol": "7G-E3-D",
+  "source_result_filename": "ST_Guitar_Stage7G_E3_D_R1_result.json",
+  "source_result_sha256": "5626a1ea70a2bc285d3585ec2f155eb86040ece6507a03dd6a477dd073ec67d3",
+  "execution_git_sha": "dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3",
+  "identity": {
+    "repository": "khfy7wpr5p-maker/st-guitar-fingering-training",
+    "approved_git_sha": "dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3",
+    "actual_git_sha": "dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3",
+    "python": "3.12.13",
+    "numpy": "2.0.2",
+    "scikit_learn": "1.6.1",
+    "data_scope": "new_teacher_gold_development_not_untouched_validation"
+  },
+  "input_hashes": {
+    "package_sha256": "e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef",
+    "audit_sha256": "e8fa34998a409a275d372ae089b9a3f3ed1ea5b53de5c15e58a61de0210a2915",
+    "manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "feature_list_sha256": "6e1d26e566a36e473f4f11b065df3e9eb282e06be7bdd3deb65a1160d440bfc3"
+  },
+  "preflight": {
+    "status": "PREFLIGHT_PASS_STOP_BEFORE_TRAIN",
+    "task_count": 400,
+    "decisive_rows": 399,
+    "equal_or_unsure_excluded": 1,
+    "families": 40,
+    "family_isolated": true,
+    "outer_splits": 5,
+    "inner_splits": 4,
+    "outer_random_state": 731,
+    "inner_random_states": [7310, 7311, 7312, 7313, 7314],
+    "curriculum_level_counts": {
+      "L1": 140,
+      "L2": 120,
+      "L3": 80,
+      "L4": 60
+    },
+    "decoded_teacher_preference": {
+      "OPEN_LOW": 311,
+      "COMPACT": 88,
+      "EQUAL_OR_UNSURE": 1
+    },
+    "feature_count": 40
+  },
+  "result": {
+    "status": "POSITIVE_DEVELOPMENT_SIGNAL_ELIGIBLE_FOR_E3E_DESIGN",
+    "scientific_scope": "nested_development_cv_not_untouched_validation",
+    "events": 399,
+    "event_accuracy": 0.8621553884711779,
+    "always_open_low_accuracy": 0.7794486215538847,
+    "event_delta": 0.08270676691729317,
+    "macro_family_accuracy": 0.8618396187146187,
+    "macro_family_baseline": 0.7834237984237985,
+    "macro_family_delta": 0.07841582029082017,
+    "compact_precision": 0.7796610169491526,
+    "compact_recall": 0.5227272727272727,
+    "compact_tp": 46,
+    "compact_fp": 13,
+    "compact_fn": 42,
+    "compact_switch_count": 59,
+    "compact_switch_rate": 0.14786967418546365,
+    "family_wins": 22,
+    "family_ties": 13,
+    "family_losses": 5,
+    "outer_selected_thresholds": [0.5, 0.5, 0.6, 0.5, 0.5],
+    "curriculum_level_metrics": {
+      "L1": {"events": 140, "accuracy": 0.9714285714285714, "compact_switch_count": 9, "compact_switch_rate": 0.06428571428571428},
+      "L2": {"events": 120, "accuracy": 0.7333333333333333, "compact_switch_count": 4, "compact_switch_rate": 0.03333333333333333},
+      "L3": {"events": 80, "accuracy": 0.9, "compact_switch_count": 19, "compact_switch_rate": 0.2375},
+      "L4": {"events": 59, "accuracy": 0.8135593220338984, "compact_switch_count": 27, "compact_switch_rate": 0.4576271186440678}
+    }
+  },
+  "gate_check": {
+    "event_delta_positive": true,
+    "macro_family_delta_positive": true,
+    "compact_precision_gt_0_5": true,
+    "compact_tp_gt_fp": true,
+    "family_wins_gt_losses": true,
+    "development_gate_pass": true
+  },
+  "safety": {
+    "stage7e_used": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "raw_teacher_gold_rows_committed": false
+  }
+}
