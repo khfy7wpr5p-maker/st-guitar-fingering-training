@@ -1,0 +1,159 @@
+{
+  "schema": "st-guitar-stage7g-e3-d-training-protocol-v1",
+  "stage": "7G-E3-D",
+  "status": "TRAINING_PROTOCOL_FROZEN_NO_FIT",
+  "base_main_sha": "81f43e70b2eae734104d7d3b9d280001634d7327",
+  "purpose": "precision-first conservative compact gate with open_low default",
+  "inputs": {
+    "curriculum_package": {
+      "filename": "ST_Guitar_Stage7G_E3_B_R1_Curriculum_Batch01_400.zip",
+      "sha256": "e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef",
+      "teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+      "internal_audit_sha256": "e8fa34998a409a275d372ae089b9a3f3ed1ea5b53de5c15e58a61de0210a2915"
+    },
+    "teacher_choices": {
+      "filename": "ST_Guitar_E3_Batch01_choices_400of400.json",
+      "sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e"
+    },
+    "expected_tasks": 400,
+    "expected_families": 40,
+    "expected_levels": {
+      "L1": 140,
+      "L2": 120,
+      "L3": 80,
+      "L4": 60
+    },
+    "expected_decoded": {
+      "OPEN_LOW": 311,
+      "COMPACT": 88,
+      "EQUAL_OR_UNSURE": 1,
+      "decisive_fit_rows": 399
+    }
+  },
+  "fit_corpus": {
+    "new_e3_curriculum_teacher_gold_only": true,
+    "old_e1_e2_556_decisive_rows_used": false,
+    "historical_first_38_full_candidate_rows_used": false,
+    "equal_or_unsure_used_in_binary_fit": false,
+    "teacher_gold_semantics": "pairwise_guitaristic_preference",
+    "stage7e_used": false
+  },
+  "features": {
+    "source_constant": "STAGE7G_E3_FEATURE_NAMES",
+    "count": 40,
+    "ordered_name_sha256": "6e1d26e566a36e473f4f11b065df3e9eb282e06be7bdd3deb65a1160d440bfc3",
+    "model_uses_curriculum_level": false,
+    "model_uses_family_id": false,
+    "family_id_split_only": true,
+    "curriculum_level_reporting_only": true,
+    "sequence_context": false,
+    "source_target_tab": false
+  },
+  "model": {
+    "positive_class": "COMPACT",
+    "default_decision": "OPEN_LOW",
+    "pipeline": [
+      "StandardScaler",
+      "LogisticRegression"
+    ],
+    "logistic_regression": {
+      "max_iter": 2000,
+      "class_weight": null,
+      "C": 1.0,
+      "solver": "lbfgs",
+      "random_state": 0
+    },
+    "regularization_search": false,
+    "class_weight_search": false,
+    "feature_selection": false,
+    "model_family_search": false,
+    "calibration_search": false
+  },
+  "nested_cv": {
+    "classification": "NESTED_DEVELOPMENT_CV_NOT_UNTOUCHED_VALIDATION",
+    "outer": {
+      "splitter": "StratifiedGroupKFold",
+      "n_splits": 5,
+      "shuffle": true,
+      "random_state": 731,
+      "group_key": "family_id"
+    },
+    "inner": {
+      "splitter": "StratifiedGroupKFold",
+      "n_splits": 4,
+      "shuffle": true,
+      "random_state_rule": "7310 + outer_fold_index",
+      "probabilities": "pooled_inner_oof_only"
+    },
+    "abort_on_family_leakage": true,
+    "abort_on_training_fold_single_class": true,
+    "abort_on_nonfinite_features": true
+  },
+  "threshold_gate": {
+    "candidate_thresholds": [0.5, 0.6, 0.7, 0.8, 0.9, 0.95],
+    "selection_data": "inner_oof_only",
+    "eligibility": {
+      "min_predicted_compact": 10,
+      "min_compact_precision": 0.6666666666666666,
+      "min_event_accuracy_delta_vs_always_open_low": 0.0
+    },
+    "selection_order": [
+      "max_compact_recall",
+      "max_event_accuracy_delta_vs_always_open_low",
+      "max_compact_precision",
+      "higher_threshold"
+    ],
+    "fallback_if_none_eligible": "NO_SWITCH_ALWAYS_OPEN_LOW",
+    "outer_labels_may_select_threshold": false
+  },
+  "required_metrics": [
+    "event_accuracy",
+    "always_open_low_event_accuracy",
+    "event_accuracy_delta",
+    "macro_family_accuracy",
+    "always_open_low_macro_family_accuracy",
+    "macro_family_accuracy_delta",
+    "compact_precision",
+    "compact_recall",
+    "compact_true_positives",
+    "compact_false_positives",
+    "compact_false_negatives",
+    "compact_switch_count",
+    "compact_switch_rate",
+    "family_win_tie_loss",
+    "outer_fold_selected_thresholds",
+    "curriculum_level_diagnostic_metrics"
+  ],
+  "development_gate": {
+    "positive_status": "POSITIVE_DEVELOPMENT_SIGNAL_ELIGIBLE_FOR_E3E_DESIGN",
+    "negative_status": "NEGATIVE_DEVELOPMENT_CV_NO_PROMOTION",
+    "requirements": {
+      "event_accuracy_delta_gt": 0.0,
+      "macro_family_accuracy_delta_gt": 0.0,
+      "compact_precision_gt": 0.5,
+      "compact_true_positives_gt_false_positives": true,
+      "family_wins_gt_losses": true
+    },
+    "authorizes_checkpoint": false,
+    "authorizes_production": false
+  },
+  "colab": {
+    "manual_training_only_after_protocol_merge": true,
+    "exact_git_sha_required": true,
+    "hash_preflight_required": true,
+    "preflight_stop_before_train": true,
+    "manual_train_cell_required": true,
+    "frozen_evaluation_only": true,
+    "aggregate_evidence_export": true,
+    "checkpoint_retained_default": false
+  },
+  "scientific_boundary": {
+    "model_fit": false,
+    "threshold_selected": false,
+    "outer_cv_observed": false,
+    "checkpoint_retained": false,
+    "production_integration": false,
+    "untouched_validation_claim": false,
+    "stage7e_used": false
+  }
+}
