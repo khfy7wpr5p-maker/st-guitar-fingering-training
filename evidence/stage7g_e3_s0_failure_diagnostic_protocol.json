@@ -1,0 +1,170 @@
+{
+  "architecture_decision": {
+    "current_monolithic_architecture_changed": false,
+    "specialist_activation_forbidden_in_s0": true,
+    "specialist_architecture_status": "TARGET_ARCHITECTURE_CANDIDATE_ONLY"
+  },
+  "base_main_sha": "8cb60ba2ae40f2f7e10eb2c01537d21edd89d97b",
+  "decision_boundary": {
+    "architecture_change_requires_separate_evidence_review_after_s0": true,
+    "s0_can_diagnose_patterns_but_does_not_activate_specialist_architecture": true,
+    "teacher_repeatability_requires_separate_blind_repeat_batch": true
+  },
+  "diagnostic_flags": {
+    "compact_support_thin_if_min_outer_compact_support_lt": 20,
+    "flags_are_diagnostic_not_promotion_gates": true,
+    "high_fold_variance_if_final_macro_f1_range_gte": 0.1,
+    "learning_curve_still_rising_if_macro_f1_gain_75_to_100_gte": 0.03,
+    "recurrent_overfit_if_at_least_3_folds_final_minus_min_val_loss_gte": 0.02
+  },
+  "forbidden": [
+    "scheduler",
+    "threshold_search",
+    "hyperparameter_search",
+    "new_features",
+    "specialist_training",
+    "early_stopping",
+    "best_epoch_checkpoint_selection",
+    "checkpoint_retention",
+    "E3-E reuse",
+    "Stage7E reuse",
+    "production_or_shadow_integration"
+  ],
+  "frozen_geometry_strata": {
+    "semantics": "descriptive_only_not_teacher_preference_rules",
+    "source": "existing_stage7g_e3_curriculum_strong_contrast_thresholds",
+    "thresholds": {
+      "fretted_note_count": 1.0,
+      "internal_string_gaps": 1.0,
+      "mean_positive_fret": 3.0,
+      "open_note_count": 1.0,
+      "positive_fret_span": 2.0,
+      "string_span": 2.0
+    }
+  },
+  "frozen_model": {
+    "activation": "relu",
+    "alpha": 0.0001,
+    "batch_size": 32,
+    "decision_threshold": 0.5,
+    "epochs": 60,
+    "hidden_layer_sizes": [
+      32,
+      16
+    ],
+    "learning_rate_init": 0.001,
+    "positive_class": "COMPACT",
+    "random_state": 20260815,
+    "solver": "adam",
+    "type": "MLPClassifier"
+  },
+  "hypotheses": [
+    {
+      "diagnostics": [
+        "outer-fold class support",
+        "25/50/75/100 family learning curve",
+        "family-cluster bootstrap uncertainty"
+      ],
+      "id": "H1",
+      "name": "data_or_class_support_limitation"
+    },
+    {
+      "diagnostics": [
+        "train loss trajectory",
+        "validation loss trajectory",
+        "final-minus-minimum validation loss in all five outer folds"
+      ],
+      "id": "H2",
+      "name": "overfitting"
+    },
+    {
+      "diagnostics": [
+        "all five family-isolated folds",
+        "fold variance",
+        "OOF family-level metrics"
+      ],
+      "id": "H3",
+      "name": "family_or_domain_shift"
+    },
+    {
+      "causal_claim_not_allowed_from_s0_alone": true,
+      "diagnostics": [
+        "threshold-free ranking metrics",
+        "frozen geometry-regime breakdown",
+        "curriculum-level breakdown"
+      ],
+      "id": "H4",
+      "name": "feature_or_composite_target_limitation"
+    },
+    {
+      "diagnostics": [],
+      "id": "H5",
+      "measurable_in_s0": false,
+      "name": "teacher_gold_repeatability_limit",
+      "required_future_test": "blind repeat reliability batch"
+    }
+  ],
+  "inputs": {
+    "choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "decisive_rows": 399,
+    "decoded_labels": {
+      "COMPACT": 88,
+      "OPEN_LOW": 311
+    },
+    "e3e_teacher_gold_used": false,
+    "families": 40,
+    "feature_count": 40,
+    "feature_name_sha256": "6e1d26e566a36e473f4f11b065df3e9eb282e06be7bdd3deb65a1160d440bfc3",
+    "stage7e_used": false,
+    "teacher_gold_scope": "same_consumed_E3_development_only"
+  },
+  "learning_curve": {
+    "fixed_epochs": 60,
+    "fractions": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "inner_family_partitions": 4,
+    "no_epoch_selection": true,
+    "partition_method": "StratifiedGroupKFold",
+    "random_state_base": 20260816
+  },
+  "metrics": [
+    "log_loss",
+    "accuracy",
+    "macro_f1",
+    "balanced_accuracy",
+    "compact_precision",
+    "compact_recall",
+    "average_precision",
+    "roc_auc",
+    "brier_score",
+    "mcc",
+    "tp",
+    "fp",
+    "fn",
+    "tn"
+  ],
+  "outer_cv": {
+    "evaluate_all_folds": true,
+    "final_epoch_oof_only_for_primary_diagnostic_aggregate": true,
+    "group_key": "family_id",
+    "method": "StratifiedGroupKFold",
+    "minimum_val_loss_descriptive_only": true,
+    "n_splits": 5,
+    "random_state": 20260815,
+    "shuffle": true
+  },
+  "schema": "st-guitar-stage7g-e3-s0-failure-diagnostic-protocol-v1",
+  "scientific_question": "Why did the frozen R2 monolithic OPEN_LOW-vs-COMPACT MLP fail the ultra-quality target?",
+  "stage": "7G-E3-S0",
+  "status": "PREREGISTERED_NO_RESULTS",
+  "uncertainty": {
+    "confidence": 0.95,
+    "draws": 2000,
+    "method": "family_cluster_bootstrap",
+    "random_state": 20260816
+  }
+}
