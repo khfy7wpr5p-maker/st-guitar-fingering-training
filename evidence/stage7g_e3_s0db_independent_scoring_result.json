@@ -1,0 +1,148 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0db-independent-scoring-result-v1",
+  "stage": "7G-E3-S0-D-B",
+  "status": "COMPONENT_SEPARATION_SIGNAL_OBSERVED_NO_SPECIALIST_ACTIVATION",
+  "input": {
+    "response_filename": "ST_Guitar_S0DB_Independent_1to5_20of20.json",
+    "response_sha256": "a8d479d40a64923dde236e7625c008e933759029754e39d3ed13b0c55e29de8e",
+    "manifest_sha256": "7a038f3d009b4771f0d94b29a188dda4c03fb34a4c3ca5cbd3d5d4c20a5412ae",
+    "task_count": 20,
+    "component_score_count": 160,
+    "overall_preference_count": 20,
+    "complete": true
+  },
+  "overall_preference_counts": {
+    "A": 15,
+    "B": 5
+  },
+  "score_distributions": {
+    "POSITION_COMFORT": {
+      "counts": {"1": 1, "3": 7, "4": 11, "5": 21},
+      "mean": 4.275
+    },
+    "STRING_DISTRIBUTION": {
+      "counts": {"1": 1, "3": 6, "4": 12, "5": 21},
+      "mean": 4.3
+    },
+    "FINGER_SPREAD": {
+      "counts": {"1": 1, "3": 6, "4": 11, "5": 22},
+      "mean": 4.325
+    },
+    "OPEN_STRING_UTILITY": {
+      "counts": {"1": 1, "3": 18, "4": 5, "5": 16},
+      "mean": 3.875
+    }
+  },
+  "within_option_component_separation": {
+    "options_with_non_identical_component_scores": 16,
+    "total_options": 40,
+    "rate": 0.4,
+    "tasks_with_at_least_one_option_showing_component_separation": 13,
+    "total_tasks": 20,
+    "task_rate": 0.65
+  },
+  "within_option_spearman_correlations_40_option_ratings": {
+    "POSITION_COMFORT": {
+      "POSITION_COMFORT": 1.0,
+      "STRING_DISTRIBUTION": 0.8379554547884623,
+      "FINGER_SPREAD": 0.9633376460205353,
+      "OPEN_STRING_UTILITY": 0.7113221714922159
+    },
+    "STRING_DISTRIBUTION": {
+      "POSITION_COMFORT": 0.8379554547884623,
+      "STRING_DISTRIBUTION": 0.9999999999999998,
+      "FINGER_SPREAD": 0.7950794957311615,
+      "OPEN_STRING_UTILITY": 0.7067865269334108
+    },
+    "FINGER_SPREAD": {
+      "POSITION_COMFORT": 0.9633376460205353,
+      "STRING_DISTRIBUTION": 0.7950794957311615,
+      "FINGER_SPREAD": 1.0,
+      "OPEN_STRING_UTILITY": 0.6670304670908081
+    },
+    "OPEN_STRING_UTILITY": {
+      "POSITION_COMFORT": 0.7113221714922159,
+      "STRING_DISTRIBUTION": 0.7067865269334108,
+      "FINGER_SPREAD": 0.6670304670908081,
+      "OPEN_STRING_UTILITY": 1.0
+    }
+  },
+  "dimension_delta_vs_overall": {
+    "POSITION_COMFORT": {
+      "non_tie_tasks": 13,
+      "sign_matches_overall": 12,
+      "sign_match_rate_non_tie": 0.9230769230769231,
+      "dimension_ties": 7
+    },
+    "STRING_DISTRIBUTION": {
+      "non_tie_tasks": 14,
+      "sign_matches_overall": 13,
+      "sign_match_rate_non_tie": 0.9285714285714286,
+      "dimension_ties": 6
+    },
+    "FINGER_SPREAD": {
+      "non_tie_tasks": 12,
+      "sign_matches_overall": 11,
+      "sign_match_rate_non_tie": 0.9166666666666666,
+      "dimension_ties": 8
+    },
+    "OPEN_STRING_UTILITY": {
+      "non_tie_tasks": 14,
+      "sign_matches_overall": 13,
+      "sign_match_rate_non_tie": 0.9285714285714286,
+      "dimension_ties": 6
+    }
+  },
+  "task_level_tradeoffs": {
+    "opposing_component_directions_count": 1,
+    "total_tasks": 20,
+    "note": "Only one task had at least one component favor A and another favor B; zero-valued/tied dimensions alone do not count as opposing tradeoffs."
+  },
+  "geometry_descriptives": {
+    "higher_position_proxy": "greater mean positive fret; descriptive only",
+    "higher_position": {
+      "eligible_tasks": 19,
+      "higher_position_has_higher_POSITION_COMFORT": 2,
+      "higher_position_wins_overall": 1,
+      "higher_position_mean_POSITION_COMFORT": 3.8947368421052633,
+      "lower_position_mean_POSITION_COMFORT": 4.578947368421052
+    },
+    "open_string_proxy": "greater count of fret=0 placements; descriptive only",
+    "more_open_strings": {
+      "eligible_tasks": 15,
+      "more_open_has_higher_OPEN_STRING_UTILITY": 10,
+      "more_open_wins_overall": 11,
+      "more_open_mean_OPEN_STRING_UTILITY": 4.333333333333333,
+      "less_open_mean_OPEN_STRING_UTILITY": 3.3333333333333335
+    }
+  },
+  "secondary_historical_preference_check": {
+    "historical_preferred_current_side_counts": {"A": 14, "B": 6},
+    "same_overall_preference_count": 19,
+    "total": 20,
+    "rate": 0.95,
+    "reliability_proof": false
+  },
+  "interpretation": {
+    "component_separation_observed": true,
+    "open_string_utility_most_distinct_component": true,
+    "position_string_finger_still_strongly_coupled": true,
+    "simple_unweighted_sum_not_authorized": true,
+    "rubric_weight_fitting_authorized": false,
+    "specialist_training_authorized": false,
+    "architecture_design_supported": true,
+    "next_recommended_design": "Preserve independent component labels; design deterministic/component-specific analyzers and a later arbiter under a new preregistered stage. Collect larger independently scored Teacher-GOLD before training specialists."
+  },
+  "scientific_boundary": {
+    "model_training": false,
+    "specialist_training": false,
+    "specialist_activation": false,
+    "rubric_weight_fitting": false,
+    "threshold_tuning": false,
+    "hyperparameter_tuning": false,
+    "checkpoint_retained": false,
+    "production_or_shadow_integration": false,
+    "e3e_used": false,
+    "stage7e_used": false
+  }
+}
