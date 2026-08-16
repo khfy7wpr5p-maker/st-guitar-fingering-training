@@ -41,24 +41,35 @@ Teacher decision reliability redesign
   ├─ S0-D-A five repeated A/B subquestions: 20/20 perfectly collinear
   └─ S0-D-B independent per-option 1–5 scoring: component separation OBSERVED
         ↓
+S1 independent-component Teacher-GOLD
+  ├─ S1-A reliability protocol: FROZEN
+  ├─ S1-B 120-task first-pass + 48-task repeat seal: COMPLETED
+  ├─ S1-C first-pass 120/120 responses: COMPLETED
+  └─ S1-D blind repeat reliability: CURRENT / waiting minimum-delay gate
+        ↓
 ┌───────────────────────────────────────────────────────────────┐
 │ CURRENT POSITION                                              │
-│ Preserve independent component labels and expand them under   │
-│ a new preregistered, family-isolated Teacher-GOLD stage.      │
-│ Measure repeat reliability under the decomposed rubric before │
-│ training or activating specialist component models.           │
+│ Do not train component models yet. Complete the sealed 48-task│
+│ blind repeat and evaluate the preregistered component         │
+│ reliability gates.                                            │
 └───────────────────────────────────────────────────────────────┘
-        ↓
+        ↓ only if component reliability passes
 Future component-analysis layer (DESIGN CANDIDATE; NOT ACTIVE)
   ├─ Position Comfort analyzer
   ├─ String Distribution / Topology analyzer
   ├─ Finger / Hand Spread analyzer
   └─ Open-String Utility analyzer
         ↓
-Future Guitaristic Arbiter / Ranker
+Future Base Guitaristic Arbiter / Ranker
   ├─ combines validated component evidence
   ├─ ranks only physically-valid candidates
   └─ falls back conservatively when evidence is insufficient
+        ↓
+Future DCR-inspired Hard Guitaristic Error Refinement
+  ├─ mines only preregistered family-isolated development errors
+  ├─ focuses on high-confidence wrong guitaristic decisions
+  ├─ refines/reranks only the SAME physically-valid candidates
+  └─ remains bypassable: base arbiter is the conservative fallback
         ↓
 Future preregistered checkpoint-retention gate
         ↓
@@ -81,13 +92,17 @@ Future MusicXML → GuitarTAB output integration
 - E3-E positive untouched signal, with the E3-E Teacher-GOLD corpus now permanently consumed for evaluation;
 - R2/S0/S0-B failure diagnostics;
 - S0-C repeat-reliability evidence;
-- S0-D-A and S0-D-B teacher-rubric experiments.
+- S0-D-A and S0-D-B teacher-rubric experiments;
+- S1-A preregistered reliability contract;
+- S1-B deterministic 120-task first-pass and 48-task repeat seal;
+- S1-C first-pass Teacher-GOLD collection completed at 120/120 responses.
 
 ### Proposed only — not trained, activated, or promoted
 
 - component-specific ergonomics models;
 - learned weighting of component scores;
-- a new Guitaristic Arbiter combining component models;
+- a Base Guitaristic Arbiter combining component models;
+- DCR-inspired Hard Guitaristic Error Refinement;
 - a retained production checkpoint;
 - GuitarTab Engine shadow/production integration.
 
@@ -103,10 +118,28 @@ S0-D-A therefore decomposed “which is more natural?” into position, string d
 
 S0-D-B changed the elicitation method. A and B were scored independently on 1–5 component scales before the overall A/B choice was shown. This produced genuine component separation: 16/40 option ratings had non-identical component scores and 13/20 tasks showed separation in at least one option. `OPEN_STRING_UTILITY` was the most distinct component, while position/string/finger scores remained strongly coupled. The result supports component-oriented architecture design but explicitly does **not** authorize specialist training, rubric-weight fitting, checkpoint retention, or integration.
 
+S1 then scaled that rubric under a preregistered reliability contract. The 120-task first pass has been completed, but the labels remain quarantined until the sealed 48-task blind repeat is completed and all preregistered component reliability gates are evaluated.
+
+## DCR-inspired future refinement principle
+
+Bowen Cheng and colleagues' DCR work on object detection motivates a **future research hypothesis** for this project: after a reliable base guitaristic model exists, high-confidence wrong development predictions may be handled by a separate refinement stage rather than forcing the base model to absorb every difficult regime.
+
+This is an architectural analogy only. The DCR paper is not guitar-fingering evidence. The project-specific design candidate is documented in `docs/DCR_HARD_GUITARISTIC_ERROR_REFINEMENT.md`.
+
+A future refiner may be studied only after:
+
+1. the S1 component reliability gate passes;
+2. a separate component-model training protocol is preregistered and merged;
+3. component/base-arbiter models are trained under family isolation;
+4. hard errors are defined from family-isolated development predictions, preferably out-of-fold;
+5. the hard-error definition, confidence rule, sample mixture, model class, and comparison gate are frozen before the refinement experiment.
+
+Stage 7E, E3-E, S0-C repeat labels, and S1 repeat labels may not be mined as refinement training/tuning data.
+
 ## Authority boundary
 
 1. Deterministic guitar rules own physical validity. AI may never manufacture, legalize, or select a placement outside the deterministic candidate set.
-2. Learned specialists, analyzers, routers, arbiters, or future rankers may only operate on candidates that already passed deterministic physical validation.
+2. Learned specialists, analyzers, routers, arbiters, refiners, or future rankers may only operate on candidates that already passed deterministic physical validation.
 3. Source XML pitch is not trusted blindly. Sounding pitch is independently recomputed from tuning + string + fret whenever observed technical placement exists.
 4. Standard-notation and TAB staves representing the same event are one lineage, not two independent labels.
 5. Written-guitar octave conventions are recorded explicitly and never silently mixed with sounding pitch.
@@ -120,11 +153,15 @@ S0-D-B changed the elicitation method. A and B were scored independently on 1–
 13. S0-C repeat labels are reliability evidence only and may not be used for training, threshold tuning, or model selection.
 14. S0-D-A/B pilot labels are architecture-design evidence. They are not automatically a specialist-training corpus; any future training use requires a new preregistered data/training protocol.
 15. No simple or fitted weighting of the four S0-D-B component dimensions is authorized from the 20-task pilot.
-16. A future component architecture must measure repeat reliability under the decomposed rubric before specialist activation.
-17. Production/shadow integration remains closed until a separately preregistered checkpoint/promotion gate passes.
+16. S1 first-pass component labels remain quarantined until the frozen repeat-reliability gate passes and a separate training protocol is merged.
+17. S1 repeat labels are permanently reliability-only and may not be added as extra training rows.
+18. A future component architecture must measure repeat reliability under the decomposed rubric before specialist activation.
+19. Any DCR-inspired refiner must be trained/evaluated from preregistered family-isolated development evidence and may only rerank already-valid candidates.
+20. No DCR-inspired hard-error threshold, sample mixture, or refiner model may be selected by inspecting Stage 7E, E3-E, or another untouched promotion corpus.
+21. Production/shadow integration remains closed until a separately preregistered checkpoint/promotion gate passes.
 
 ## Current learning state
 
-The project has evidence that guitarist preference is learnable, but also evidence that a single global A/B “naturalness” target is too unstable to be treated as the sole specialist target. The current architecture therefore separates **physical validity**, **candidate proposals**, **guitaristic component judgments**, and a future **arbiter**.
+The project has evidence that guitarist preference is learnable, but also evidence that a single global A/B “naturalness” target is too unstable to be treated as the sole specialist target. The current architecture therefore separates **physical validity**, **candidate proposals**, **guitaristic component judgments**, a future **base arbiter**, and—only if later evidence justifies it—a **hard-error refinement stage**.
 
-The next executable scientific step is **not model training**. It is to preregister a larger, family-isolated independent-component Teacher-GOLD collection and a repeat-reliability test using the S0-D-B style rubric. Only after that evidence is adequate should component-model training or arbiter design be opened.
+The next executable scientific step remains **the sealed S1 blind repeat reliability test**, not model training and not DCR refinement training. Only after the reliability evidence is adequate should component-model training be opened. Hard-error refinement comes later, after a valid family-isolated base model exists.
