@@ -1,0 +1,87 @@
+{
+  "frozen_model": {
+    "C": 1.0,
+    "class_weight": null,
+    "compact_probability_threshold": 0.5,
+    "default_decision": "OPEN_LOW",
+    "feature_count": 40,
+    "max_iter": 2000,
+    "pipeline": ["StandardScaler", "LogisticRegression"],
+    "positive_class": "COMPACT",
+    "random_state": 0,
+    "solver": "lbfgs",
+    "threshold_search_on_e3e": false
+  },
+  "gate": {
+    "all_positive_requirements_pass": true,
+    "compact_precision_gte_2_over_3": true,
+    "compact_true_positives_gt_false_positives": true,
+    "event_accuracy_delta_gt_0": true,
+    "family_wins_gt_losses": true,
+    "macro_family_accuracy_delta_gt_0": true,
+    "minimum_evidence_pass": true
+  },
+  "inputs": {
+    "development_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "development_decisive_rows": 399,
+    "development_families": 40,
+    "e3d_reference_result_sha256": "5626a1ea70a2bc285d3585ec2f155eb86040ece6507a03dd6a477dd073ec67d3",
+    "e3e_completed_tasks": 240,
+    "e3e_decisive_events": 237,
+    "e3e_equal_or_unsure": 3,
+    "e3e_evaluable_families": 24,
+    "e3e_internal_audit_sha256": "75440e8e97c1ab80c27d93f8f37d1545a776e7fc8d9d0ddc6de5fdad9d98f7ee",
+    "e3e_teacher_responses_sha256": "2f7bf64b9e80b217a6072d84a421b98d3988ffe2a19972ac786b16c6e4f2d325",
+    "feature_list_sha256": "6e1d26e566a36e473f4f11b065df3e9eb282e06be7bdd3deb65a1160d440bfc3"
+  },
+  "main_sha": "13b4b8c64b89efc983621b96bad381736dc7b639",
+  "reproduction_guard": {
+    "aggregate_metrics_exact": true,
+    "all_30_inner_threshold_candidate_metrics_exact": true,
+    "execution_numpy": "2.3.5",
+    "execution_python": "3.13.5",
+    "execution_sklearn": "1.8.0",
+    "family_wins_ties_losses_exact": [22, 13, 5],
+    "macro_family_metrics_exact": true,
+    "note": "Used the scikit-learn 1.6.1 StratifiedGroupKFold split behavior to reproduce the sealed E3-D split plan; current logistic-regression predictions reproduced every sealed E3-D threshold candidate and aggregate metric exactly before the untouched fit.",
+    "reference_e3d_outer_selected_thresholds": [0.5, 0.5, 0.6, 0.5, 0.5],
+    "reproduced_outer_selected_thresholds": [0.5, 0.5, 0.6, 0.5, 0.5],
+    "status": "PASS_EXACT_E3D_BEHAVIORAL_REPRODUCTION"
+  },
+  "schema": "st-guitar-stage7g-e3-e-untouched-result-v1",
+  "scientific_boundary": {
+    "checkpoint_retained": false,
+    "e3e_teacher_gold_consumed_untouched": true,
+    "e3e_used_for_threshold_selection": false,
+    "e3e_used_for_training": false,
+    "posthoc_retuning_performed": false,
+    "production_integration": false,
+    "promotion_authorized": false
+  },
+  "stage": "7G-E3-E-D",
+  "status": "POSITIVE_UNTOUCHED_SIGNAL_ELIGIBLE_FOR_PROMOTION_DESIGN",
+  "teacher_preferences": {
+    "COMPACT": 106,
+    "EQUAL_OR_UNSURE": 3,
+    "OPEN_LOW": 131
+  },
+  "untouched_metrics": {
+    "accuracy": 0.70042194092827,
+    "accuracy_delta_vs_always_open_low": 0.14767932489451474,
+    "always_open_low_accuracy": 0.5527426160337553,
+    "compact_false_negative": 67,
+    "compact_false_positive": 4,
+    "compact_precision": 0.9069767441860465,
+    "compact_recall": 0.36792452830188677,
+    "compact_switch_count": 43,
+    "compact_switch_rate": 0.18143459915611815,
+    "compact_true_positive": 39,
+    "events": 237,
+    "family_losses": 1,
+    "family_ties": 7,
+    "family_wins": 16,
+    "macro_family_accuracy": 0.7345328282828283,
+    "macro_family_accuracy_delta_vs_always_open_low": 0.2398989898989899,
+    "macro_family_always_open_low_accuracy": 0.4946338383838384
+  }
+}
