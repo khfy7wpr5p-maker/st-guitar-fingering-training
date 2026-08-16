@@ -1,0 +1,194 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1a-component-teacher-gold-reliability-protocol-v1",
+  "stage": "7G-E3-S1-A",
+  "status": "PREREGISTERED_NO_S1_RESPONSES",
+  "purpose": "Expand independent per-option guitaristic component supervision and measure blind intra-rater reliability before any component-model training or Guitaristic Arbiter design.",
+  "parent_evidence": {
+    "s0c_finding": "The single global A/B naturalness target failed the frozen repeat-reliability gate: 34/60 exact semantic agreement and Cohen kappa 0.1333.",
+    "s0da_finding": "Five repeated pairwise subquestions were perfectly collinear on 20/20 tasks and therefore did not create independent component supervision.",
+    "s0db_finding": "Independent per-option 1-5 scoring produced component separation on 13/20 tasks; OPEN_STRING_UTILITY was the most distinct component while position/string/finger remained strongly coupled.",
+    "architecture_consequence": "Do not train component specialists until the decomposed rubric itself demonstrates high repeat reliability on a larger sealed corpus."
+  },
+  "source_identity": {
+    "teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "validated_teacher_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "source_task_count": 400,
+    "source_family_count": 40,
+    "source_semantic_scope": "development-domain open_low-vs-compact disagreements only",
+    "historical_overall_teacher_preference_used_for_selection": false,
+    "stage7e": "FORBIDDEN",
+    "e3e_teacher_gold": "FORBIDDEN"
+  },
+  "exclusions_before_selection": {
+    "original_equal_or_unsure_rows": 1,
+    "s0c_repeat_tasks": 60,
+    "s0da_pairwise_rubric_tasks": 20,
+    "s0db_independent_scoring_pilot_tasks": 20,
+    "selection_must_reconstruct_exclusions_deterministically_from_frozen_prior_protocols": true,
+    "prior_answers_may_not_affect_selection": true
+  },
+  "first_pass_component_corpus": {
+    "task_count": 120,
+    "curriculum_quota": {
+      "L1": 30,
+      "L2": 30,
+      "L3": 30,
+      "L4": 30
+    },
+    "maximum_tasks_per_family": 4,
+    "minimum_distinct_families": 32,
+    "selection": "Target-blind deterministic SHA256 ranking within curriculum level after frozen exclusions. Fill levels in fixed round-robin order while respecting the family cap; no Teacher score or historical preference may influence selection.",
+    "selection_salt": "stage7g-e3-s1a-component-corpus-selection-v1",
+    "task_id_salt": "stage7g-e3-s1a-component-corpus-task-id-v1",
+    "reblind_salt": "stage7g-e3-s1a-component-corpus-reblind-v1",
+    "task_order_salt": "stage7g-e3-s1a-component-corpus-order-v1",
+    "family_cv_folds": {
+      "count": 5,
+      "assignment": "Sort distinct selected family IDs by SHA256(family_id|stage7g-e3-s1a-family-fold-v1), then assign round-robin to folds 0..4. All tasks from one family remain in one fold.",
+      "fold_salt": "stage7g-e3-s1a-family-fold-v1",
+      "teacher_visible": false,
+      "note": "These folds reserve family-isolated development evaluation structure only. They do not authorize training in S1-A."
+    }
+  },
+  "elicitation": {
+    "option_isolation": "Score A alone, lock its four component scores, then score B alone and lock its four component scores. Only after both options are scored may A and B be shown together for overall preference.",
+    "component_dimensions": [
+      "POSITION_COMFORT",
+      "STRING_DISTRIBUTION",
+      "FINGER_SPREAD",
+      "OPEN_STRING_UTILITY"
+    ],
+    "component_scale": [1, 2, 3, 4, 5],
+    "overall_preference": ["A", "B", "EQUAL_OR_UNSURE"],
+    "overall_is_not_a_component_training_target_in_s1a": true,
+    "historical_answers_teacher_visible": false,
+    "family_id_teacher_visible": false,
+    "curriculum_level_teacher_visible": false,
+    "specialist_identity_teacher_visible": false,
+    "fatigue_control": {
+      "sealed_sessions": 4,
+      "tasks_per_session": 30,
+      "session_assignment": "Deterministic from the sealed task order; no result-driven reassignment.",
+      "recommended_break_between_sessions": true
+    }
+  },
+  "scale_anchors": {
+    "POSITION_COMFORT": {
+      "1": "very awkward or practically unusable hand position",
+      "2": "awkward; substantial positional effort",
+      "3": "acceptable/neutral",
+      "4": "comfortable and natural",
+      "5": "very natural, relaxed, coherent position",
+      "rule_tr": "Perde numarasını tek başına ceza sayma. Yüksek pozisyon kendi içinde rahat ve düzenli olabilir."
+    },
+    "STRING_DISTRIBUTION": {
+      "1": "very unnatural string distribution or severe crossing/skipping burden",
+      "2": "awkward distribution",
+      "3": "acceptable/neutral",
+      "4": "natural and accessible distribution",
+      "5": "very natural, economical string distribution",
+      "rule_tr": "Garip tel atlaması, çaprazlama veya gereksiz tel değişimini dezavantaj say."
+    },
+    "FINGER_SPREAD": {
+      "1": "extreme or clearly uncomfortable spread/hand shape",
+      "2": "large or strained spread",
+      "3": "manageable/neutral",
+      "4": "relaxed spread",
+      "5": "very compact/easy hand shape",
+      "rule_tr": "Yalnız parmak açıklığı ve el şekline odaklan; pozisyon yüksekliğini tek başına ceza sayma."
+    },
+    "OPEN_STRING_UTILITY": {
+      "1": "open-string use is clearly harmful/awkward for this shape",
+      "2": "open-string contribution is somewhat disadvantageous",
+      "3": "neutral or no meaningful open-string advantage; use 3 when the option has no open strings",
+      "4": "useful open-string contribution",
+      "5": "clear ergonomic/resonance/economy advantage from open strings",
+      "rule_tr": "Açık tel otomatik olarak iyi değildir. Açık tel yoksa 3 = nötr kullan."
+    }
+  },
+  "blind_repeat_reliability": {
+    "repeat_task_count": 48,
+    "repeat_curriculum_quota": {
+      "L1": 12,
+      "L2": 12,
+      "L3": 12,
+      "L4": 12
+    },
+    "maximum_repeat_tasks_per_family": 2,
+    "repeat_selection": "Select from the sealed 120 first-pass tasks before any first-pass Teacher response is opened, using only task identity/curriculum/family metadata and deterministic SHA256 ranking.",
+    "repeat_selection_salt": "stage7g-e3-s1a-repeat-selection-v1",
+    "repeat_task_id_salt": "stage7g-e3-s1a-repeat-task-id-v1",
+    "repeat_reblind_salt": "stage7g-e3-s1a-repeat-reblind-v1",
+    "repeat_order_salt": "stage7g-e3-s1a-repeat-order-v1",
+    "minimum_delay_hours_after_first_pass_completion": 24,
+    "independent_A_B_reblinding": true,
+    "first_pass_scores_teacher_visible_during_repeat": false,
+    "repeat_labels_for_training": false,
+    "repeat_labels_for_tuning": false,
+    "repeat_labels_for_model_selection": false
+  },
+  "primary_component_reliability_gate": {
+    "unit": "paired option-level rating; 48 repeat tasks produce 96 paired ratings per component",
+    "required_for_every_component": {
+      "quadratic_weighted_cohen_kappa_gte": 0.90,
+      "exact_score_agreement_gte": 0.80,
+      "within_one_point_agreement_gte": 0.98,
+      "mean_absolute_score_difference_lte": 0.35
+    },
+    "variance_guard": {
+      "minimum_distinct_first_pass_scores_on_repeat_subset": 3,
+      "maximum_single_score_fraction": 0.85,
+      "undefined_kappa": "FAIL_REVIEW_RUBRIC_OR_SAMPLING"
+    },
+    "pass_status": "S1A_COMPONENT_RELIABILITY_GATE_PASS_ELIGIBLE_FOR_COMPONENT_TRAINING_PROTOCOL_DESIGN",
+    "fail_status": "S1A_COMPONENT_RELIABILITY_GATE_FAIL_REVIEW_RUBRIC_BEFORE_TRAINING",
+    "meaning": "Passing opens design of a separate component-model training protocol only. It does not train, retain, or activate any model."
+  },
+  "secondary_overall_preference_reliability_gate": {
+    "unit": "48 repeated task-level overall preferences",
+    "exact_semantic_repeat_agreement_gte": 0.90,
+    "three_way_cohen_kappa_gte": 0.80,
+    "repeat_equal_or_unsure_rate_lte": 0.10,
+    "pass_status": "S1A_OVERALL_REPEAT_SIGNAL_ADEQUATE_FOR_LATER_ARBITER_TARGET_DESIGN",
+    "fail_status": "S1A_OVERALL_REPEAT_SIGNAL_INADEQUATE_KEEP_ARBITER_TARGET_CLOSED",
+    "meaning": "This secondary gate does not control component-model eligibility. A failure keeps direct overall-preference/arbiter supervision closed even if component reliability passes."
+  },
+  "analysis_plan": {
+    "before_training_only": [
+      "per-component first-pass score distributions",
+      "per-component exact / within-one / mean-absolute-difference repeat metrics",
+      "per-component quadratic weighted Cohen kappa",
+      "repeat reliability by curriculum level",
+      "repeat reliability by family without changing thresholds",
+      "overall-preference exact repeat agreement and three-way Cohen kappa",
+      "within-option cross-component correlations",
+      "A-minus-B component deltas versus overall preference as descriptive evidence only"
+    ],
+    "no_posthoc_gate_changes": true,
+    "no_weight_fitting": true,
+    "no_threshold_tuning": true,
+    "no_specialist_training": true,
+    "no_arbiter_training": true,
+    "causal_claims": false
+  },
+  "training_quarantine": {
+    "first_pass_component_labels": "QUARANTINED_UNTIL_PRIMARY_COMPONENT_RELIABILITY_GATE_PASSES_AND_A_NEW_TRAINING_PROTOCOL_IS_MERGED",
+    "repeat_labels": "RELIABILITY_ONLY_PERMANENTLY_FORBIDDEN_AS_EXTRA_TRAINING_ROWS",
+    "overall_preference_labels": "DESCRIPTIVE_ONLY_IN_S1A; NO_DIRECT_ARBITER_TRAINING",
+    "s0db_pilot_labels": "ARCHITECTURE_DESIGN_ONLY; NOT AUTOMATICALLY ADDED TO_S1_TRAINING"
+  },
+  "forbidden": [
+    "model training in S1-A",
+    "component specialist training in S1-A",
+    "Guitaristic Arbiter training in S1-A",
+    "rubric weight fitting",
+    "threshold or hyperparameter tuning",
+    "changing task quotas or reliability thresholds after responses are observed",
+    "using historical overall Teacher preference to select S1-A tasks",
+    "using repeat responses as additional training examples",
+    "checkpoint retention or promotion",
+    "production or shadow integration",
+    "Stage 7E reuse",
+    "E3-E Teacher-GOLD reuse"
+  ]
+}
