@@ -1,0 +1,86 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0c-teacher-repeat-reliability-protocol-v1",
+  "stage": "7G-E3-S0-C",
+  "status": "PREREGISTERED_NO_REPEAT_RESULTS",
+  "purpose": "Measure blind intra-rater repeat reliability of the E3 Batch01 Teacher-GOLD preference labels before any specialist architecture activation.",
+  "inputs": {
+    "source_teacher_manifest": "exact sealed E3 Batch01 400-task blind teacher manifest",
+    "source_teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "source_validated_teacher_gold": "exact validated E3 Batch01 400/400 Teacher-GOLD export",
+    "source_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "eligible_rows": 399,
+    "excluded_equal_or_unsure_rows": 1,
+    "e3e_teacher_gold": "FORBIDDEN",
+    "stage7e": "FORBIDDEN"
+  },
+  "repeat_batch": {
+    "task_count": 60,
+    "teacher_preference_balance": {
+      "OPEN_LOW": 30,
+      "COMPACT": 30
+    },
+    "curriculum_and_preference_quotas": {
+      "L1": {"OPEN_LOW": 6, "COMPACT": 6},
+      "L2": {"OPEN_LOW": 9, "COMPACT": 9},
+      "L3": {"OPEN_LOW": 7, "COMPACT": 7},
+      "L4": {"OPEN_LOW": 8, "COMPACT": 8}
+    },
+    "family_cap": 2,
+    "selection": "deterministic SHA256 rank inside frozen level x original-preference strata; no result-driven sampling",
+    "selection_salt": "stage7g-e3-s0c-repeat-selection-v1",
+    "repeat_task_id_salt": "stage7g-e3-s0c-repeat-id-v1",
+    "reblind_salt": "stage7g-e3-s0c-repeat-reblind-v1",
+    "order_salt": "stage7g-e3-s0c-repeat-order-v1",
+    "minimum_delay_from_original_annotation_hours": 24
+  },
+  "blinding": {
+    "original_task_id_teacher_visible": false,
+    "family_id_teacher_visible": false,
+    "curriculum_level_teacher_visible": false,
+    "original_response_teacher_visible": false,
+    "original_teacher_preference_teacher_visible": false,
+    "specialist_identity_teacher_visible": false,
+    "original_A_B_side_preserved": false,
+    "A_B_reblinded_independently": true,
+    "task_order_reshuffled": true,
+    "old_answer_import_into_repeat_annotator": "FORBIDDEN"
+  },
+  "primary_metrics": [
+    "exact_semantic_repeat_agreement_all_60",
+    "OPEN_LOW_repeat_agreement_original_OPEN_LOW_30",
+    "COMPACT_repeat_agreement_original_COMPACT_30",
+    "three_way_cohen_kappa",
+    "repeat_equal_or_unsure_rate"
+  ],
+  "ultra_reliability_gate": {
+    "exact_semantic_repeat_agreement_gte": 0.95,
+    "OPEN_LOW_repeat_agreement_gte": 0.90,
+    "COMPACT_repeat_agreement_gte": 0.90,
+    "three_way_cohen_kappa_gte": 0.90,
+    "repeat_equal_or_unsure_rate_lte": 0.05,
+    "all_conditions_required": true
+  },
+  "interpretation": {
+    "gate_pass": "Teacher-GOLD repeat reliability is strong enough to support the next architecture-design decision; it does not itself activate specialists.",
+    "gate_fail": "Do not blame the model architecture alone. Refine the teacher decision rubric and repeat the reliability study under a new preregistered stage before specialist activation.",
+    "repeat_labels_training_use": "FORBIDDEN",
+    "repeat_labels_threshold_tuning_use": "FORBIDDEN",
+    "repeat_labels_model_selection_use": "FORBIDDEN",
+    "specialist_architecture_activation_from_s0c_alone": "FORBIDDEN"
+  },
+  "forbidden": [
+    "new model training",
+    "scheduler tuning",
+    "threshold search",
+    "hyperparameter search",
+    "new model features",
+    "specialist training",
+    "specialist architecture activation",
+    "checkpoint retention",
+    "production or shadow integration",
+    "E3-E Teacher-GOLD reuse",
+    "Stage7E reuse",
+    "changing repeat selection after seeing repeat answers",
+    "changing reliability gate after seeing repeat answers"
+  ]
+}
