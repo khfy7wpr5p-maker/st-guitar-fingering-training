@@ -1,0 +1,84 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0b-error-attribution-protocol-v1",
+  "stage": "7G-E3-S0-B",
+  "status": "PREREGISTERED_NO_RESULTS",
+  "purpose": "Explain S0 errors at event level without changing, selecting, or promoting a model.",
+  "inputs": {
+    "development_teacher_gold": "same exact 399 decisive E3 Batch01 rows used by R2/S0",
+    "families": 40,
+    "features": 40,
+    "source_oof": "same frozen S0 5-fold family-isolated final-epoch OOF model",
+    "e3e_teacher_gold": "FORBIDDEN",
+    "stage7e": "FORBIDDEN"
+  },
+  "descriptive_attribution": {
+    "threshold_source": "existing STAGE7G_E3_STRONG_CONTRAST_THRESHOLDS only",
+    "new_thresholds": false,
+    "axes": {
+      "OPEN_STRING_ECONOMY": [
+        "open_note_count",
+        "fretted_note_count"
+      ],
+      "POSITION": [
+        "mean_positive_fret"
+      ],
+      "STRETCH": [
+        "positive_fret_span"
+      ],
+      "STRING_TOPOLOGY": [
+        "string_span",
+        "internal_string_gaps"
+      ]
+    },
+    "primary_bucket": [
+      "NO_STRONG_AXIS",
+      "SINGLE_AXIS_<AXIS>",
+      "MULTI_AXIS"
+    ],
+    "causal_interpretation": "FORBIDDEN",
+    "teacher_specialist_labels_created": false
+  },
+  "required_event_fields": [
+    "event_id",
+    "family_id",
+    "curriculum_level",
+    "outer_fold",
+    "teacher_target",
+    "model_prediction",
+    "compact_probability",
+    "error_type",
+    "context",
+    "open_low_geometry",
+    "compact_geometry",
+    "compact_minus_open",
+    "attribution"
+  ],
+  "architecture_decision": {
+    "specialist_architecture_status": "TARGET_ARCHITECTURE_CANDIDATE_ONLY",
+    "specialist_activation_forbidden_in_s0b": true,
+    "architecture_change_from_s0b_result": "requires separate decision after audit"
+  },
+  "forbidden": [
+    "scheduler",
+    "threshold_search",
+    "hyperparameter_search",
+    "new_features",
+    "new_contrast_thresholds",
+    "specialist_training",
+    "specialist_architecture_activation",
+    "early_stopping",
+    "best_epoch_checkpoint_selection",
+    "E3-E Teacher-GOLD",
+    "Stage7E",
+    "checkpoint_retention",
+    "production_or_shadow_integration",
+    "causal attribution claims"
+  ],
+  "expected_outputs": {
+    "all_399_event_rows": true,
+    "fp_fn_rows_explicit": true,
+    "summary_by_curriculum_level": true,
+    "summary_by_descriptive_primary_bucket": true,
+    "model_checkpoint": false
+  }
+}
