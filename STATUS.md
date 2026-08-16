@@ -80,23 +80,22 @@
   - position/string/finger still strongly coupled
   - architecture design supported; specialist training and weight fitting not authorized
 
-## Current stage — 7G-E3-S1-A
+## S1 independent-component reliability
 
-**➡ CURRENT: larger independent-component Teacher-GOLD reliability contract.**
-
-S1-A freezes the next data-quality gate before any new component-model training.
-
-### First-pass corpus
-
-- 120 tasks total
-- L1/L2/L3/L4 = 30/30/30/30
-- maximum 4 tasks per family
-- minimum 32 distinct families
-- deterministic target-blind selection
-- historical Teacher preference forbidden from selection
-- original equal/unsure row + all S0-C/S0-D-A/S0-D-B exposed tasks excluded
-- frozen 5-fold family assignment for possible later development evaluation
-- four sealed 30-task sessions for fatigue control
+- Stage 7G-E3-S1-A — reliability contract: ✅ preregistered before collection
+- Stage 7G-E3-S1-B — exact batch generator / seal: ✅ completed
+  - first pass: 120 tasks, L1/L2/L3/L4 = 30/30/30/30
+  - 38 distinct families, maximum 4 tasks/family
+  - repeat: 48 tasks, 12 per level
+  - repeat subset selected before first-pass answers, 31 families, maximum 2/family
+- Stage 7G-E3-S1-C — first-pass component Teacher-GOLD: ✅ 120/120 responses completed
+  - component labels remain quarantined
+  - no training authorized
+- Stage 7G-E3-S1-D — **➡ CURRENT: sealed blind repeat reliability**
+  - minimum 24-hour delay after first-pass completion
+  - first-pass scores hidden
+  - repeat A/B independently reblinded and reordered
+  - repeat labels reliability-only
 
 ### Frozen component rubric
 
@@ -106,20 +105,6 @@ Every candidate is scored independently on:
 2. `STRING_DISTRIBUTION`
 3. `FINGER_SPREAD`
 4. `OPEN_STRING_UTILITY`
-
-A is scored and locked first; B is scored and locked second. Overall A/B/equal-or-unsure preference appears only after both independent option scores are locked.
-
-### Blind repeat subset
-
-- 48 tasks
-- 12 per L1/L2/L3/L4
-- maximum 2 repeat tasks per family
-- selected and sealed before first-pass answers are opened
-- minimum delay 24 hours after first-pass completion
-- independently reblinded A/B sides and reordered tasks
-- first-pass scores hidden
-- 96 paired option ratings per component
-- repeat labels permanently reliability-only
 
 ### Primary component reliability gate
 
@@ -136,7 +121,7 @@ Variance guard:
 - no single score >85% of ratings
 - undefined kappa = fail/review, never pass
 
-A pass opens only a **separate component-model training protocol design**. No model is trained or activated by S1-A.
+A pass opens only a **separate component-model training protocol design**. No model is trained or activated by S1-D.
 
 ### Secondary overall preference gate
 
@@ -146,30 +131,47 @@ Measured separately on 48 repeated task-level final choices:
 - three-way Cohen kappa >= 0.80
 - repeat equal/unsure rate <= 0.10
 
-If this fails while component reliability passes, component-model design may proceed but direct overall-preference / Guitaristic Arbiter target training remains closed.
+If this fails while component reliability passes, component-model design may proceed but direct overall-preference / Base Guitaristic Arbiter target training remains closed.
+
+## DCR-inspired future refinement
+
+A DCR-inspired **Hard Guitaristic Error Refinement** layer is now recorded as a future design candidate only.
+
+It is not active and may not be trained during S1. Its role, if later justified, would be to refine high-confidence wrong guitaristic decisions from a valid family-isolated base model while preserving the deterministic physical candidate boundary.
+
+Prerequisites:
+
+- S1 component reliability PASS;
+- separate component-model training protocol;
+- family-isolated component/base-arbiter predictions;
+- preregistered hard-error definition and confidence rule;
+- preregistered hard/ordinary sample mixture and refiner model;
+- base-vs-base+refiner comparison before any untouched promotion design.
+
+Stage 7E, E3-E, S0-C repeat labels, and S1 repeat labels remain forbidden as refiner training/tuning data.
+
+See `docs/DCR_HARD_GUITARISTIC_ERROR_REFINEMENT.md`.
 
 ## Immediate next controlled step
 
-After S1-A is accepted on `main`, prepare **S1-B** only:
+Complete **S1-D only**:
 
-- deterministic reconstruction of prior exclusions;
-- exact 120-task selection;
-- exact 48-repeat subset selection;
-- frozen family-fold assignment;
-- teacher-facing four-session annotator;
-- separate hidden audit;
-- SHA-256 batch seals;
-- stop before Teacher annotation for verification.
-
-No training belongs in S1-B.
+- wait for the frozen minimum-delay gate;
+- run the already sealed 48-task blind repeat;
+- validate response integrity;
+- calculate only the preregistered reliability metrics;
+- declare PASS/FAIL/REVIEW without changing thresholds;
+- stop before any component-model or refiner training.
 
 ## Training quarantine / closed gates
 
-- S1-A first-pass component labels: 🔒 quarantined until reliability PASS + separate merged training protocol
-- S1-A repeat labels: 🚫 reliability-only, permanently forbidden as additional training rows
-- S1-A overall preference labels: 🔒 descriptive only in S1-A
+- S1 first-pass component labels: 🔒 quarantined until reliability PASS + separate merged training protocol
+- S1 repeat labels: 🚫 reliability-only, permanently forbidden as additional training rows
+- S1 overall preference labels: 🔒 descriptive/reliability role only at this stage
 - New component specialist training: 🔒 closed
-- Guitaristic Arbiter training: 🔒 closed
+- Base Guitaristic Arbiter training: 🔒 closed
+- DCR-inspired refiner training: 🔒 closed
+- Hard-error threshold/sample-mixture selection: 🔒 closed
 - Rubric-weight fitting: 🔒 closed
 - Checkpoint retention/promotion: 🔒 closed
 - Production / GuitarTab Engine shadow integration: 🔒 closed
