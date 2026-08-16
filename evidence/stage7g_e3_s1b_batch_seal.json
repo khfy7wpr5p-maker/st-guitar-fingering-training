@@ -1,0 +1,70 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1b-batch-seal-v1",
+  "stage": "7G-E3-S1-B",
+  "status": "SEALED_BEFORE_FIRST_PASS_RESPONSES",
+  "generator_main_sha": "4dca6ae18c53023dddfec76a2a880e5868c2492a",
+  "source": {
+    "teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "validated_teacher_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "prior_exclusions": {
+      "s0c": 60,
+      "s0da": 20,
+      "s0db": 20,
+      "original_equal_or_unsure": 1,
+      "total_unique": 101
+    }
+  },
+  "first_pass": {
+    "task_count": 120,
+    "level_counts": {
+      "L1": 30,
+      "L2": 30,
+      "L3": 30,
+      "L4": 30
+    },
+    "distinct_families": 38,
+    "max_tasks_per_family": 4,
+    "session_counts": {
+      "1": 30,
+      "2": 30,
+      "3": 30,
+      "4": 30
+    },
+    "family_fold_counts": {
+      "0": 24,
+      "1": 28,
+      "2": 24,
+      "3": 19,
+      "4": 25
+    },
+    "manifest_sha256": "4a5dd305bd9110eec115cd901ba43a154c6724dca13f54ff634a41f07dd286a1",
+    "teacher_html_sha256": "04cd829b56a662f207a6e8f9c33f0c8f7159dbfcf7bb36d2772414d88627dcfb",
+    "selection_task_id_set_sha256": "41e74ce3d29afbbe6782a3abe83b6936ef59046df07d277b13f56c6499cf9036"
+  },
+  "repeat_preselection": {
+    "task_count": 48,
+    "level_counts": {
+      "L1": 12,
+      "L2": 12,
+      "L3": 12,
+      "L4": 12
+    },
+    "distinct_families": 31,
+    "max_tasks_per_family": 2,
+    "minimum_delay_hours": 24,
+    "manifest_sha256": "7a4fe1ef61df3a991984b00e35050cb0c5faff55b09bc6d8f7578157c70fae17",
+    "selection_task_id_set_sha256": "9f1b8ae5415d4896049d3e6c32f18c0812df45984019b0b1f81f406863f4fb34",
+    "selected_before_first_pass_answers": true,
+    "teacher_repeat_artifact_withheld_until_repeat_stage": true
+  },
+  "scientific_boundary": {
+    "model_training": false,
+    "specialist_training": false,
+    "arbiter_training": false,
+    "rubric_weight_fitting": false,
+    "threshold_or_hyperparameter_tuning": false,
+    "checkpoint_retention": false,
+    "production_or_shadow_integration": false,
+    "repeat_labels_for_training": false
+  }
+}
