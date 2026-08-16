@@ -22,42 +22,43 @@
 | 7G-E3-S0-C | Blind Teacher-GOLD repeat reliability | 🔴 frozen reliability gate failed: 34/60 exact agreement; κ=0.1333 |
 | 7G-E3-S0-D-A | Five-part pairwise rubric calibration | ✅ 20 tasks; all component A/B judgments collinear → not independent supervision |
 | 7G-E3-S0-D-B | Independent per-option 1–5 component scoring | ✅ separation in 13/20 tasks; architecture-design signal only |
-| 7G-E3-S1-A | Larger component Teacher-GOLD + repeat-reliability contract | **CURRENT — preregistered before collection; no training** |
-| 7G-E3-S1-B | Deterministic 120-task + 48-repeat batch generator / seal | next; not implemented |
-| 7G-E3-S1-C | First-pass independent component Teacher-GOLD collection | future; blocked on S1-B seal |
-| 7G-E3-S1-D | Blind decomposed-rubric repeat reliability | future; frozen gates defined by S1-A |
-| Future | Component-specific analyzers | 🔒 not trained/activated |
-| Future | Guitaristic Arbiter / Ranker | 🔒 design/training closed until component evidence is adequate |
+| 7G-E3-S1-A | Larger component Teacher-GOLD + repeat-reliability contract | ✅ preregistered; no training |
+| 7G-E3-S1-B | Deterministic 120-task + 48-repeat batch generator / seal | ✅ completed and sealed before first-pass answers |
+| 7G-E3-S1-C | First-pass independent component Teacher-GOLD collection | ✅ 120/120 responses completed; labels quarantined |
+| 7G-E3-S1-D | Blind decomposed-rubric repeat reliability | **CURRENT — sealed 48-task repeat; minimum-delay gate before execution** |
+| Future | Component-specific analyzers | 🔒 not trained/activated; blocked on S1-D reliability PASS + separate training protocol |
+| Future | Base Guitaristic Arbiter / Ranker | 🔒 design/training closed until reliable component evidence + model protocol |
+| Future | DCR-inspired Hard Guitaristic Error Refinement | 🔒 design candidate only; blocked until a valid family-isolated base model exists |
 | Future | Checkpoint retention | 🔒 closed |
 | 8 | Context/transition ranking + GuitarTab Engine shadow integration | 🔒 future; blocked until a valid checkpoint/promotion gate passes |
 
 ## Current position
 
-The project is now at **Stage 7G-E3-S1-A**. The architecture still keeps deterministic guitar physics as the authority, but the immediate research problem is no longer candidate validity or whether a global `open_low`↔`compact` model can learn anything. The current problem is whether guitarist preference can be decomposed into component labels that are repeatable enough to support high-quality specialist models.
+The project is now at **Stage 7G-E3-S1-D**. S1-A froze the reliability contract, S1-B generated and sealed the exact first-pass/repeat tasks, and S1-C collected all 120 first-pass responses. The immediate research question is now whether the independent component ratings are repeatable under the already sealed 48-task blind repeat.
 
-S1-A freezes that data-quality test before any new responses are collected.
+No component model, arbiter, DCR-inspired refiner, checkpoint, or production/shadow integration is authorized at this point.
 
-## S1-A frozen design
+## S1 frozen design
 
-The first-pass component corpus will contain **120 tasks** from the same 40-family E3 development domain:
+The first-pass component corpus contains **120 tasks**:
 
 - L1=30
 - L2=30
 - L3=30
 - L4=30
 - maximum 4 tasks per family
-- minimum 32 distinct families
+- at least 32 distinct families
+- deterministic target-blind selection
+- historical Teacher preference forbidden from selection
 
-The following are excluded before selection:
+The following were excluded before selection:
 
 - the original 1 equal/unsure row;
 - 60 S0-C repeat tasks;
 - 20 S0-D-A pairwise-rubric tasks;
 - 20 S0-D-B independent-scoring pilot tasks.
 
-Selection is deterministic and target-blind. Historical Teacher preference may not influence selection.
-
-Each task preserves the S0-D-B elicitation order:
+Each first-pass task preserves the S0-D-B elicitation order:
 
 1. score A alone;
 2. lock A's four 1–5 component ratings;
@@ -72,11 +73,9 @@ The frozen component dimensions are:
 - `FINGER_SPREAD`
 - `OPEN_STRING_UTILITY`
 
-The 120 tasks are split into four sealed 30-task sessions for fatigue control.
+## S1-D blind repeat design
 
-## S1-A blind repeat design
-
-Before first-pass answers are opened, **48 tasks** are frozen for later blind repeat:
+Before first-pass answers were opened, **48 tasks** were frozen for blind repeat:
 
 - L1=12
 - L2=12
@@ -112,22 +111,35 @@ The final A/B/equal-or-unsure decision is measured separately:
 - three-way Cohen kappa >= 0.80
 - repeat equal-or-unsure rate <= 0.10
 
-This gate does not control component-model eligibility. If component ratings are reliable but overall preference remains unstable, component training design may be opened while direct Guitaristic Arbiter target training stays closed.
+This gate does not control component-model eligibility. If component ratings are reliable but overall preference remains unstable, component training design may be opened while direct Base Guitaristic Arbiter target training stays closed.
+
+## DCR-inspired future refinement gate
+
+The DCR-inspired idea is recorded only as a future architecture candidate. It is **not part of S1-D**.
+
+A hard-error refinement experiment may be designed only after:
+
+1. S1 component reliability passes;
+2. a separate component-model training protocol is merged;
+3. component/base-arbiter models exist under family-isolated evaluation;
+4. high-confidence wrong decisions can be identified from family-isolated development predictions;
+5. hard-error definition, confidence threshold, training sample mixture, model family, and base-vs-refined comparison gate are preregistered.
+
+The refiner may only rerank candidates already accepted by the deterministic physical engine. Stage 7E, E3-E, S0-C repeat labels, and S1 repeat labels remain unavailable for refiner training/tuning.
+
+See `docs/DCR_HARD_GUITARISTIC_ERROR_REFINEMENT.md`.
 
 ## Immediate next step
 
-Proceed only to **Stage 7G-E3-S1-B** after S1-A is accepted on `main`:
+Proceed only with **Stage 7G-E3-S1-D**:
 
-1. reconstruct the frozen prior-task exclusions deterministically;
-2. select the exact 120 first-pass tasks without using Teacher answers;
-3. assign frozen five-fold family-isolated development folds;
-4. select the exact 48-task repeat subset before answers are opened;
-5. independently reblind A/B sides;
-6. generate the teacher-facing four-session interface and separate hidden internal audit;
-7. seal manifest/audit SHA-256 identities;
-8. stop before Teacher annotation and verify the seal.
-
-No model training belongs in S1-B.
+1. respect the frozen minimum 24-hour delay from first-pass completion;
+2. expose only the already sealed 48-task repeat package;
+3. keep first-pass answers hidden during repeat annotation;
+4. validate 48/48 response integrity;
+5. compute the preregistered component and overall reliability metrics exactly as frozen;
+6. declare PASS/FAIL/REVIEW without changing thresholds after seeing results;
+7. do not train a model in this stage.
 
 ## Key evidence state
 
@@ -167,10 +179,16 @@ No model training belongs in S1-B.
 - position/string/finger still strongly coupled
 - architecture-design signal only; no specialist training/weight fitting
 
+### S1 first pass
+
+- 120/120 responses completed
+- manifest identity remains the previously sealed S1 first-pass manifest
+- first-pass labels remain quarantined until S1-D reliability outcome and a separate training protocol
+
 ## Scientific rules that remain fixed
 
 - Deterministic guitar physics owns physical validity.
-- Learned components may operate only on already-valid candidates.
+- Learned components, arbiters, or refiners may operate only on already-valid candidates.
 - `open_low` remains the conservative fallback/default proposal until a later promotion gate changes that under new evidence.
 - Stage 7E is permanently consumed/evaluation-only.
 - E3-E Teacher-GOLD is permanently consumed/evaluation-only and may not be used for training, tuning, threshold/model selection, or a new validation claim.
@@ -178,9 +196,9 @@ No model training belongs in S1-B.
 - The 399 decisive E3 Batch01 labels are development data, not untouched validation.
 - S0-C repeat labels are reliability-only and forbidden from training/tuning/model selection.
 - S0-D-A/B remain design/calibration evidence; they do not automatically become a specialist training corpus.
-- S1-A first-pass component labels remain quarantined until the primary reliability gate passes and a separate training protocol is merged.
-- S1-A repeat labels are permanently reliability-only.
-- No component weights, specialist architecture, checkpoint, or production/shadow integration may be selected in S1-A.
+- S1 first-pass component labels remain quarantined until the primary reliability gate passes and a separate training protocol is merged.
+- S1 repeat labels are permanently reliability-only.
+- No component weights, specialist architecture, DCR threshold, refiner sample mixture, checkpoint, or production/shadow integration may be selected in S1-D.
 
 ## Development-control rule
 
