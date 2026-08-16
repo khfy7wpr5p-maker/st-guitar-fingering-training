@@ -1,5 +1,7 @@
 # Status
 
+## Foundation
+
 - Stage 0 — Safety + architecture baseline: ✅ implemented
 - Stage 1 — Dataset Contract v1: ✅ implemented
 - Stage 2 — Guitar Pro/MusicXML intake + normalizer: ✅ implemented
@@ -7,76 +9,107 @@
 - Stage 4 — Dataset Builder v1: ✅ implemented
 - Stage 5 — First bounded single-note placement training: ✅ executed; no retained production checkpoint
 - Stage 6 — Chord voicing specialist research: ✅ executed through stateless/context/rollout experiments
+
+## Specialist-routing research
+
 - Stage 7D-A — target-blind stateless specialist router: ✅ positive development evidence
 - Stage 7E — untouched final evaluation: ✅ relative router advantage passed; corpus permanently consumed/evaluation-only
 - Stage 7G-A → 7G-D — Teacher-GOLD contract, blind annotation, pairwise dataset: ✅ completed
-  - original pairwise Teacher-GOLD development corpus: **556 decisive / 40 families**, plus 6 equal/unsure
+  - original pairwise development corpus: 556 decisive / 40 families, plus 6 equal/unsure
   - first 38 richer full-candidate Teacher-GOLD choices remain a separate semantic label type
-- Stage 7G-E1 — first Teacher-GOLD router: ✅ executed, **negative development result**
-  - router agreement: **70.50%**
-  - `always_open_low`: **77.88%**
-  - event-weighted delta: **−7.37 pp**
-  - checkpoint retained: **no**
+- Stage 7G-E1 — first Teacher-GOLD router: ✅ negative development result
+  - 70.50% vs 77.88% `always_open_low`
+  - no checkpoint
 - Stage 7G-E2 — compact-preference diagnostic: ✅ completed
-  - compact true positives: **66**
-  - compact false positives: **107**
-  - net correct decisions vs `always_open_low`: **−41**
-  - diagnostic patterns are hypothesis generators only, not validated routing rules
-- Stage 7G-E3-A — Guitar Ergonomics Curriculum contract: ✅ merged
-  - frozen target-blind representation: **40 descriptors**
-  - L1→L4 curriculum assignment is target-blind
-  - blind Teacher-GOLD remains the only authority for guitaristic preference
-- Stage 7G-E3-B — target-blind curriculum generator: ✅ merged
-- Stage 7G-E3-B-R1 — first sealed curriculum batch: ✅ completed
-  - remaining unlabeled `open_low`↔`compact` disagreements after prior-task exclusion: **5,026**
-  - inventory: L1=788, L2=1,482, L3=1,202, L4=1,554
-  - sealed quota: L1=140, L2=120, L3=80, L4=60 = **400 tasks**
-  - all **40 development families** represented; overlap with previous 600 tasks = 0
-  - external package SHA-256: `e0ff5c2796ddc9950ddad5e27cc754629baf5cf5c582ad769f88a321ea8d87ef`
-- Stage 7G-E3-C — Teacher-GOLD Batch01 response seal: ✅ completed
-  - validation: **400/400**, exact task-set match, 0 duplicate/missing/invalid
-  - decoded preference: `open_low=311`, `compact=88`, `EQUAL_OR_UNSURE=1`
-  - decisive rows: **399**
-  - L1 compact rate: **6.43%**; L4 compact rate: **50.85%**
-  - source families overlap prior development families, therefore this is **development evidence, not untouched validation**
-- Stage 7G-E3-D — conservative compact-gate training protocol: ✅ merged and frozen
-  - default decision: `OPEN_LOW`
-  - fit corpus: only the new E3 Batch01 **399 decisive** Teacher-GOLD rows
-  - old E1/E2 556 decisive rows are excluded from the E3-D fit
-  - model: `StandardScaler` + `LogisticRegression(C=1, class_weight=None, lbfgs)`
-  - validation: 5-fold outer / 4-fold inner family-isolated nested development CV
-  - compact threshold candidates: `[0.50, 0.60, 0.70, 0.80, 0.90, 0.95]`, selected on inner OOF only
-  - if no threshold satisfies the frozen precision/baseline-safety gate: `NO_SWITCH → OPEN_LOW`
-- Stage 7G-E3-D-R1A — Colab execution harness: ✅ merged
-  - loader/preflight/nested-CV execution code merged at `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`
-- Stage 7G-E3-D-R1B — exact execution SHA pin: ✅ merged
-  - Colab notebook pins `PINNED_EXECUTION_SHA` to R1A merge SHA `dfe9c2b170eee1afce3a5b02ba8ec15c49c158e3`
-- Stage 7G-E3-D-R1 — manual Colab development execution: ✅ completed with **positive development signal**
-  - preflight: `PREFLIGHT_PASS_STOP_BEFORE_TRAIN`
-  - exact user-exported result SHA-256: `5626a1ea70a2bc285d3585ec2f155eb86040ece6507a03dd6a477dd073ec67d3`
-  - event accuracy: **86.22%** vs `always_open_low` **77.94%** → **+8.27 pp**
-  - macro-family accuracy: **86.18%** vs baseline **78.34%** → **+7.84 pp**
-  - compact precision / recall: **77.97% / 52.27%**
-  - compact TP / FP / FN: **46 / 13 / 42**
-  - family win / tie / loss: **22 / 13 / 5**
-  - outer selected thresholds: `[0.5, 0.5, 0.6, 0.5, 0.5]`
-  - frozen continuation status: `POSITIVE_DEVELOPMENT_SIGNAL_ELIGIBLE_FOR_E3E_DESIGN`
-  - scientific scope remains **development CV, not untouched validation**
-- Stage 7G-E3-E — new untouched family-disjoint Teacher-GOLD validation: 🟡 design opened
-  - current substage: **E3-E-A new-family intake audit**
-  - only genuinely new source families may enter
-  - zero overlap required with prior Teacher-GOLD development families and consumed Stage 7E material
-  - no E3-E Teacher-GOLD labels have been collected or observed
-  - validation quota/pass criteria must be frozen before E3-E answers are opened
-- Checkpoint retention: 🔒 closed
-- Production / GuitarTab Engine integration: 🔒 closed
+  - compact TP=66, FP=107
+  - patterns remain hypothesis generators only
+
+## E3 ergonomics research
+
+- Stage 7G-E3-A/B/C — curriculum + 40-descriptor contract + Batch01: ✅ completed
+  - 400/400 blind Teacher-GOLD responses
+  - 399 decisive; `open_low=311`, `compact=88`, equal/unsure=1
+- Stage 7G-E3-D-R1 — conservative `compact` gate development CV: ✅ positive development signal
+  - accuracy 86.22% vs `always_open_low` 77.94% → +8.27 pp
+  - macro-family delta +7.84 pp
+  - compact precision / recall 77.97% / 52.27%
+  - family win/tie/loss 22/13/5
+  - checkpoint retained: no
+- Stage 7G-E3-E — genuinely new family-disjoint untouched validation: ✅ completed and **consumed**
+  - 240 responses / 24 new families; 237 decisive, 3 equal/unsure
+  - accuracy 70.04% vs `always_open_low` 55.27% → +14.77 pp
+  - macro-family accuracy 73.45% vs 49.46% → +23.99 pp
+  - compact precision / recall 90.70% / 36.79%
+  - family win/tie/loss 16/7/1
+  - status: `POSITIVE_UNTOUCHED_SIGNAL_ELIGIBLE_FOR_PROMOTION_DESIGN`
+  - E3-E Teacher-GOLD is permanently forbidden for training/tuning/model/threshold selection
+  - checkpoint retained: no; promotion authorized: no
+
+## Quality/failure diagnostics after E3-E
+
+- Stage 7G-E3-R2 — visible-learning MLP: ✅ executed
+  - clear learning signal
+  - preregistered ultra-quality gate: 🔴 FAIL
+  - validation overfit became visible after the minimum-loss region
+  - no epoch/checkpoint selected post hoc
+- Stage 7G-E3-S0 — five-fold scientific failure diagnostic: ✅ completed
+  - recurrent overfit in 4/5 folds
+  - substantial family/fold sensitivity
+  - compact support thin
+  - representation/regime-specific errors remain
+  - learning curve did not meet the preregistered “still rising” criterion
+- Stage 7G-E3-S0-B — event-level descriptive error attribution: ✅ completed
+  - multi-axis bucket carried the majority of errors
+  - position and topology were the strongest single-axis error groups
+  - no causal specialist activation authorized
+
+## Teacher-label reliability and decomposition
+
+- Stage 7G-E3-S0-C — blind repeat reliability: 🔴 frozen reliability gate FAILED
+  - 60 repeated tasks, balanced 30 original `OPEN_LOW` / 30 original `COMPACT`
+  - exact semantic repeat agreement: 34/60 = 56.67%
+  - original `OPEN_LOW` repeat agreement: 14/30 = 46.67%
+  - original `COMPACT` repeat agreement: 20/30 = 66.67%
+  - Cohen kappa: 0.1333
+  - repeat labels are reliability-only and forbidden from training/tuning/model selection
+- Stage 7G-E3-S0-D-A — five-part pairwise rubric: ✅ completed
+  - 20 tasks
+  - position / string distribution / finger spread / open-string advantage / overall A/B choices were perfectly collinear on 20/20 tasks
+  - conclusion: repeated pairwise subquestions are not independent specialist supervision
+- Stage 7G-E3-S0-D-B — independent 1–5 per-option component scoring: ✅ completed
+  - 20 new tasks / 20 distinct families
+  - 160 component scores + 20 overall preferences
+  - 16/40 options had non-identical component scores
+  - 13/20 tasks showed component separation in at least one option
+  - `OPEN_STRING_UTILITY` was the most distinct component
+  - position/string/finger scores remained strongly coupled
+  - architecture design supported; specialist training and weight fitting not authorized
 
 ## Current interpretation
 
-The architecture has moved from a symmetric `open_low`/`compact` router toward a precision-first conservative compact gate. `open_low` remains the default because Teacher-GOLD evidence showed that unnecessary compact switches were the dominant E1 failure mode.
+The deterministic physical engine remains correct and authoritative. The research question has shifted from “can a global `open_low`↔`compact` gate learn preference?” to “how should guitarist preference be represented and supervised so that it is repeatable enough for high-quality component models?”
 
-Stage 7G-E3-D-R1 is the first frozen nested-CV test of the ergonomics-based conservative gate on the new 399-row Teacher-GOLD development batch. The preregistered continuation gate passed on every required condition: event and macro-family deltas were positive, pooled compact precision exceeded 0.5, compact TP exceeded FP, and family wins exceeded losses.
+E3-D and E3-E prove that useful preference signal exists, but the later ultra-quality and reliability work shows that the old single A/B naturalness target is not sufficient for promotion. S0-D-B provides the first evidence that independent per-option component scoring can separate at least part of the decision structure.
 
-This is meaningful development evidence but is not a promotion result. The same 40-family development domain influenced earlier E1/E2/E3 reasoning, so it cannot establish untouched transfer. No checkpoint has been retained and no production or shadow integration is authorized.
+## Current position
 
-The next controlled scientific step is Stage 7G-E3-E-A: acquire and audit genuinely new family-disjoint source material target-blindly, prove separation before annotation, then seal a validation batch and numeric pass/fail gate before any new Teacher-GOLD answers are opened.
+**➡ CURRENT: architecture-design / data-design gate before any new specialist training.**
+
+The next scientific step must be a new preregistered stage that expands independent component Teacher-GOLD collection on new family-isolated tasks and includes blind repeat-reliability measurement under the decomposed rubric.
+
+Only after that evidence is adequate may a separate protocol open:
+
+- component-specific model training;
+- learned or deterministic component aggregation;
+- a Guitaristic Arbiter / Ranker;
+- checkpoint retention.
+
+## Closed gates
+
+- New component specialist training: 🔒 closed
+- Rubric-weight fitting: 🔒 closed
+- Checkpoint retention/promotion: 🔒 closed
+- Production / GuitarTab Engine shadow integration: 🔒 closed
+- Stage 7E reuse: 🚫 forbidden
+- E3-E reuse for training/tuning/model selection: 🚫 forbidden
+- S0-C repeat-label training use: 🚫 forbidden

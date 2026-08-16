@@ -1,0 +1,58 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0c-repeat-reliability-result-v1",
+  "stage": "7G-E3-S0-C",
+  "status": "S0C_RELIABILITY_GATE_FAIL_REVIEW_ANNOTATION_RUBRIC",
+  "input": {
+    "response_filename": "ST_Guitar_S0C_repeat_choices_60of60.json",
+    "response_sha256": "0e8dd1b2febbff3fe9a667bbd5ec80fec285569a81006cbc37e495bbdf0d863f",
+    "repeat_manifest_sha256": "971b68a74db6d98d7e794f318a5cae67355aafd032304d34b1dec64ff988c14a",
+    "task_count": 60,
+    "original_preference_balance": {
+      "OPEN_LOW": 30,
+      "COMPACT": 30
+    }
+  },
+  "metrics": {
+    "exact_semantic_repeat_agreement": {"same": 34, "total": 60, "rate": 0.5666666666666667},
+    "original_OPEN_LOW_repeat_agreement": {"same": 14, "total": 30, "rate": 0.4666666666666667},
+    "original_COMPACT_repeat_agreement": {"same": 20, "total": 30, "rate": 0.6666666666666666},
+    "repeat_equal_or_unsure": {"count": 0, "total": 60, "rate": 0.0},
+    "three_way_cohen_kappa": 0.1333333333333333,
+    "semantic_confusion": {
+      "OPEN_LOW_to_OPEN_LOW": 14,
+      "OPEN_LOW_to_COMPACT": 16,
+      "OPEN_LOW_to_EQUAL_OR_UNSURE": 0,
+      "COMPACT_to_COMPACT": 20,
+      "COMPACT_to_OPEN_LOW": 10,
+      "COMPACT_to_EQUAL_OR_UNSURE": 0
+    },
+    "by_curriculum_level": {
+      "L1": {"same": 8, "total": 12, "rate": 0.6666666666666666},
+      "L2": {"same": 9, "total": 18, "rate": 0.5},
+      "L3": {"same": 9, "total": 14, "rate": 0.6428571428571429},
+      "L4": {"same": 8, "total": 16, "rate": 0.5}
+    }
+  },
+  "frozen_ultra_reliability_gate": {
+    "exact_semantic_repeat_agreement_gte": 0.95,
+    "OPEN_LOW_repeat_agreement_gte": 0.9,
+    "COMPACT_repeat_agreement_gte": 0.9,
+    "three_way_cohen_kappa_gte": 0.9,
+    "repeat_equal_or_unsure_rate_lte": 0.05,
+    "all_conditions_required": true,
+    "passed": false
+  },
+  "interpretation": {
+    "single_pairwise_naturalness_label_is_reliable_enough_for_specialist_activation": false,
+    "annotation_rubric_requires_decomposition": true,
+    "causal_claim_about_model_architecture": false
+  },
+  "scientific_boundary": {
+    "repeat_labels_training_use": false,
+    "repeat_labels_threshold_tuning_use": false,
+    "repeat_labels_model_selection_use": false,
+    "specialist_architecture_activation": false,
+    "checkpoint_retained": false,
+    "production_or_shadow_integration": false
+  }
+}
