@@ -1,0 +1,82 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0d-teacher-rubric-calibration-protocol-v1",
+  "stage": "7G-E3-S0-D-A",
+  "status": "PREREGISTERED_NO_CALIBRATION_RESULTS",
+  "purpose": "Replace the ambiguous single 'more natural' Teacher decision with separate guitaristic dimensions before any new model or specialist training.",
+  "source": {
+    "teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "validated_teacher_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "s0c_repeat_tasks_excluded": true,
+    "s0c_repeat_answers_used_for_selection": false,
+    "e3e_teacher_gold": "FORBIDDEN",
+    "stage7e": "FORBIDDEN"
+  },
+  "calibration_batch": {
+    "task_count": 20,
+    "curriculum_quota": {"L1": 5, "L2": 5, "L3": 5, "L4": 5},
+    "selection": "deterministic SHA256 rank within curriculum level after excluding the 60 S0-C repeat tasks and the one original equal-or-unsure row; independent of old preference and S0-C result",
+    "selection_salt": "stage7g-e3-s0d-rubric-calibration-selection-v1",
+    "task_order_salt": "stage7g-e3-s0d-rubric-calibration-order-v1",
+    "old_answer_teacher_visible": false,
+    "family_id_teacher_visible": false,
+    "curriculum_level_teacher_visible": false,
+    "specialist_identity_teacher_visible": false
+  },
+  "rubric": [
+    {
+      "id": "POSITION_COMFORT",
+      "question_tr": "Pozisyon rahatlığı: Hangi seçenek sol elin klavye üzerindeki konumunu daha doğal ve rahat yapıyor?",
+      "rule_tr": "Perde numarasını tek başına ceza olarak kullanma. Yüksek pozisyon kendi içinde düzenli ve rahat olabilir.",
+      "responses": ["A", "B", "EQUAL_OR_UNSURE"]
+    },
+    {
+      "id": "STRING_DISTRIBUTION",
+      "question_tr": "Tel dağılımı: Hangi seçenek notaları tellere daha doğal ve erişilebilir dağıtıyor?",
+      "rule_tr": "Garip tel atlaması, çaprazlama veya gereksiz tel değişimini dezavantaj say.",
+      "responses": ["A", "B", "EQUAL_OR_UNSURE"]
+    },
+    {
+      "id": "FINGER_SPREAD",
+      "question_tr": "Parmak açıklığı: Hangi seçenek daha az gereksiz açılma, gerilme veya el şekli bozulması gerektiriyor?",
+      "rule_tr": "Yalnız fiziksel parmak açıklığı ve el şekline odaklan; pozisyon yüksekliğini tek başına ceza sayma.",
+      "responses": ["A", "B", "EQUAL_OR_UNSURE"]
+    },
+    {
+      "id": "OPEN_STRING_ADVANTAGE",
+      "question_tr": "Açık tel avantajı: Hangi seçenek gitaristik olarak daha faydalı bir açık tel avantajına sahip?",
+      "rule_tr": "Açık tel otomatik olarak daha iyi değildir; yalnız gerçekten rahatlık, rezonans veya basış ekonomisi sağlıyorsa avantaj say.",
+      "responses": ["A", "B", "EQUAL_OR_UNSURE"]
+    },
+    {
+      "id": "OVERALL_PREFERENCE",
+      "question_tr": "Genel tercih: Tüm ölçütleri birlikte düşündüğünde gitar üzerinde hangisini tercih edersin?",
+      "rule_tr": "Bu son karar önceki dört cevabın basit çoğunluğu olmak zorunda değildir.",
+      "responses": ["A", "B", "EQUAL_OR_UNSURE"]
+    }
+  ],
+  "analysis_plan": {
+    "today": [
+      "dimension response counts",
+      "dimension-versus-overall agreement",
+      "conflict count where dimensions disagree with one another",
+      "cases where higher-position option wins POSITION_COMFORT or OVERALL_PREFERENCE",
+      "cases where OPEN_STRING_ADVANTAGE conflicts with OVERALL_PREFERENCE"
+    ],
+    "causal_claims": false,
+    "model_training": false,
+    "rubric_weights": "NOT_SELECTED",
+    "specialist_activation": false
+  },
+  "forbidden": [
+    "new model training",
+    "threshold tuning",
+    "hyperparameter tuning",
+    "rubric weight fitting",
+    "specialist training",
+    "specialist architecture activation",
+    "checkpoint retention",
+    "production or shadow integration",
+    "changing the five rubric questions after seeing the 20 calibration answers",
+    "using S0-C repeat answers to choose calibration tasks"
+  ]
+}
