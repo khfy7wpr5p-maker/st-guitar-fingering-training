@@ -42,74 +42,136 @@
   - compact precision / recall 90.70% / 36.79%
   - family win/tie/loss 16/7/1
   - status: `POSITIVE_UNTOUCHED_SIGNAL_ELIGIBLE_FOR_PROMOTION_DESIGN`
-  - E3-E Teacher-GOLD is permanently forbidden for training/tuning/model/threshold selection
+  - E3-E Teacher-GOLD permanently forbidden for training/tuning/model/threshold selection
   - checkpoint retained: no; promotion authorized: no
 
-## Quality/failure diagnostics after E3-E
+## Quality/failure diagnostics
 
 - Stage 7G-E3-R2 — visible-learning MLP: ✅ executed
   - clear learning signal
   - preregistered ultra-quality gate: 🔴 FAIL
-  - validation overfit became visible after the minimum-loss region
   - no epoch/checkpoint selected post hoc
 - Stage 7G-E3-S0 — five-fold scientific failure diagnostic: ✅ completed
   - recurrent overfit in 4/5 folds
   - substantial family/fold sensitivity
   - compact support thin
   - representation/regime-specific errors remain
-  - learning curve did not meet the preregistered “still rising” criterion
 - Stage 7G-E3-S0-B — event-level descriptive error attribution: ✅ completed
   - multi-axis bucket carried the majority of errors
-  - position and topology were the strongest single-axis error groups
+  - position and topology strongest single-axis error groups
   - no causal specialist activation authorized
 
 ## Teacher-label reliability and decomposition
 
 - Stage 7G-E3-S0-C — blind repeat reliability: 🔴 frozen reliability gate FAILED
-  - 60 repeated tasks, balanced 30 original `OPEN_LOW` / 30 original `COMPACT`
-  - exact semantic repeat agreement: 34/60 = 56.67%
-  - original `OPEN_LOW` repeat agreement: 14/30 = 46.67%
-  - original `COMPACT` repeat agreement: 20/30 = 66.67%
-  - Cohen kappa: 0.1333
-  - repeat labels are reliability-only and forbidden from training/tuning/model selection
+  - 60 repeated tasks
+  - exact semantic repeat agreement 34/60 = 56.67%
+  - Cohen kappa 0.1333
+  - repeat labels reliability-only and forbidden from training/tuning/model selection
 - Stage 7G-E3-S0-D-A — five-part pairwise rubric: ✅ completed
   - 20 tasks
-  - position / string distribution / finger spread / open-string advantage / overall A/B choices were perfectly collinear on 20/20 tasks
+  - all five A/B judgments perfectly collinear on 20/20 tasks
   - conclusion: repeated pairwise subquestions are not independent specialist supervision
 - Stage 7G-E3-S0-D-B — independent 1–5 per-option component scoring: ✅ completed
   - 20 new tasks / 20 distinct families
   - 160 component scores + 20 overall preferences
-  - 16/40 options had non-identical component scores
   - 13/20 tasks showed component separation in at least one option
-  - `OPEN_STRING_UTILITY` was the most distinct component
-  - position/string/finger scores remained strongly coupled
+  - `OPEN_STRING_UTILITY` most distinct
+  - position/string/finger still strongly coupled
   - architecture design supported; specialist training and weight fitting not authorized
 
-## Current interpretation
+## Current stage — 7G-E3-S1-A
 
-The deterministic physical engine remains correct and authoritative. The research question has shifted from “can a global `open_low`↔`compact` gate learn preference?” to “how should guitarist preference be represented and supervised so that it is repeatable enough for high-quality component models?”
+**➡ CURRENT: larger independent-component Teacher-GOLD reliability contract.**
 
-E3-D and E3-E prove that useful preference signal exists, but the later ultra-quality and reliability work shows that the old single A/B naturalness target is not sufficient for promotion. S0-D-B provides the first evidence that independent per-option component scoring can separate at least part of the decision structure.
+S1-A freezes the next data-quality gate before any new component-model training.
 
-## Current position
+### First-pass corpus
 
-**➡ CURRENT: architecture-design / data-design gate before any new specialist training.**
+- 120 tasks total
+- L1/L2/L3/L4 = 30/30/30/30
+- maximum 4 tasks per family
+- minimum 32 distinct families
+- deterministic target-blind selection
+- historical Teacher preference forbidden from selection
+- original equal/unsure row + all S0-C/S0-D-A/S0-D-B exposed tasks excluded
+- frozen 5-fold family assignment for possible later development evaluation
+- four sealed 30-task sessions for fatigue control
 
-The next scientific step must be a new preregistered stage that expands independent component Teacher-GOLD collection on new family-isolated tasks and includes blind repeat-reliability measurement under the decomposed rubric.
+### Frozen component rubric
 
-Only after that evidence is adequate may a separate protocol open:
+Every candidate is scored independently on:
 
-- component-specific model training;
-- learned or deterministic component aggregation;
-- a Guitaristic Arbiter / Ranker;
-- checkpoint retention.
+1. `POSITION_COMFORT`
+2. `STRING_DISTRIBUTION`
+3. `FINGER_SPREAD`
+4. `OPEN_STRING_UTILITY`
 
-## Closed gates
+A is scored and locked first; B is scored and locked second. Overall A/B/equal-or-unsure preference appears only after both independent option scores are locked.
 
+### Blind repeat subset
+
+- 48 tasks
+- 12 per L1/L2/L3/L4
+- maximum 2 repeat tasks per family
+- selected and sealed before first-pass answers are opened
+- minimum delay 24 hours after first-pass completion
+- independently reblinded A/B sides and reordered tasks
+- first-pass scores hidden
+- 96 paired option ratings per component
+- repeat labels permanently reliability-only
+
+### Primary component reliability gate
+
+Every one of the four components must satisfy:
+
+- quadratic-weighted Cohen kappa >= 0.90
+- exact score agreement >= 0.80
+- within ±1 point agreement >= 0.98
+- mean absolute score difference <= 0.35
+
+Variance guard:
+
+- at least 3 distinct first-pass scores on the repeat subset per component
+- no single score >85% of ratings
+- undefined kappa = fail/review, never pass
+
+A pass opens only a **separate component-model training protocol design**. No model is trained or activated by S1-A.
+
+### Secondary overall preference gate
+
+Measured separately on 48 repeated task-level final choices:
+
+- exact semantic repeat agreement >= 0.90
+- three-way Cohen kappa >= 0.80
+- repeat equal/unsure rate <= 0.10
+
+If this fails while component reliability passes, component-model design may proceed but direct overall-preference / Guitaristic Arbiter target training remains closed.
+
+## Immediate next controlled step
+
+After S1-A is accepted on `main`, prepare **S1-B** only:
+
+- deterministic reconstruction of prior exclusions;
+- exact 120-task selection;
+- exact 48-repeat subset selection;
+- frozen family-fold assignment;
+- teacher-facing four-session annotator;
+- separate hidden audit;
+- SHA-256 batch seals;
+- stop before Teacher annotation for verification.
+
+No training belongs in S1-B.
+
+## Training quarantine / closed gates
+
+- S1-A first-pass component labels: 🔒 quarantined until reliability PASS + separate merged training protocol
+- S1-A repeat labels: 🚫 reliability-only, permanently forbidden as additional training rows
+- S1-A overall preference labels: 🔒 descriptive only in S1-A
 - New component specialist training: 🔒 closed
+- Guitaristic Arbiter training: 🔒 closed
 - Rubric-weight fitting: 🔒 closed
 - Checkpoint retention/promotion: 🔒 closed
 - Production / GuitarTab Engine shadow integration: 🔒 closed
 - Stage 7E reuse: 🚫 forbidden
 - E3-E reuse for training/tuning/model selection: 🚫 forbidden
-- S0-C repeat-label training use: 🚫 forbidden
