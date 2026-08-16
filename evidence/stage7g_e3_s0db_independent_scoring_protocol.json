@@ -1,0 +1,110 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0db-independent-scoring-protocol-v1",
+  "stage": "7G-E3-S0-D-B",
+  "status": "PREREGISTERED_NO_S0DB_RESULTS",
+  "purpose": "Measure guitaristic component judgments independently for each candidate before any specialist training or rubric-weight fitting.",
+  "parent_stage": {
+    "s0da_result_sha256": "d05eab7e44d04a1e74a4d7dafac141c34f55da33ddd6edef4b2418b2425282b2",
+    "s0da_response_sha256": "0cfa954a96b894959bb0621246724309fd3e99633ee6bb3dc098ce2a45825b69",
+    "finding": "Five repeated pairwise A/B judgments were perfectly collinear on 20/20 tasks, so component supervision must be elicited independently per option."
+  },
+  "source": {
+    "teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "validated_teacher_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "s0c_repeat_tasks_excluded": 60,
+    "s0da_tasks_excluded": 20,
+    "original_equal_or_unsure_excluded": 1,
+    "s0c_answers_used_for_selection": false,
+    "s0da_answers_used_for_selection": false,
+    "old_teacher_preference_used_for_selection": false,
+    "e3e_teacher_gold": "FORBIDDEN",
+    "stage7e": "FORBIDDEN"
+  },
+  "batch": {
+    "task_count": 20,
+    "curriculum_quota": {"L1": 5, "L2": 5, "L3": 5, "L4": 5},
+    "family_cap": 1,
+    "selection": "deterministic SHA256 rank within level after exclusions, while enforcing family_cap=1; no result-driven sampling",
+    "selection_salt": "stage7g-e3-s0db-independent-score-selection-v1",
+    "reblind_salt": "stage7g-e3-s0db-independent-score-reblind-v1",
+    "task_id_salt": "stage7g-e3-s0db-independent-score-task-id-v1",
+    "task_order_salt": "stage7g-e3-s0db-independent-score-order-v1"
+  },
+  "elicitation": {
+    "option_isolation": "Score A alone, then score B alone; do not expose the other option during component scoring.",
+    "component_dimensions": ["POSITION_COMFORT", "STRING_DISTRIBUTION", "FINGER_SPREAD", "OPEN_STRING_UTILITY"],
+    "component_scale": [1, 2, 3, 4, 5],
+    "overall_preference": ["A", "B", "EQUAL_OR_UNSURE"],
+    "overall_shown_only_after_both_options_scored": true,
+    "old_answers_teacher_visible": false,
+    "family_id_teacher_visible": false,
+    "curriculum_level_teacher_visible": false,
+    "specialist_identity_teacher_visible": false
+  },
+  "scale_anchors": {
+    "POSITION_COMFORT": {
+      "1": "very awkward or practically unusable hand position",
+      "2": "awkward; substantial positional effort",
+      "3": "acceptable/neutral",
+      "4": "comfortable and natural",
+      "5": "very natural, relaxed, coherent position",
+      "rule_tr": "Perde numarasını tek başına ceza sayma. Yüksek pozisyon kendi içinde rahat ve düzenli olabilir."
+    },
+    "STRING_DISTRIBUTION": {
+      "1": "very unnatural string distribution or severe crossing/skipping burden",
+      "2": "awkward distribution",
+      "3": "acceptable/neutral",
+      "4": "natural and accessible distribution",
+      "5": "very natural, economical string distribution"
+    },
+    "FINGER_SPREAD": {
+      "1": "extreme or clearly uncomfortable spread/hand shape",
+      "2": "large or strained spread",
+      "3": "manageable/neutral",
+      "4": "relaxed spread",
+      "5": "very compact/easy hand shape"
+    },
+    "OPEN_STRING_UTILITY": {
+      "1": "open-string use is clearly harmful/awkward for this shape",
+      "2": "open-string contribution is somewhat disadvantageous",
+      "3": "neutral or no meaningful open-string advantage; use 3 when the option has no open strings",
+      "4": "useful open-string contribution",
+      "5": "clear ergonomic/resonance/economy advantage from open strings",
+      "rule_tr": "Açık tel otomatik olarak iyi değildir. Açık tel yoksa 3 = nötr kullan."
+    }
+  },
+  "analysis_plan": {
+    "primary": [
+      "per-dimension score distributions",
+      "within-option cross-dimension correlations",
+      "A-minus-B score differences by dimension",
+      "agreement between sign of each dimension difference and overall preference",
+      "task-level tradeoff count where dimensions favor different options",
+      "higher-position option score and overall-win descriptives",
+      "open-string utility score and overall-win descriptives"
+    ],
+    "secondary": ["descriptive comparison with historical Teacher-GOLD preference; not a reliability proof"],
+    "no_weight_fitting": true,
+    "no_specialist_training": true,
+    "causal_claims": false
+  },
+  "success_signal_for_architecture_design": {
+    "note": "Descriptive design signal only, not a promotion gate.",
+    "requires_component_separation": "At least some tasks must show non-identical component scores/tradeoffs rather than all dimensions moving together.",
+    "requires_interpretable_overall_relation": "Dimension differences should show interpretable association with overall preference without fitting weights."
+  },
+  "forbidden": [
+    "new model training",
+    "specialist training",
+    "specialist architecture activation",
+    "rubric weight fitting",
+    "threshold tuning",
+    "hyperparameter tuning",
+    "checkpoint retention",
+    "production or shadow integration",
+    "using S0-C repeat labels as training data",
+    "using E3-E Teacher-GOLD",
+    "using Stage7E",
+    "changing scale anchors after seeing S0-D-B answers"
+  ]
+}
