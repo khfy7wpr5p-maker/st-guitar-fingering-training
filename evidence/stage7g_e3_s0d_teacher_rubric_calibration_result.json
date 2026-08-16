@@ -1,0 +1,68 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0d-rubric-calibration-result-v1",
+  "stage": "7G-E3-S0-D-A",
+  "status": "CALIBRATION_COMPLETE_RUBRIC_NOT_SPECIALIST_READY",
+  "input": {
+    "response_filename": "ST_Guitar_S0D_Rubric_Calibration_20of20.json",
+    "response_sha256": "0cfa954a96b894959bb0621246724309fd3e99633ee6bb3dc098ce2a45825b69",
+    "manifest_sha256": "d9dddcf6735bde7d1bdad2bc8717aac1ab6de9f93d6770f2d5776b8229ffa3f1",
+    "task_count": 20,
+    "answer_count": 100,
+    "complete": true
+  },
+  "dimension_counts": {
+    "POSITION_COMFORT": {"A": 11, "B": 9},
+    "STRING_DISTRIBUTION": {"A": 11, "B": 9},
+    "FINGER_SPREAD": {"A": 11, "B": 9},
+    "OPEN_STRING_ADVANTAGE": {"A": 11, "B": 9},
+    "OVERALL_PREFERENCE": {"A": 11, "B": 9}
+  },
+  "dimension_vs_overall": {
+    "POSITION_COMFORT": {"agreement": 20, "total": 20, "rate": 1.0},
+    "STRING_DISTRIBUTION": {"agreement": 20, "total": 20, "rate": 1.0},
+    "FINGER_SPREAD": {"agreement": 20, "total": 20, "rate": 1.0},
+    "OPEN_STRING_ADVANTAGE": {"agreement": 20, "total": 20, "rate": 1.0}
+  },
+  "within_task_dimension_conflict": {"tasks_with_any_conflict": 0, "total": 20, "rate": 0.0},
+  "position_descriptive_proxy": {
+    "definition": "higher-position option = greater mean positive fret; descriptive only",
+    "eligible_tasks": 17,
+    "higher_position_wins_POSITION_COMFORT": 4,
+    "higher_position_wins_POSITION_COMFORT_rate": 0.23529411764705882,
+    "higher_position_wins_OVERALL_PREFERENCE": 4,
+    "higher_position_wins_OVERALL_PREFERENCE_rate": 0.23529411764705882
+  },
+  "open_string_descriptive_proxy": {
+    "definition": "more-open option = greater open-note count; descriptive only",
+    "eligible_tasks": 12,
+    "more_open_option_wins_OPEN_STRING_ADVANTAGE": 10,
+    "more_open_option_wins_OPEN_STRING_ADVANTAGE_rate": 0.8333333333333334,
+    "more_open_option_wins_OVERALL_PREFERENCE": 10,
+    "more_open_option_wins_OVERALL_PREFERENCE_rate": 0.8333333333333334,
+    "OPEN_STRING_ADVANTAGE_vs_OVERALL_conflicts": 0
+  },
+  "secondary_descriptive_original_preference_check": {
+    "note": "Not the preregistered primary purpose and not causal evidence.",
+    "same_semantic_overall_preference": 19,
+    "total": 20,
+    "rate": 0.95
+  },
+  "interpretation": {
+    "rubric_separates_dimensions_in_this_batch": false,
+    "reason": "All four component judgments exactly matched OVERALL_PREFERENCE on all 20 tasks; the labels are perfectly collinear in this calibration batch.",
+    "higher_position_is_not_automatically_rejected": true,
+    "general_preference_descriptively_more_stable_than_s0c": true,
+    "causal_claim_about_rubric_improving_reliability": false,
+    "specialist_training_authorized": false,
+    "next_design_requirement": "Use independently scored component judgments rather than five repeated pairwise A/B choices before specialist supervision."
+  },
+  "scientific_boundary": {
+    "model_training": false,
+    "threshold_tuning": false,
+    "rubric_weight_fitting": false,
+    "specialist_training": false,
+    "specialist_activation": false,
+    "checkpoint_retained": false,
+    "production_or_shadow_integration": false
+  }
+}
