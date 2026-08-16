@@ -1,0 +1,58 @@
+{
+  "schema": "st-guitar-stage7g-e3-s0db-batch-seal-v1",
+  "stage": "7G-E3-S0-D-B",
+  "status": "SEALED_PENDING_TEACHER_RESPONSES",
+  "protocol_path": "evidence/stage7g_e3_s0db_independent_scoring_protocol.json",
+  "source": {
+    "teacher_manifest_sha256": "433bd01d1d8abee7e92ace335733570fb624bf17d70904c42bf9669b45fe9af2",
+    "validated_teacher_choices_sha256": "db0e752ec7b9e0e1b333a217d904175f4e57cd89a32b2511330ebab7b8c6c12e",
+    "eligible_after_exclusions": 319,
+    "excluded_s0c_tasks": 60,
+    "excluded_s0da_tasks": 20,
+    "excluded_original_equal_or_unsure": 1
+  },
+  "selection": {
+    "task_count": 20,
+    "level_counts": {"L1": 5, "L2": 5, "L3": 5, "L4": 5},
+    "distinct_families": 20,
+    "family_cap": 1,
+    "algorithm": "Sort eligible rows independently within L1,L2,L3,L4 by SHA256(task_id|selection_salt). Iterate levels in fixed round-robin order L1,L2,L3,L4, taking the next candidate whose family has not yet been selected, until each level has five tasks.",
+    "selection_salt": "stage7g-e3-s0db-independent-score-selection-v1",
+    "reblind_salt": "stage7g-e3-s0db-independent-score-reblind-v1",
+    "task_id_salt": "stage7g-e3-s0db-independent-score-task-id-v1",
+    "task_order_salt": "stage7g-e3-s0db-independent-score-order-v1"
+  },
+  "teacher_manifest": {
+    "schema": "st-guitar-stage7g-e3-s0db-independent-score-manifest-v1",
+    "sha256": "7a038f3d009b4771f0d94b29a188dda4c03fb34a4c3ca5cbd3d5d4c20a5412ae",
+    "annotation_blinded": true,
+    "historical_teacher_preference_visible": false,
+    "family_id_visible": false,
+    "curriculum_level_visible": false
+  },
+  "teacher_interface": {
+    "path": "s0db-calibration/index.html",
+    "local_html_sha256": "d2046c36bbffe1f40ee82f7ecf272339a24bb54ce399012be6cd7912f429b638",
+    "flow": "A alone: four 1-5 component scores; B alone: four 1-5 component scores; then A/B/EQUAL overall preference",
+    "component_scores_per_task": 8,
+    "overall_preferences_per_task": 1,
+    "total_component_scores": 160,
+    "total_overall_preferences": 20
+  },
+  "internal_audit": {
+    "teacher_facing": false,
+    "sha256": "2a0588eace0d1b29b4dce700494a860d7714d344f2f510bf2d44b55c1da3551e",
+    "committed_to_git": false
+  },
+  "scientific_boundary": {
+    "teacher_responses_seen_at_seal_time": false,
+    "model_training": false,
+    "specialist_training": false,
+    "rubric_weight_fitting": false,
+    "threshold_or_hyperparameter_tuning": false,
+    "checkpoint_retention": false,
+    "production_or_shadow_integration": false,
+    "e3e_used": false,
+    "stage7e_used": false
+  }
+}
