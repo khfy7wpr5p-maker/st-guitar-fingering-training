@@ -37,7 +37,7 @@
     "full_source_alignment_public_before_repeat": false,
     "repeat_manifest_public_before_repeat": false,
     "sealed_bundle_committed_publicly": false,
-    "sealed_bundle_storage": "PRIVATE_SESSION_ARTIFACT_HASH_COMMITTED_IN_GIT; CONTENT WITHHELD TO PRESERVE_BLINDING"
+    "sealed_bundle_storage": "PRIVATE_SESSION_ARTIFACT_HASH_COMMITTED_IN_GIT; CONTENT WITHHELD TO PRESERVE BLINDING"
   },
   "frozen_at": "2026-08-17T21:07:00+03:00",
   "frozen_values": {
