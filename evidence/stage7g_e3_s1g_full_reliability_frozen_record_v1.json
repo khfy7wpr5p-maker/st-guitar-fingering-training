@@ -1,0 +1,65 @@
+{
+  "artifacts": {
+    "first_manifest": {
+      "bytes": 53806,
+      "filename": "first_manifest.json",
+      "sha256": "6670353c83ff9f7ec943a78c65d5cc62a68eeab2643be0041911d833a6a97a05"
+    },
+    "generation_audit": {
+      "bytes": 10853,
+      "filename": "generation_audit.json",
+      "sha256": "a9e4dae922188e424afa456d967ccf79a5b5de2bea7638ae0e087b979503ce09"
+    },
+    "protocol": {
+      "bytes": 6038,
+      "filename": "protocol.json",
+      "sha256": "21a06bf5f0bca59535cf092d672c4a33e307a303667797aacc5fde0c40305ffd"
+    },
+    "repeat_manifest": {
+      "bytes": 53815,
+      "filename": "repeat_manifest.json",
+      "sha256": "7b8ef0acc7fa678ad9bba57bce1f4ae17a17096f6fffd424b81c0c17c33f3eca"
+    },
+    "sealed_bundle": {
+      "bytes": 101025,
+      "filename": "sealed_bundle.json",
+      "sha256": "d4b45270bcbaf348e5e3869869f836258e4f0728d0fd3f8795a1e8c258c46128"
+    },
+    "source_manifest": {
+      "bytes": 58015,
+      "filename": "source_manifest.json",
+      "sha256": "ccd6bce7e386be4a7cc12c279891edeeb1decac83fb14e967bba15f4f6b2a73f"
+    }
+  },
+  "base_main_sha": "d19de194c36675c43ec9ae07793edac2968fe0a3",
+  "confidentiality": {
+    "decryption_key_public": false,
+    "full_source_alignment_public_before_repeat": false,
+    "repeat_manifest_public_before_repeat": false,
+    "sealed_bundle_committed_publicly": false,
+    "sealed_bundle_storage": "PRIVATE_SESSION_ARTIFACT_HASH_COMMITTED_IN_GIT; CONTENT WITHHELD TO PRESERVE_BLINDING"
+  },
+  "frozen_at": "2026-08-17T21:07:00+03:00",
+  "frozen_values": {
+    "families": 40,
+    "family_max_tasks": 1,
+    "invalid": "<24 or >168",
+    "open_tasks": 20,
+    "pass_exact": "36/40",
+    "pass_first_no_gte": 5,
+    "pass_first_yes_gte": 5,
+    "pass_kappa_gte": 0.8,
+    "pass_repeat_unsure_lte": "4/40",
+    "preferred_repeat_window_hours": "24-72",
+    "repeat_reversals": "20/40",
+    "review_window_hours": ">72-168",
+    "string_tasks": 20,
+    "tasks": 40,
+    "tetrads_per_focus": 10,
+    "triads_per_focus": 10
+  },
+  "immutability_rule": "This v1 Git record commits the protocol and SHA-256 hashes of the already-generated hidden source/first/repeat artifacts. Any later change requires v2; no v1 frozen value or committed hash may be overwritten.",
+  "schema": "st-guitar-stage7g-e3-s1g-frozen-record-v1",
+  "stage": "7G-E3-S1-G",
+  "status": "FROZEN_IMMUTABLE_COMMITMENT_BEFORE_S1E_PILOT_REPEAT_RESULT"
+}
