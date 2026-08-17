@@ -1,0 +1,101 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1f-component-training-prep-protocol-v1",
+  "stage": "7G-E3-S1-F",
+  "status": "PREREGISTERED_PREPARATION_ONLY_NO_S1_LABELS",
+  "purpose": "Prepare the deterministic feature contract, family-safe split, fixed baseline fit/evaluation harness, and fail-closed authorization boundary before any component-model training is allowed.",
+  "component_specialists": [
+    "STRING_SKIP_PENALTY",
+    "OPEN_STRING_HAND_RELIEF",
+    "OPEN_STRING_CONTROL_PENALTY"
+  ],
+  "feature_contract": {
+    "source": "existing frozen Stage 7G-E3 target-blind proposal geometry plus chord/candidate context",
+    "feature_names": [
+      "chord_size",
+      "pitch_span",
+      "mean_pitch",
+      "candidate_count",
+      "open_note_count",
+      "fretted_note_count",
+      "min_positive_fret",
+      "mean_positive_fret",
+      "max_fret",
+      "positive_fret_span",
+      "unique_positive_frets",
+      "max_same_positive_fret_count",
+      "string_span",
+      "adjacent_string_ratio",
+      "internal_string_gaps"
+    ],
+    "feature_count": 15,
+    "feature_name_sha256": "7f0eac9a840db29544ffd97caedb5b9cbe7ab3bd5b68a764f7c8f0366fdf18bc",
+    "teacher_label_used_to_build_features": false,
+    "geometry_used_as_target": false,
+    "physical_candidate_boundary": "valid_chord_voicings_authoritative"
+  },
+  "label_contract": {
+    "future_allowed_source": "FULL_RELIABILITY_FIRST_PASS only after separate merged training protocol",
+    "binary": {
+      "NO": 0,
+      "YES": 1
+    },
+    "UNSURE": "excluded_from_fit_not_coerced",
+    "pilot_labels_for_training": false,
+    "repeat_labels_for_training": false,
+    "repeat_labels_for_tuning": false,
+    "repeat_labels_for_model_selection": false
+  },
+  "split_contract": {
+    "method": "deterministic_family_level_5_fold",
+    "folds": 5,
+    "family_overlap_train_validation": false,
+    "selection_uses_teacher_labels": false,
+    "salt": "stage7g-e3-s1f-family-fold-v1"
+  },
+  "fixed_baseline_model": {
+    "pipeline": [
+      "StandardScaler",
+      "LogisticRegression"
+    ],
+    "max_iter": 2000,
+    "class_weight": "balanced",
+    "solver": "lbfgs",
+    "random_state": 0,
+    "positive_class": "YES",
+    "decision_threshold": 0.5,
+    "threshold_tuning_on_validation": false,
+    "checkpoint_serialization": false
+  },
+  "evaluation": {
+    "metrics": [
+      "accuracy",
+      "balanced_accuracy",
+      "precision_yes",
+      "recall_yes",
+      "f1_yes",
+      "confusion_counts"
+    ],
+    "majority_baseline": true,
+    "promotion_gate_defined": false,
+    "model_selection_gate_defined": false
+  },
+  "training_authorization_required": {
+    "schema": "st-guitar-stage7g-e3-s1f-training-authorization-v1",
+    "full_reliability_status": "PASS",
+    "training_protocol_status": "MERGED",
+    "repeat_labels_used": false,
+    "pilot_labels_used": false,
+    "threshold_tuned_on_validation": false,
+    "checkpoint_retention_authorized": false,
+    "production_or_shadow_integration": false
+  },
+  "current_scientific_boundary": {
+    "actual_s1e_first_pass_labels_read": false,
+    "actual_s1d_labels_read": false,
+    "model_fit_on_project_labels": false,
+    "checkpoint_retained": false,
+    "training_execution_authorized": false,
+    "full_reliability_test_still_required": true,
+    "merge_requires_explicit_user_approval": true
+  }
+}
