@@ -67,11 +67,21 @@
   "metric_unit": "40 aligned option ratings per micro-question (20 tasks x 2 options)",
   "physical_contract": {
     "authoritative_generator": "valid_chord_voicings()",
-    "chord_sizes": [3,4],
+    "chord_sizes": [
+      3,
+      4
+    ],
     "generator_main_sha": "d19de194c36675c43ec9ae07793edac2968fe0a3",
     "selected_option_max_fret_lte": 12,
     "strings": "1->6",
-    "tuning_midi": [64,59,55,50,45,40]
+    "tuning_midi": [
+      64,
+      59,
+      55,
+      50,
+      45,
+      40
+    ]
   },
   "purpose": "Independently test whether the three S1-E micro-labels are sufficiently repeatable before any project-label model fit is authorized.",
   "questions": {
@@ -86,15 +96,30 @@
   "task_distribution": {
     "OPEN_STRING_UTILITY": {
       "both_options_require_open_string": true,
-      "option_category_totals": {"exactly_1_open":21,"ge2_open":19},
-      "pair_categories": {"1_vs_1_open":7,"1_vs_ge2_open":7,"ge2_vs_ge2_open":6},
+      "option_category_totals": {
+        "exactly_1_open": 21,
+        "ge2_open": 19
+      },
+      "pair_categories": {
+        "1_vs_1_open": 7,
+        "1_vs_ge2_open": 7,
+        "ge2_vs_ge2_open": 6
+      },
       "tasks": 20,
       "tetrads": 10,
       "triads": 10
     },
     "STRING_DISTRIBUTION": {
-      "option_category_totals": {"0_internal_gaps":14,"1_internal_gap":13,"ge2_internal_gaps":13},
-      "pair_categories": {"0_vs_1_internal_gaps":7,"0_vs_ge2_internal_gaps":7,"1_vs_ge2_internal_gaps":6},
+      "option_category_totals": {
+        "0_internal_gaps": 14,
+        "1_internal_gap": 13,
+        "ge2_internal_gaps": 13
+      },
+      "pair_categories": {
+        "0_vs_1_internal_gaps": 7,
+        "0_vs_ge2_internal_gaps": 7,
+        "1_vs_ge2_internal_gaps": 6
+      },
       "selected_option_open_count": 0,
       "tasks": 20,
       "tetrads": 10,
@@ -107,8 +132,14 @@
     "invalid_after_hours": 168,
     "lt24": "FAIL_INVALID",
     "minimum_repeat_delay_hours": 24,
-    "preferred_repeat_window_hours": [24,72],
-    "review_window_hours": [72,168]
+    "preferred_repeat_window_hours": [
+      24,
+      72
+    ],
+    "review_window_hours": [
+      72,
+      168
+    ]
   },
   "training_boundary": {
     "checkpoint_retention_authorized": false,
@@ -118,7 +149,10 @@
     "s1e_pilot_first_pass_training": false,
     "s1e_pilot_repeat_training": false,
     "s1f_fit_remains_hard_closed": true,
-    "training_eligibility_requires": ["FULL_RELIABILITY_GLOBAL_PASS","SEPARATE_TRAINING_PROTOCOL_REVIEWED_AND_MERGED"]
+    "training_eligibility_requires": [
+      "FULL_RELIABILITY_GLOBAL_PASS",
+      "SEPARATE_TRAINING_PROTOCOL_REVIEWED_AND_MERGED"
+    ]
   },
   "ui_instruction": "Yalnız gösterilen mevcut şekli değerlendir. Notaları başka tele/perdeye taşıma ve alternatif voicing düşünme.",
   "version": "v1"
