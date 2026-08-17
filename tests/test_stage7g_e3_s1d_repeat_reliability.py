@@ -1,8 +1,7 @@
 from __future__ import annotations
 
+import unittest
 from unittest.mock import patch
-
-import pytest
 
 import st_guitar_fingering_training.stage7g_e3_s1d_repeat_reliability as s1d
 from st_guitar_fingering_training.stage7g_e3_s1b_batch_generator import (
@@ -65,10 +64,8 @@ def _fixture() -> tuple[dict, dict, dict, dict, dict, dict, str, str]:
 
     first_audit_rows = []
     first_export_rows = []
-    first_orientations: dict[int, dict[str, str]] = {}
     for i in range(120):
         orientation = _orientation(i, repeat=False)
-        first_orientations[i] = orientation
         level = f"L{(i % 4) + 1}"
         family = f"family_{i % 31:02d}"
         first_audit_rows.append({
@@ -166,80 +163,85 @@ def _score_fixture(fixture: tuple[dict, dict, dict, dict, dict, dict, str, str])
         )
 
 
-def test_quadratic_weighted_kappa_identical_diverse_scores_is_one() -> None:
-    scores = [1, 2, 3, 4, 5] * 4
-    assert s1d.quadratic_weighted_cohen_kappa(scores, scores) == pytest.approx(1.0)
+class S1DRepeatReliabilityTests(unittest.TestCase):
+    def test_quadratic_weighted_kappa_identical_diverse_scores_is_one(self) -> None:
+        scores = [1, 2, 3, 4, 5] * 4
+        self.assertAlmostEqual(s1d.quadratic_weighted_cohen_kappa(scores, scores), 1.0)
+
+    def test_quadratic_weighted_kappa_degenerate_distribution_is_undefined(self) -> None:
+        self.assertIsNone(s1d.quadratic_weighted_cohen_kappa([3] * 12, [3] * 12))
+
+    def test_score_s1d_aligns_independently_reblinded_options_and_passes(self) -> None:
+        result = _score_fixture(_fixture())
+
+        self.assertTrue(result["delay_gate"]["pass"])
+        self.assertAlmostEqual(result["delay_gate"]["actual_hours"], 25.0)
+        self.assertTrue(result["primary_component_reliability"]["all_four_components_pass"])
+        for component in COMPONENTS:
+            metrics = result["primary_component_reliability"]["metrics"][component]
+            self.assertEqual(metrics["paired_option_ratings"], 96)
+            self.assertAlmostEqual(metrics["exact_score_agreement"], 1.0)
+            self.assertAlmostEqual(metrics["within_one_point_agreement"], 1.0)
+            self.assertAlmostEqual(metrics["mean_absolute_score_difference"], 0.0)
+            self.assertAlmostEqual(metrics["quadratic_weighted_cohen_kappa"], 1.0)
+            self.assertEqual(metrics["distinct_first_pass_scores"], 5)
+        self.assertTrue(result["secondary_overall_preference_reliability"]["pass"])
+        self.assertAlmostEqual(
+            result["secondary_overall_preference_reliability"]["metrics"]["exact_semantic_repeat_agreement"],
+            1.0,
+        )
+        self.assertAlmostEqual(
+            result["secondary_overall_preference_reliability"]["metrics"]["three_way_cohen_kappa"],
+            1.0,
+        )
+        self.assertEqual(
+            {level: data["tasks"] for level, data in result["by_curriculum_level"].items()},
+            {"L1": 12, "L2": 12, "L3": 12, "L4": 12},
+        )
+
+    def test_score_s1d_rejects_repeat_started_before_24_hour_gate(self) -> None:
+        fixture = list(_fixture())
+        fixture[1] = dict(fixture[1])
+        fixture[1]["started_at"] = "2026-08-17T11:00:00+00:00"
+        fixture[1]["completed_at"] = "2026-08-17T12:00:00+00:00"
+
+        first_payload, repeat_payload, first_manifest, repeat_manifest, first_audit, repeat_audit, first_sha, repeat_sha = tuple(fixture)
+        with (
+            patch.object(s1d, "EXPECTED_S1_FIRST_MANIFEST_SHA256", first_sha),
+            patch.object(s1d, "EXPECTED_S1_REPEAT_MANIFEST_SHA256", repeat_sha),
+        ):
+            with self.assertRaisesRegex(ValueError, "minimum delay gate not satisfied"):
+                s1d.score_s1d_repeat_reliability(
+                    first_payload,
+                    repeat_payload,
+                    first_manifest,
+                    repeat_manifest,
+                    first_audit,
+                    repeat_audit,
+                )
+
+    def test_score_s1d_rejects_manifest_tampering(self) -> None:
+        fixture = list(_fixture())
+        first_manifest = dict(fixture[2])
+        first_manifest["tasks"] = list(first_manifest["tasks"])
+        first_manifest["tasks"][0] = {"task_id": "tampered"}
+        fixture[2] = first_manifest
+
+        first_payload, repeat_payload, first_manifest, repeat_manifest, first_audit, repeat_audit, first_sha, repeat_sha = tuple(fixture)
+        with (
+            patch.object(s1d, "EXPECTED_S1_FIRST_MANIFEST_SHA256", first_sha),
+            patch.object(s1d, "EXPECTED_S1_REPEAT_MANIFEST_SHA256", repeat_sha),
+        ):
+            with self.assertRaisesRegex(ValueError, "canonical SHA mismatch"):
+                s1d.score_s1d_repeat_reliability(
+                    first_payload,
+                    repeat_payload,
+                    first_manifest,
+                    repeat_manifest,
+                    first_audit,
+                    repeat_audit,
+                )
 
 
-def test_quadratic_weighted_kappa_degenerate_distribution_is_undefined() -> None:
-    assert s1d.quadratic_weighted_cohen_kappa([3] * 12, [3] * 12) is None
-
-
-def test_score_s1d_aligns_independently_reblinded_options_and_passes() -> None:
-    result = _score_fixture(_fixture())
-
-    assert result["delay_gate"]["pass"] is True
-    assert result["delay_gate"]["actual_hours"] == pytest.approx(25.0)
-    assert result["primary_component_reliability"]["all_four_components_pass"] is True
-    for component in COMPONENTS:
-        metrics = result["primary_component_reliability"]["metrics"][component]
-        assert metrics["paired_option_ratings"] == 96
-        assert metrics["exact_score_agreement"] == pytest.approx(1.0)
-        assert metrics["within_one_point_agreement"] == pytest.approx(1.0)
-        assert metrics["mean_absolute_score_difference"] == pytest.approx(0.0)
-        assert metrics["quadratic_weighted_cohen_kappa"] == pytest.approx(1.0)
-        assert metrics["distinct_first_pass_scores"] == 5
-    assert result["secondary_overall_preference_reliability"]["pass"] is True
-    assert result["secondary_overall_preference_reliability"]["metrics"]["exact_semantic_repeat_agreement"] == pytest.approx(1.0)
-    assert result["secondary_overall_preference_reliability"]["metrics"]["three_way_cohen_kappa"] == pytest.approx(1.0)
-    assert {level: data["tasks"] for level, data in result["by_curriculum_level"].items()} == {
-        "L1": 12,
-        "L2": 12,
-        "L3": 12,
-        "L4": 12,
-    }
-
-
-def test_score_s1d_rejects_repeat_started_before_24_hour_gate() -> None:
-    fixture = list(_fixture())
-    fixture[1] = dict(fixture[1])
-    fixture[1]["started_at"] = "2026-08-17T11:00:00+00:00"
-    fixture[1]["completed_at"] = "2026-08-17T12:00:00+00:00"
-
-    first_payload, repeat_payload, first_manifest, repeat_manifest, first_audit, repeat_audit, first_sha, repeat_sha = tuple(fixture)
-    with (
-        patch.object(s1d, "EXPECTED_S1_FIRST_MANIFEST_SHA256", first_sha),
-        patch.object(s1d, "EXPECTED_S1_REPEAT_MANIFEST_SHA256", repeat_sha),
-    ):
-        with pytest.raises(ValueError, match="minimum delay gate not satisfied"):
-            s1d.score_s1d_repeat_reliability(
-                first_payload,
-                repeat_payload,
-                first_manifest,
-                repeat_manifest,
-                first_audit,
-                repeat_audit,
-            )
-
-
-def test_score_s1d_rejects_manifest_tampering() -> None:
-    fixture = list(_fixture())
-    first_manifest = dict(fixture[2])
-    first_manifest["tasks"] = list(first_manifest["tasks"])
-    first_manifest["tasks"][0] = {"task_id": "tampered"}
-    fixture[2] = first_manifest
-
-    first_payload, repeat_payload, first_manifest, repeat_manifest, first_audit, repeat_audit, first_sha, repeat_sha = tuple(fixture)
-    with (
-        patch.object(s1d, "EXPECTED_S1_FIRST_MANIFEST_SHA256", first_sha),
-        patch.object(s1d, "EXPECTED_S1_REPEAT_MANIFEST_SHA256", repeat_sha),
-    ):
-        with pytest.raises(ValueError, match="canonical SHA mismatch"):
-            s1d.score_s1d_repeat_reliability(
-                first_payload,
-                repeat_payload,
-                first_manifest,
-                repeat_manifest,
-                first_audit,
-                repeat_audit,
-            )
+if __name__ == "__main__":
+    unittest.main()
