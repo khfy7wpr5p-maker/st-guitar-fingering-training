@@ -4,7 +4,7 @@
 
 Preparation only. No S1-D or S1-E project labels are read or fitted in this stage.
 
-The purpose of S1-F is to remove idle time while reliability work continues. It prepares a fixed, target-blind training/evaluation harness for three future micro-specialists:
+S1-F prepares a fixed, target-blind training/evaluation contract for three future micro-specialists:
 
 - `STRING_SKIP_PENALTY`
 - `OPEN_STRING_HAND_RELIEF`
@@ -14,20 +14,22 @@ The purpose of S1-F is to remove idle time while reliability work continues. It 
 
 S1-F does **not** authorize training execution.
 
-Model fitting on project labels stays closed until all of the following are true:
+The executable `fit_component_specialist()` path is hard-closed in this preparation PR. No caller-supplied dictionary, including one claiming `PASS` and `MERGED`, can open it.
+
+A later, separate training-protocol PR may replace that hard-close only after:
 
 1. a new independent full component-reliability test has status `PASS`;
-2. a separate component-training protocol is reviewed and merged;
-3. pilot labels are excluded from training;
-4. repeat labels are excluded from training, tuning, and model selection;
-5. validation threshold is not tuned on the same validation labels;
-6. checkpoint retention and production/shadow integration remain separately closed.
+2. the exact eligible first-pass corpus is defined;
+3. pilot labels remain excluded from training;
+4. repeat labels remain excluded from training, tuning, and model selection;
+5. validation/model-retention gates are preregistered;
+6. that separate training protocol is reviewed and merged.
 
-The preparation API therefore requires a fail-closed `st-guitar-stage7g-e3-s1f-training-authorization-v1` object before its in-memory baseline `fit()` path can execute.
+Checkpoint retention and production/shadow integration remain separately closed.
 
 ## Feature contract
 
-S1-F reuses the already-frozen target-blind Stage 7G-E3 proposal geometry rather than creating a second guitar-geometry definition.
+S1-F reuses the already-frozen target-blind Stage 7G-E3 proposal geometry.
 
 The 15 frozen input features are:
 
@@ -51,25 +53,27 @@ Teacher answers are never used to construct these features. Geometry is descript
 
 Every voicing entering the feature builder must belong to the authoritative deterministic `valid_chord_voicings()` candidate set. The two open-string specialists additionally fail closed if the candidate contains no open string.
 
-## Label contract
+## Label and provenance contract
 
-Future supervised rows may be constructed only from a separately authorized `FULL_RELIABILITY_FIRST_PASS` source.
+Future supervised rows may be constructed only when provenance is **exactly**:
+
+`FULL_RELIABILITY_FIRST_PASS`
+
+Prefix, suffix, substring, pilot, repeat, and manually named alternatives are rejected.
 
 - `YES -> 1`
 - `NO -> 0`
 - `UNSURE -> excluded from fit`
 
-The code rejects provenance containing `PILOT` or `REPEAT`.
+Provenance is validated **before** `UNSURE` can be excluded, so an `UNSURE` row from a forbidden source is rejected rather than silently discarded.
 
 ## Family-safe validation
 
-The harness uses deterministic five-fold assignment at the `family_id` level. A family may never appear in both the training and validation partition for the same fold.
-
-The split does not use Teacher labels.
+The harness uses deterministic five-fold assignment at the `family_id` level. A family may never appear in both the training and validation partition for the same fold. The split does not use Teacher labels.
 
 ## Fixed baseline
 
-The prepared baseline is intentionally simple and fixed:
+The preparation stage may construct, but not fit, this frozen baseline:
 
 ```text
 StandardScaler
@@ -82,12 +86,10 @@ StandardScaler
 → probability threshold 0.5
 ```
 
-The threshold is not searched or tuned in S1-F.
-
-Evaluation reports accuracy, balanced accuracy, YES precision/recall/F1, TN/FP/FN/TP, and constant/majority baseline comparison.
+The threshold is not searched or tuned in S1-F. Evaluation helpers report accuracy, balanced accuracy, YES precision/recall/F1, TN/FP/FN/TP, and constant/majority baseline comparison.
 
 No promotion threshold is defined in this preparation stage.
 
 ## What happens after reliability
 
-If the future full reliability test passes, a separate training-protocol PR must define the exact eligible first-pass corpus, minimum sample/family counts, final cross-validation policy, model-retention gate, and comparison criteria. Only after that protocol is merged may real component training execution be authorized.
+If the future full reliability test passes, a separate training-protocol PR must define the exact eligible first-pass corpus, minimum sample/family counts, final cross-validation policy, model-retention gate, and comparison criteria. Only that later merged change may open real component training execution.
