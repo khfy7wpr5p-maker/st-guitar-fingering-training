@@ -1,0 +1,125 @@
+{
+  "answers": {
+    "NO": "Hayır",
+    "UNSURE": "Emin değilim",
+    "YES": "Evet"
+  },
+  "blinding": {
+    "first_pass": "opaque task IDs + deterministic target-blind A/B reblind + deterministic task order",
+    "first_pass_answers_withheld_during_repeat": true,
+    "repeat": "new opaque task IDs + private preregistered nonce + independent order + exactly 20/40 A/B reversals relative to first",
+    "repeat_nonce_public": false,
+    "repeat_nonce_sha256": "26c6f111f453a3b79bb633d760f9e3906a578ae3a033bcc5be6eb27c84faf31d",
+    "semantic_alignment_uses_source_option_identity": true
+  },
+  "change_policy": "Any change to task count, task distribution, questions, thresholds, timing, family rule, physical bounds, or blinding method after this freeze invalidates v1 and requires a new preregistration version. V1 is never edited in place.",
+  "decision": {
+    "FAIL_per_question": {
+      "cohen_kappa_lt": 0.7,
+      "exact_agreement_lte": 0.85,
+      "exact_agreement_max_count": 34,
+      "integrity_failure": true,
+      "repeat_unsure_min_count": 10,
+      "repeat_unsure_rate_gte": 0.25
+    },
+    "PASS_per_question": {
+      "cohen_kappa_gte": 0.8,
+      "exact_agreement_gte": 0.9,
+      "exact_agreement_min_count": 36,
+      "first_pass_min_no": 5,
+      "first_pass_min_yes": 5,
+      "repeat_unsure_max_count": 4,
+      "repeat_unsure_rate_lte": 0.1
+    },
+    "REVIEW_per_question": {
+      "cohen_kappa": "0.70 <= kappa < 0.80",
+      "exact_agreement_count": 35,
+      "repeat_unsure_count": "5-9/40",
+      "variance": "first-pass YES <5 or NO <5, unless a hard FAIL criterion applies"
+    },
+    "global_fail": "Any micro-question FAIL",
+    "global_pass": "ALL three micro-questions PASS + manifest integrity 100% + physical validation 100% + repeat start 24-72h after first-pass completion",
+    "global_review": "No micro-question FAIL and at least one REVIEW"
+  },
+  "frozen_at": "2026-08-17T21:07:00+03:00",
+  "frozen_public_salt_labels": {
+    "first_order": "stage7g-e3-s1g-fullrel-v1-first-order",
+    "first_reblind": "stage7g-e3-s1g-fullrel-v1-first-reblind",
+    "first_task_id": "stage7g-e3-s1g-fullrel-v1-first-task-id",
+    "repeat_order_label": "stage7g-e3-s1g-fullrel-v1-repeat-order",
+    "repeat_reblind_label": "stage7g-e3-s1g-fullrel-v1-repeat-reblind",
+    "repeat_task_id_label": "stage7g-e3-s1g-fullrel-v1-repeat-task-id",
+    "source_task_id": "stage7g-e3-s1g-fullrel-v1-source-task-id"
+  },
+  "generator_main_sha": "d19de194c36675c43ec9ae07793edac2968fe0a3",
+  "independence": {
+    "actual_distinct_families": 40,
+    "family_definition": "chord_size + lowest-note-relative interval pattern",
+    "max_tasks_per_family": 1,
+    "minimum_distinct_families": 32,
+    "pilot_repeat_result_used_for_selection": false,
+    "prior_source_task_identifiers_reused": false,
+    "s1e_pilot_v2_exact_task_reuse": false,
+    "s1e_pilot_v2_interval_family_overlap": false,
+    "source_origin": "NEW_SYNTHETIC_PREREGISTRATION_GENERATOR_V1",
+    "teacher_answers_used_for_selection": false
+  },
+  "metric_unit": "40 aligned option ratings per micro-question (20 tasks x 2 options)",
+  "physical_contract": {
+    "authoritative_generator": "valid_chord_voicings()",
+    "chord_sizes": [3,4],
+    "generator_main_sha": "d19de194c36675c43ec9ae07793edac2968fe0a3",
+    "selected_option_max_fret_lte": 12,
+    "strings": "1->6",
+    "tuning_midi": [64,59,55,50,45,40]
+  },
+  "purpose": "Independently test whether the three S1-E micro-labels are sufficiently repeatable before any project-label model fit is authorized.",
+  "questions": {
+    "OPEN_STRING_CONTROL_PENALTY": "Bu seçenekte kullanılan açık tel(ler), mevcut şekli temiz ve kontrollü çalmayı belirgin biçimde zorlaştırıyor mu?",
+    "OPEN_STRING_HAND_RELIEF": "Bu seçenekte kullanılan açık tel(ler), mevcut şeklin sol el işini belirgin biçimde kolaylaştırıyor mu?",
+    "STRING_SKIP_PENALTY": "Bu mevcut tel dağılımı, gereksiz tel atlaması yüzünden çalmayı belirgin biçimde zorlaştırıyor mu?"
+  },
+  "schema": "st-guitar-stage7g-e3-s1g-full-reliability-preregistration-v1",
+  "stage": "7G-E3-S1-G",
+  "status": "FROZEN_BEFORE_S1E_PILOT_REPEAT_RESULT",
+  "task_count": 40,
+  "task_distribution": {
+    "OPEN_STRING_UTILITY": {
+      "both_options_require_open_string": true,
+      "option_category_totals": {"exactly_1_open":21,"ge2_open":19},
+      "pair_categories": {"1_vs_1_open":7,"1_vs_ge2_open":7,"ge2_vs_ge2_open":6},
+      "tasks": 20,
+      "tetrads": 10,
+      "triads": 10
+    },
+    "STRING_DISTRIBUTION": {
+      "option_category_totals": {"0_internal_gaps":14,"1_internal_gap":13,"ge2_internal_gaps":13},
+      "pair_categories": {"0_vs_1_internal_gaps":7,"0_vs_ge2_internal_gaps":7,"1_vs_ge2_internal_gaps":6},
+      "selected_option_open_count": 0,
+      "tasks": 20,
+      "tetrads": 10,
+      "triads": 10
+    }
+  },
+  "timing": {
+    "gt168": "FAIL_NEW_BATCH",
+    "gt72_lte168": "REVIEW",
+    "invalid_after_hours": 168,
+    "lt24": "FAIL_INVALID",
+    "minimum_repeat_delay_hours": 24,
+    "preferred_repeat_window_hours": [24,72],
+    "review_window_hours": [72,168]
+  },
+  "training_boundary": {
+    "checkpoint_retention_authorized": false,
+    "full_reliability_first_pass_initial_status": "QUARANTINED",
+    "full_reliability_repeat_training": false,
+    "production_or_shadow_integration_authorized": false,
+    "s1e_pilot_first_pass_training": false,
+    "s1e_pilot_repeat_training": false,
+    "s1f_fit_remains_hard_closed": true,
+    "training_eligibility_requires": ["FULL_RELIABILITY_GLOBAL_PASS","SEPARATE_TRAINING_PROTOCOL_REVIEWED_AND_MERGED"]
+  },
+  "ui_instruction": "Yalnız gösterilen mevcut şekli değerlendir. Notaları başka tele/perdeye taşıma ve alternatif voicing düşünme.",
+  "version": "v1"
+}
