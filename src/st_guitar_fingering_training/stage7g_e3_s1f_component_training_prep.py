@@ -199,8 +199,11 @@ def _validate_rows(rows: tuple[Stage7GE3S1FTrainingRow, ...]) -> str:
         raise ValueError("S1-F rows contain non-finite features")
     if any(row.label not in (0, 1) for row in rows):
         raise ValueError("S1-F binary labels must be 0/1")
-    if any("REPEAT" in row.provenance.upper() or "PILOT" in row.provenance.upper() for row in rows):
+    provenance = tuple(row.provenance.upper() for row in rows)
+    if any("REPEAT" in value or "PILOT" in value for value in provenance):
         raise ValueError("S1-F rows contain forbidden repeat/pilot provenance")
+    if any("FIRST_PASS" not in value or "FULL_RELIABILITY" not in value for value in provenance):
+        raise ValueError("S1-F rows must all have FULL_RELIABILITY_FIRST_PASS provenance")
     return next(iter(specialists))
 
 
