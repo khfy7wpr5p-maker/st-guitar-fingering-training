@@ -2,7 +2,7 @@
   "schema": "st-guitar-stage7g-e3-s1f-component-training-prep-protocol-v1",
   "stage": "7G-E3-S1-F",
   "status": "PREREGISTERED_PREPARATION_ONLY_NO_S1_LABELS",
-  "purpose": "Prepare the deterministic feature contract, family-safe split, fixed baseline fit/evaluation harness, and fail-closed authorization boundary before any component-model training is allowed.",
+  "purpose": "Prepare deterministic features, family-safe splitting, fixed baseline construction/evaluation helpers, and a hard-closed training boundary before any component-model training is allowed.",
   "component_specialists": [
     "STRING_SKIP_PENALTY",
     "OPEN_STRING_HAND_RELIEF",
@@ -34,16 +34,17 @@
     "physical_candidate_boundary": "valid_chord_voicings_authoritative"
   },
   "label_contract": {
-    "future_allowed_source": "FULL_RELIABILITY_FIRST_PASS only after separate merged training protocol",
+    "future_allowed_source": "exactly FULL_RELIABILITY_FIRST_PASS only after separate merged training protocol",
     "binary": {
       "NO": 0,
       "YES": 1
     },
-    "UNSURE": "excluded_from_fit_not_coerced",
+    "UNSURE": "excluded_only_after_exact_provenance_validation",
     "pilot_labels_for_training": false,
     "repeat_labels_for_training": false,
     "repeat_labels_for_tuning": false,
-    "repeat_labels_for_model_selection": false
+    "repeat_labels_for_model_selection": false,
+    "substring_or_prefixed_provenance_allowed": false
   },
   "split_contract": {
     "method": "deterministic_family_level_5_fold",
@@ -64,7 +65,8 @@
     "positive_class": "YES",
     "decision_threshold": 0.5,
     "threshold_tuning_on_validation": false,
-    "checkpoint_serialization": false
+    "checkpoint_serialization": false,
+    "construction_without_fit_allowed": true
   },
   "evaluation": {
     "metrics": [
@@ -79,15 +81,12 @@
     "promotion_gate_defined": false,
     "model_selection_gate_defined": false
   },
-  "training_authorization_required": {
-    "schema": "st-guitar-stage7g-e3-s1f-training-authorization-v1",
-    "full_reliability_status": "PASS",
-    "training_protocol_status": "MERGED",
-    "repeat_labels_used": false,
-    "pilot_labels_used": false,
-    "threshold_tuned_on_validation": false,
-    "checkpoint_retention_authorized": false,
-    "production_or_shadow_integration": false
+  "current_executable_training_gate": {
+    "mode": "HARD_CLOSED",
+    "caller_supplied_authorization_mapping_can_open": false,
+    "claimed_pass_or_merged_fields_can_open": false,
+    "future_opening_requires_code_change_in_separate_merged_training_protocol": true,
+    "future_full_reliability_pass_required": true
   },
   "current_scientific_boundary": {
     "actual_s1e_first_pass_labels_read": false,
