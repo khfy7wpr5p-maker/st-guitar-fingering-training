@@ -1,0 +1,120 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1g-full-reliability-preregistration-v2-string-only",
+  "stage": "7G-E3-S1-G",
+  "version": "v2",
+  "status": "FROZEN_AFTER_S1E_V2_PILOT_RESULT_BEFORE_FULL_RELIABILITY_FIRST_PASS",
+  "base_main_sha": "ac146e9a5c6519a03e3650fe00b236c13fe90a7b",
+  "frozen_at": "2026-08-18T21:51:00+03:00",
+  "supersedes_for_execution": "S1-G v1",
+  "v1_disposition": "ARCHIVED_IMMUTABLE_NOT_EXECUTED",
+  "revision_reason": {
+    "pilot_result": "S1-E v2: STRING_SKIP_PENALTY PASS 16/16 exact, kappa 1.0; both open-string residual questions hard FAIL",
+    "architecture_decision": "Retire OPEN_STRING_HAND_RELIEF and OPEN_STRING_CONTROL_PENALTY as context-free Teacher labels. Keep open-string geometry as deterministic factual features only.",
+    "same_pilot_tasks_reused": false
+  },
+  "human_label_contract": {
+    "active_micro_question": "STRING_SKIP_PENALTY",
+    "question_text": "Bu mevcut tel dağılımı, gereksiz tel atlaması yüzünden çalmayı belirgin biçimde zorlaştırıyor mu?",
+    "responses": [
+      "YES",
+      "NO",
+      "UNSURE"
+    ],
+    "retired_human_labels": [
+      "OPEN_STRING_HAND_RELIEF",
+      "OPEN_STRING_CONTROL_PENALTY"
+    ]
+  },
+  "deterministic_open_string_contract": {
+    "open_note_count": "deterministic feature",
+    "fretted_note_count": "deterministic feature",
+    "open_string_hand_relief_teacher_label": false,
+    "open_string_control_penalty_teacher_label": false,
+    "future_contextual_tone_or_control": "out_of_scope_until_musical_context_is_available"
+  },
+  "batch": {
+    "tasks": 20,
+    "aligned_option_ratings": 40,
+    "triads": 10,
+    "tetrads": 10,
+    "distinct_interval_families": 20,
+    "max_tasks_per_family": 1,
+    "pilot_v2_interval_family_overlap": 0,
+    "pair_categories": {
+      "0_vs_1_internal_gaps": 7,
+      "0_vs_ge2_internal_gaps": 7,
+      "1_vs_ge2_internal_gaps": 6
+    },
+    "tuning_midi": [
+      64,
+      59,
+      55,
+      50,
+      45,
+      40
+    ],
+    "all_selected_options_open_count": 0,
+    "selected_option_max_fret_lte": 12,
+    "actual_selected_option_max_fret": 8,
+    "authoritative_physical_boundary": "valid_chord_voicings()"
+  },
+  "blinding": {
+    "first_pass": "opaque task IDs + deterministic A/B reblind + deterministic order",
+    "repeat": "new opaque task IDs + independent deterministic order + exactly 10/20 A/B reversals",
+    "semantic_alignment": "source option identity, not visible A/B",
+    "first_pass_answers_withheld_during_repeat": true
+  },
+  "timing": {
+    "minimum_repeat_delay_hours": 24,
+    "preferred_repeat_window_hours": [
+      24,
+      72
+    ],
+    "review_window_hours": [
+      72,
+      168
+    ],
+    "invalid_after_hours": 168
+  },
+  "decision": {
+    "PASS": {
+      "exact_agreement_min_count": 36,
+      "exact_agreement_gte": 0.9,
+      "cohen_kappa_gte": 0.8,
+      "repeat_unsure_max_count": 4,
+      "repeat_unsure_rate_lte": 0.1,
+      "first_pass_min_yes": 5,
+      "first_pass_min_no": 5,
+      "manifest_integrity": 1.0,
+      "physical_validation": 1.0,
+      "repeat_start_hours": "24-72"
+    },
+    "REVIEW": {
+      "exact_agreement_count": 35,
+      "cohen_kappa": "0.70 <= kappa < 0.80",
+      "repeat_unsure_count": "5-9/40",
+      "variance": "first-pass YES <5 or NO <5 unless hard FAIL",
+      "repeat_start_hours": ">72-168"
+    },
+    "FAIL": {
+      "exact_agreement_max_count": 34,
+      "cohen_kappa_lt": 0.7,
+      "repeat_unsure_min_count": 10,
+      "integrity_failure": true,
+      "timing": "<24 or >168"
+    }
+  },
+  "training_boundary": {
+    "full_reliability_first_pass_labels": "QUARANTINED",
+    "full_reliability_repeat_labels_training": false,
+    "s1e_pilot_labels_training": false,
+    "s1f_fit_hard_closed": true,
+    "training_requires": [
+      "FULL_RELIABILITY_V2_PASS",
+      "SEPARATE_TRAINING_PROTOCOL_REVIEWED_AND_MERGED",
+      "EXPLICIT_USER_APPROVAL"
+    ],
+    "checkpoint_retention_authorized": false,
+    "production_or_shadow_authorized": false
+  }
+}
