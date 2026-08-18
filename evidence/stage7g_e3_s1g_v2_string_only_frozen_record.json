@@ -1,0 +1,38 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1g-v2-string-only-frozen-record",
+  "stage": "7G-E3-S1-G",
+  "version": "v2",
+  "status": "FROZEN",
+  "frozen_at": "2026-08-18T21:51:00+03:00",
+  "base_main_sha": "ac146e9a5c6519a03e3650fe00b236c13fe90a7b",
+  "protocol_sha256": "c5c73605de0d6cf03883172120ece281fbf08177889b12b3a156efaf08662895",
+  "source_manifest_sha256": "080197afdf117c4fe25ec049e9e4e1e0de4189652ecab185ae660c32f3b25769",
+  "first_manifest_sha256": "039afc78672d1bc63b07e5e700b91bb07dea2eca07d940bc649e28c34f65a89c",
+  "repeat_manifest_sha256": "b8821d0c8412340ccec60ad76e3a5bd74fcbdd084023f76eec7fcdbd8696ab18",
+  "audit": {
+    "physical_validation": "PASS",
+    "task_count": 20,
+    "triads": 10,
+    "tetrads": 10,
+    "distinct_families": 20,
+    "max_tasks_per_family": 1,
+    "pair_categories": {
+      "0_vs_1_internal_gaps": 7,
+      "0_vs_ge2_internal_gaps": 7,
+      "1_vs_ge2_internal_gaps": 6
+    },
+    "all_open_count_zero": true,
+    "selected_max_fret": 8,
+    "pilot_v2_family_overlap": 0,
+    "repeat_reversals": 10
+  },
+  "immutability_rule": "Do not edit v2 frozen values in place. Any post-first-pass design change requires v3.",
+  "v1_status": "ARCHIVED_IMMUTABLE_NOT_EXECUTED",
+  "open_string_human_questions_status": "RETIRED",
+  "artifact_byte_sha256": {
+    "protocol_json": "a9d5624993343b2d5efdb2302580107fc4a09cd957d4f3c4e6e2767a78d59b1b",
+    "first_manifest_json": "652acb392e7af8fb94d0075ac0f1c44beaedc822f82a852f711e4db6a014f901",
+    "source_manifest_private_json": "7147bcd28ebf6a77e9a3de7fea8f2c682b0bd19093831b29b986b790c1de42f0",
+    "repeat_manifest_private_json": "bc14cf4c5e98d52d4e7d6608eaa8bc0bcd831648f44f27fef4c31d418cf1b35b"
+  }
+}
