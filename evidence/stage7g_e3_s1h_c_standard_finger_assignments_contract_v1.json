@@ -1,0 +1,49 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1h-c-standard-finger-assignments-contract",
+  "stage": "7G-E3-S1-H-C",
+  "version": "v1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION",
+  "rule_version": "S1-H-C.v1",
+  "upstream_rule_version": "S1-H-B.v1",
+  "finger_domain": [1, 2, 3, 4],
+  "open_string_finger": 0,
+  "assignment_rules": [
+    "one_distinct_finger_per_s1hb_group",
+    "same_group_notes_share_finger",
+    "lower_fret_group_uses_lower_numbered_finger_than_higher_fret_group",
+    "same_fret_groups_have_no_preference_order",
+    "barre_metadata_matches_s1hb_group_span"
+  ],
+  "output": [
+    "stable_assignment_id",
+    "pitch_string_fret_finger_placements",
+    "barre_metadata",
+    "source_voicing_candidate_id"
+  ],
+  "fail_closed": {
+    "retained_voicing_with_zero_assignments": "ERROR",
+    "pruned_voicing_assignment_generation": "FORBIDDEN",
+    "new_or_repaired_voicing": "FORBIDDEN"
+  },
+  "required_invariants": [
+    "recompute_complete_s1hb_state",
+    "assignments_only_for_s1hb_retained",
+    "preserve_pitch_string_fret_exactly",
+    "open_strings_use_finger_zero",
+    "fretted_notes_use_fingers_one_through_four",
+    "distinct_groups_use_distinct_fingers",
+    "strict_finger_order_across_strictly_increasing_frets",
+    "stable_unique_assignment_ids_per_voicing",
+    "deterministic_output_order",
+    "ten_of_ten_repeatability"
+  ],
+  "scientific_boundary": {
+    "teacher_labels_read": false,
+    "learned_score": false,
+    "model_fit": false,
+    "s1f_real_model_fit": "HARD_CLOSED",
+    "checkpoint_retention": false,
+    "shadow_or_production_integration": false
+  },
+  "next_gate": "REAL_MODEL_DEVELOPMENT_REQUIRES_SEPARATE_APPROVAL"
+}
