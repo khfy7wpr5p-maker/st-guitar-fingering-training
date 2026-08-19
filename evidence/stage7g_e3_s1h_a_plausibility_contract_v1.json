@@ -1,0 +1,103 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1h-a-plausibility-contract",
+  "stage": "7G-E3-S1-H-A",
+  "version": "v1",
+  "status": "PREPARATION_ONLY_DRAFT_PR",
+  "base_main_sha": "ac146e9a5c6519a03e3650fe00b236c13fe90a7b",
+  "rule_version": "S1-H-A.v1",
+  "physical_authority": "valid_chord_voicings()",
+  "physical_boundary": {
+    "may_create_candidate": false,
+    "may_legalize_invalid_candidate": false,
+    "may_repair_candidate": false,
+    "must_validate_raw_membership": true,
+    "must_validate_complete_authoritative_set": true,
+    "must_preserve_raw_candidates_for_audit": true
+  },
+  "classes": [
+    "PLAUSIBLE",
+    "BORDERLINE",
+    "DOMINATED",
+    "IMPRACTICAL"
+  ],
+  "class_precedence": [
+    "IMPRACTICAL",
+    "DOMINATED",
+    "BORDERLINE",
+    "PLAUSIBLE"
+  ],
+  "hard_prune_rules": [
+    {
+      "reason_code": "H001_MIN_FINGER_PROXY_GE_6",
+      "condition": "conservative_minimum_finger_proxy >= 6",
+      "action": "IMPRACTICAL_AND_PRUNE"
+    }
+  ],
+  "retained_rules": [
+    {
+      "reason_code": "B001_FIVE_DISTINCT_POSITIVE_FRETS",
+      "condition": "conservative_minimum_finger_proxy == 5",
+      "action": "BORDERLINE_RETAIN"
+    },
+    {
+      "reason_code": "D001_MECHANICALLY_DOMINATED_SAME_TOPOLOGY",
+      "condition": "same used/open/fretted string topology and another candidate is <= on minimum-finger proxy and effective fretted-hand span with strict improvement on at least one",
+      "action": "DOMINATED_DIAGNOSTIC_RETAIN"
+    }
+  ],
+  "never_single_factor_prune": [
+    "open_note_count",
+    "high_fret",
+    "internal_string_gap",
+    "multiple_fretted_runs",
+    "isolated_fretted_strings",
+    "tone",
+    "beauty",
+    "resonance",
+    "lower_position_preference"
+  ],
+  "deterministic_facts": [
+    "stage7g_e3_geometry",
+    "used_strings",
+    "open_strings",
+    "fretted_strings",
+    "fretted_string_topology",
+    "contiguous_fretted_runs",
+    "isolated_fretted_string_count",
+    "internal_gap_positions",
+    "effective_fretted_hand_span",
+    "same_fret_contiguous_barre_opportunities",
+    "conservative_minimum_finger_proxy"
+  ],
+  "fail_closed": {
+    "all_candidates_pruned_status": "NO_PLAUSIBLE_CANDIDATE",
+    "non_authoritative_candidate": "ERROR",
+    "duplicate_raw_candidate": "ERROR",
+    "incomplete_authoritative_set": "ERROR",
+    "silent_reintroduction_of_pruned_candidates": false
+  },
+  "required_invariants": [
+    "raw_candidates_exactly_equal_valid_chord_voicings",
+    "retained_subset_of_valid_chord_voicings",
+    "no_new_voicing",
+    "same_input_same_result_and_reason_codes",
+    "candidate_order_semantic_invariance",
+    "raw_candidate_audit_preserved",
+    "stable_candidate_and_compared_ids",
+    "explicit_no_plausible_status_only_after_full_authoritative_set_pruned"
+  ],
+  "scientific_boundary": {
+    "s1e_v2_pilot_labels": "NEVER_TRAINING",
+    "s1e_repeat_labels": "NEVER_TRAINING",
+    "s1g_v2_first_pass": "DESIGN_FAIL_DIAGNOSTIC_ONLY_NEVER_TRAINING",
+    "s1g_repeat": "DO_NOT_RUN",
+    "s1f_real_model_fit": "HARD_CLOSED",
+    "checkpoint_retention": false,
+    "shadow_or_production_integration": false
+  },
+  "historical_boundary": {
+    "s1g_v1": "IMMUTABLE_MERGED_HISTORY",
+    "open_pr_70": "NOT_MERGED_NOT_BASE_FOR_S1H_A"
+  },
+  "merge_authorized": false
+}
