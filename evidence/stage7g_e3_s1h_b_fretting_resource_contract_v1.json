@@ -1,0 +1,61 @@
+{
+  "schema": "st-guitar-stage7g-e3-s1h-b-fretting-resource-contract",
+  "stage": "7G-E3-S1-H-B",
+  "version": "v1",
+  "status": "PREREGISTERED_BEFORE_IMPLEMENTATION",
+  "upstream_rule_version": "S1-H-A.v1",
+  "rule_version": "S1-H-B.v1",
+  "scope": "ordinary_four_fretting_fingers_with_continuous_barre_resource_feasibility",
+  "standard_fretting_fingers": [1, 2, 3, 4],
+  "extended_techniques_in_scope": false,
+  "barre_crossing": {
+    "unused_string": "PASSABLE",
+    "same_fret": "PASSABLE",
+    "higher_fret": "PASSABLE_AS_OVERRIDE",
+    "open_string": "BLOCKING",
+    "lower_positive_fret": "BLOCKING"
+  },
+  "hard_prune_rules": [
+    {
+      "reason_code": "H101_MIN_STANDARD_FINGERS_GE_5",
+      "condition": "minimum_standard_fingers >= 5",
+      "action": "STANDARD_FINGERING_INFEASIBLE_AND_PRUNE"
+    }
+  ],
+  "upstream_reason_code": "U100_UPSTREAM_S1H_A_PRUNED",
+  "status_when_empty": "NO_STANDARD_FINGERING_CANDIDATE",
+  "required_invariants": [
+    "recompute_authoritative_s1h_a_state",
+    "raw_candidates_equal_upstream_raw_candidates",
+    "final_retained_subset_of_s1h_a_retained",
+    "no_upstream_pruned_reintroduction",
+    "no_new_voicing",
+    "deterministic_group_partition",
+    "deterministic_canonical_assignment",
+    "semantic_order_invariance",
+    "ten_of_ten_repeatability",
+    "explicit_empty_final_status"
+  ],
+  "never_single_factor_prune": [
+    "absolute_fret_height",
+    "fret_span",
+    "finger_order_crossing",
+    "wrist_angle",
+    "barre_comfort",
+    "string_skip",
+    "open_string_preference",
+    "tone",
+    "resonance",
+    "style",
+    "chord_transition"
+  ],
+  "scientific_boundary": {
+    "teacher_labels_read": false,
+    "s1e_or_s1g_reopened": false,
+    "s1f_real_model_fit": "HARD_CLOSED",
+    "learned_model_created": false,
+    "checkpoint_retention": false,
+    "shadow_or_production_integration": false
+  },
+  "next_candidate_stage": "S1-H-C deterministic reach/pose constraints"
+}
