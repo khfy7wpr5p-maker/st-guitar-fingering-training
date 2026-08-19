@@ -1,0 +1,146 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-batch01-first-pass-response-seal-v1",
+  "stage": "7G-E3-S2-A-BATCH01-FIRST-PASS",
+  "status": "SEALED_FIRST_PASS_COMPLETE_CORPUS_GATE_FAIL_INSUFFICIENT_DECISIVE",
+  "base_main_sha": "e8f56778520461dc618f57d44011c1b9a6815cfa",
+  "protocol_version": "S2-A.v1",
+  "provenance": "S2A_STATIC_NATURALNESS_FIRST_PASS",
+  "target": "STATIC_STANDARD_FINGERING_NATURALNESS",
+  "external_inputs": {
+    "session_count": 6,
+    "raw_choice_rows_committed_to_git": false,
+    "sessions": [
+      {
+        "session_id": "S2A_BATCH01_SESSION_01",
+        "choices_filename": "ST_Guitar_S2A_BATCH01_SESSION_01_choices.json",
+        "choices_sha256": "7b1bc6dd299ec7a87d5c6b1c352ec51498be33299cb4a1dceb17bc149a49a81d",
+        "manifest_sha256": "2630217922aa0d8dbcc93e419e103ae846b6a9d9997766f52cd9c8a32eb17887",
+        "collected_at_utc": "2026-08-19T17:36:16.887Z",
+        "validation_status": "PASS",
+        "task_count": 120,
+        "unique_task_ids": 120,
+        "response_counts": {"A": 22, "B": 31, "EQUAL_OR_UNSURE": 67}
+      },
+      {
+        "session_id": "S2A_BATCH01_SESSION_02",
+        "choices_filename": "ST_Guitar_S2A_BATCH01_SESSION_02_choices.json",
+        "choices_sha256": "fbed70714579a2362eb66b7c3e0412a3769377914a68994f45438bfcb7191d3f",
+        "manifest_sha256": "706c90007407a726be11f6214e76afbde4fd5327225fcb4de7f8df8320a31595",
+        "collected_at_utc": "2026-08-19T18:08:39.246Z",
+        "validation_status": "PASS",
+        "task_count": 120,
+        "unique_task_ids": 120,
+        "response_counts": {"A": 36, "B": 24, "EQUAL_OR_UNSURE": 60}
+      },
+      {
+        "session_id": "S2A_BATCH01_SESSION_03",
+        "choices_filename": "ST_Guitar_S2A_BATCH01_SESSION_03_choices.json",
+        "choices_sha256": "cad468d4711b437d08e86bb27a8c4ce484d8ad3eba3d7096fee435716881836a",
+        "manifest_sha256": "f141112202f5cc0da72f06689788239f4d8248a7e1bb386d998f1aa00dc54e32",
+        "collected_at_utc": "2026-08-19T18:47:40.118Z",
+        "validation_status": "PASS",
+        "task_count": 120,
+        "unique_task_ids": 120,
+        "response_counts": {"A": 17, "B": 31, "EQUAL_OR_UNSURE": 72}
+      },
+      {
+        "session_id": "S2A_BATCH01_SESSION_04",
+        "choices_filename": "ST_Guitar_S2A_BATCH01_SESSION_04_choices.json",
+        "choices_sha256": "9f3c5642225b9650a7bd31bd3e78bf18076269ebcb2ba0466bacd89a1d7232dd",
+        "manifest_sha256": "ec6909f2d4aa63cd4085bf6e1c616b52b84922db93da48a8f9b9dfea82e0f12b",
+        "collected_at_utc": "2026-08-19T20:31:12.059Z",
+        "validation_status": "PASS",
+        "task_count": 120,
+        "unique_task_ids": 120,
+        "response_counts": {"A": 28, "B": 31, "EQUAL_OR_UNSURE": 61}
+      },
+      {
+        "session_id": "S2A_BATCH01_SESSION_05",
+        "choices_filename": "ST_Guitar_S2A_BATCH01_SESSION_05_choices.json",
+        "choices_sha256": "0462299056eb0d8b35d5d1eb554452a85b3d8d23fbd7814135d1d7ffd254e930",
+        "manifest_sha256": "35949faab17db283f294351a451a2410724f2c2fbe977d185d9c5d0d2a7d2ab1",
+        "collected_at_utc": "2026-08-19T21:31:57.010Z",
+        "validation_status": "PASS",
+        "task_count": 120,
+        "unique_task_ids": 120,
+        "response_counts": {"A": 34, "B": 22, "EQUAL_OR_UNSURE": 64}
+      },
+      {
+        "session_id": "S2A_BATCH01_SESSION_06",
+        "choices_filename": "ST_Guitar_S2A_BATCH01_SESSION_06_choices.json",
+        "choices_sha256": "cad5333e770b01100a373247f6a34154f2ea4fb0c770e8d4c412711b0be61796",
+        "manifest_sha256": "e6248c57a6f4c88f1981139840f0fd6c1a595ddbc2a15fdcca5ce0057e6989cb",
+        "collected_at_utc": "2026-08-19T21:53:16.385Z",
+        "validation_status": "PASS",
+        "task_count": 120,
+        "unique_task_ids": 120,
+        "response_counts": {"A": 27, "B": 28, "EQUAL_OR_UNSURE": 65}
+      }
+    ]
+  },
+  "validation": {
+    "status": "PASS",
+    "declared_tasks": 720,
+    "actual_tasks": 720,
+    "unique_task_ids": 720,
+    "duplicate_task_ids": 0,
+    "all_session_task_sets_match_sealed_manifests": true,
+    "invalid_responses": 0,
+    "annotation_blinded": true,
+    "exact_provenance_match": true
+  },
+  "responses": {
+    "A": 164,
+    "B": 167,
+    "EQUAL_OR_UNSURE": 389,
+    "decisive": 331,
+    "total": 720,
+    "decisive_rate": 0.4597222222222222,
+    "equal_or_unsure_rate": 0.5402777777777777
+  },
+  "decisive_slices": {
+    "pair_type": {"FINGER_ONLY": 139, "MIXED": 192},
+    "distance_stratum": {"NEAR": 128, "MID": 105, "FAR": 98},
+    "pair_type_x_distance": {
+      "FINGER_ONLY|FAR": 34,
+      "FINGER_ONLY|MID": 46,
+      "FINGER_ONLY|NEAR": 59,
+      "MIXED|FAR": 64,
+      "MIXED|MID": 59,
+      "MIXED|NEAR": 69
+    },
+    "decisive_family_count": 40,
+    "decisive_event_count": 218
+  },
+  "frozen_corpus_gate": {
+    "development_family_count": {"observed": 40, "required_min": 40, "status": "PASS"},
+    "eligible_event_count": {"observed": 320, "required_min": 200, "status": "PASS"},
+    "decisive_first_pass_pairs": {"observed": 331, "required_min": 600, "status": "FAIL", "shortfall": 269},
+    "FINGER_ONLY_decisive": {"observed": 139, "required_min": 150, "status": "FAIL", "shortfall": 11},
+    "MIXED_decisive": {"observed": 192, "required_min": 150, "status": "PASS", "shortfall": 0},
+    "NEAR_decisive": {"observed": 128, "required_min": 100, "status": "PASS", "shortfall": 0},
+    "MID_decisive": {"observed": 105, "required_min": 100, "status": "PASS", "shortfall": 0},
+    "FAR_decisive": {"observed": 98, "required_min": 100, "status": "FAIL", "shortfall": 2},
+    "overall_status": "FAIL"
+  },
+  "reliability": {
+    "status": "NOT_RUN",
+    "minimum_if_development_task_count_remains_720": 144,
+    "repeat_interval_hours": [24, 72],
+    "latest_first_pass_collected_at_utc": "2026-08-19T21:53:16.385Z",
+    "earliest_all-session-safe_repeat_start_utc": "2026-08-20T21:53:16.385Z",
+    "deferred_until_development_first_pass_corpus_is_complete": true
+  },
+  "scientific_boundary": {
+    "real_model_fit_executed": false,
+    "repeat_reliability_executed": false,
+    "untouched_final_opened": false,
+    "checkpoint_retained": false,
+    "shadow_or_production_integration": false,
+    "historical_teacher_answers_reused_as_labels": false,
+    "source_family_identities_reused_as_label_free_music_sources": true,
+    "source_policy_fit_eligibility_requires_explicit_contract_review_before_any_fit": true
+  },
+  "interpretation": "All six blind FIRST_PASS files are structurally valid and exactly match the sealed task manifests. However, 389/720 responses are EQUAL_OR_UNSURE, leaving only 331 decisive pairs. The frozen S2-A.v1 real-fit corpus gate therefore fails (331<600 decisive, FINGER_ONLY 139<150, FAR 98<100). No answer is coerced. Repeat and real fit remain closed while the development corpus strategy and source-policy contract are reviewed.",
+  "next_gate": "NO_FIT__REVIEW_SOURCE_POLICY_AND_CHOOSE_LABEL_BLIND_CORPUS_EXTENSION_OR_NEW_PREREG_VERSION"
+}
