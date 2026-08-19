@@ -1,8 +1,11 @@
 # Stage 7G-E3-S1-H-A — Guitaristic Plausibility Analyzer + Conservative Pruning Contract
 
-Status: **PREPARATION ONLY — BRANCH / DRAFT PR**  
-Base `main`: `ac146e9a5c6519a03e3650fe00b236c13fe90a7b`  
+Status: **MERGED — PR #71**  
+Historical preparation base: `ac146e9a5c6519a03e3650fe00b236c13fe90a7b`  
+Merged `main`: `1a8acf654f21d36c928fdd45b3a21a443b6ebe5a`  
 Rule version: `S1-H-A.v1`
+
+> Note: `evidence/stage7g_e3_s1h_a_plausibility_contract_v1.json` is an immutable pre-merge snapshot. Its `PREPARATION_ONLY_DRAFT_PR` and `merge_authorized=false` fields record the state when the contract was sealed and are intentionally not rewritten after merge.
 
 ## Purpose
 
@@ -159,6 +162,8 @@ The implementation includes unit/property-style deterministic tests for:
 - open strings, high fret, and internal gap as non-pruning single factors;
 - the repository's existing observed open-C Guitar/MusicXML voicing regression.
 
+Final PR #71 head `6bbc160d41d6daa48c5c0a21782110b4363dd89c` passed CI run #189 before merge.
+
 ## Scientific and training boundary
 
 This stage does not reopen S1-E/S1-G human reliability collection and does not authorize component-model fitting.
@@ -166,13 +171,15 @@ This stage does not reopen S1-E/S1-G human reliability collection and does not a
 - S1-E v2 pilot labels: `NEVER TRAINING`
 - S1-E repeat labels: `NEVER TRAINING`
 - S1-G v2 20-task first-pass: `DESIGN_FAIL_DIAGNOSTIC_ONLY / NEVER TRAINING`
-- S1-G repeat: not performed
+- S1-G repeat: not performed / do not run under this contract
 - S1-F real model fit: remains hard-closed
 - no checkpoint retention
 - no shadow/production integration
 
-The merged S1-G v1 preregistration remains immutable historical evidence. Open draft PR #70 is not used as the S1-H-A base and must not be treated as merged repository truth.
+The merged S1-G v1 preregistration remains immutable historical evidence. Open draft PR #70 was not used as the S1-H-A base and is not merged repository truth.
 
-## Merge boundary
+## Post-merge continuation boundary
 
-This document and implementation are preparation-only. Merge requires a separate explicit user approval.
+S1-H-A itself is complete and merged. There is currently no merged S1-H-B or later protocol.
+
+The next runtime-affecting stage must be separately preregistered. A stronger deterministic hand/finger feasibility solver is a reasonable next design candidate because the current minimum-finger proxy is only a lower bound; however, no such stage is yet frozen by this document.

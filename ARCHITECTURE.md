@@ -1,167 +1,121 @@
 # Architecture
 
-## Current architecture map
+## Authoritative current map
 
 ```text
-Guitar Pro / MusicXML source (quarantine)
+Guitar Pro / MusicXML source
         ↓
-Safe XML intake
+Safe intake + stream/tuning/pitch normalization
         ↓
-Notation/TAB stream selection
+Event / chord extraction
         ↓
-Tuning + transpose/pitch-semantics normalization
+Independent deterministic pitch ↔ string/fret validation
         ↓
-Event/chord extraction
+valid_chord_voicings()
+        │
+        │ AUTHORITATIVE PHYSICAL BOUNDARY
         ↓
-Independent physical pitch ↔ string/fret validation
+S1-H-A deterministic guitaristic plausibility analyzer ✅ MERGED
+  ├─ requires the complete authoritative candidate set
+  ├─ preserves raw physically-valid candidates for audit
+  ├─ canonical candidate IDs + stable reason codes
+  ├─ PLAUSIBLE
+  ├─ BORDERLINE
+  ├─ DOMINATED (diagnostic-only in v1; retained)
+  └─ IMPRACTICAL
+       └─ hard prune v1: H001_MIN_FINGER_PROXY_GE_6 only
         ↓
-Deterministic physically-valid candidate generator  ← AUTHORITATIVE PHYSICAL BOUNDARY
+Future ranking / component-analysis layer 🔒 CLOSED
         ↓
-Frozen proposal layer
-  ├─ open_low  ← current fallback/default proposal
-  ├─ compact   ← secondary proposal
-  └─ mid/high/common-tone historical research alternatives
+Future Base Guitaristic Arbiter / Ranker 🔒 CLOSED
         ↓
-Frozen target-blind representation
-  ├─ chord/candidate-set context
-  ├─ open/fretted-note geometry
-  ├─ position/span proxies
-  ├─ same-fret/barre-like proxy
-  ├─ string span / adjacency / internal gaps
-  └─ proposal-difference descriptors
+Optional future hard-error refinement 🔒 CLOSED
         ↓
-Historical preference-learning evidence
-  ├─ E3-D conservative open_low↔compact gate: positive development CV
-  ├─ E3-E new-family untouched evaluation: positive signal, now consumed
-  ├─ R2 visible-learning MLP: learned but failed ultra-quality gate
-  └─ S0/S0-B diagnostics: overfit + family sensitivity + multi-factor errors
+Checkpoint-retention gate 🔒 CLOSED
         ↓
-Teacher decision reliability redesign
-  ├─ S0-C blind repeat of single A/B naturalness: reliability gate FAILED
-  ├─ S0-D-A five repeated A/B subquestions: 20/20 perfectly collinear
-  └─ S0-D-B independent per-option 1–5 scoring: component separation OBSERVED
-        ↓
-S1 independent-component Teacher-GOLD
-  ├─ S1-A reliability protocol: FROZEN
-  ├─ S1-B 120-task first-pass + 48-task repeat seal: COMPLETED
-  ├─ S1-C first-pass 120/120 responses: COMPLETED
-  └─ S1-D blind repeat reliability: CURRENT / waiting minimum-delay gate
-        ↓
-┌───────────────────────────────────────────────────────────────┐
-│ CURRENT POSITION                                              │
-│ Do not train component models yet. Complete the sealed 48-task│
-│ blind repeat and evaluate the preregistered component         │
-│ reliability gates.                                            │
-└───────────────────────────────────────────────────────────────┘
-        ↓ only if component reliability passes
-Future component-analysis layer (DESIGN CANDIDATE; NOT ACTIVE)
-  ├─ Position Comfort analyzer
-  ├─ String Distribution / Topology analyzer
-  ├─ Finger / Hand Spread analyzer
-  └─ Open-String Utility analyzer
-        ↓
-Future Base Guitaristic Arbiter / Ranker
-  ├─ combines validated component evidence
-  ├─ ranks only physically-valid candidates
-  └─ falls back conservatively when evidence is insufficient
-        ↓
-Future DCR-inspired Hard Guitaristic Error Refinement
-  ├─ mines only preregistered family-isolated development errors
-  ├─ focuses on high-confidence wrong guitaristic decisions
-  ├─ refines/reranks only the SAME physically-valid candidates
-  └─ remains bypassable: base arbiter is the conservative fallback
-        ↓
-Future preregistered checkpoint-retention gate
-        ↓
-Future GuitarTab Engine SHADOW integration
-        ↓
-Future MusicXML → GuitarTAB output integration
+GuitarTab Engine shadow / production integration 🔒 CLOSED
 ```
 
-## What is implemented versus proposed
+## Implemented and merged
 
-### Implemented / evidence-backed
+- safe Guitar Pro / MusicXML intake and normalization;
+- deterministic physical validation and candidate generation;
+- historical `open_low` / `compact` research proposal layers;
+- target-blind geometry/ergonomics descriptors and family-isolated evaluation infrastructure;
+- Teacher-GOLD pairwise and independent-component research machinery;
+- S1-F preparation-only component-training harness;
+- S1-G v1 full-reliability preregistration as immutable merged history;
+- S1-H-A deterministic plausibility analyzer and conservative pruning contract.
 
-- safe MusicXML/Guitar Pro intake and normalization;
-- independent deterministic physical validation;
-- deterministic physically-valid candidate generation;
-- frozen `open_low` / `compact` proposal specialists and historical research alternatives;
-- frozen 40-descriptor target-blind ergonomics representation;
-- blind Teacher-GOLD collection and family-isolated evaluation machinery;
-- E3-D positive development-CV evidence;
-- E3-E positive untouched signal, with the E3-E Teacher-GOLD corpus now permanently consumed for evaluation;
-- R2/S0/S0-B failure diagnostics;
-- S0-C repeat-reliability evidence;
-- S0-D-A and S0-D-B teacher-rubric experiments;
-- S1-A preregistered reliability contract;
-- S1-B deterministic 120-task first-pass and 48-task repeat seal;
-- S1-C first-pass Teacher-GOLD collection completed at 120/120 responses.
+## S1-F boundary
 
-### Proposed only — not trained, activated, or promoted
+S1-F prepares fixed features, provenance validation, family-safe folds, and a baseline model shape, but `fit_component_specialist()` remains deliberately hard-closed for project-label fitting.
 
-- component-specific ergonomics models;
-- learned weighting of component scores;
-- a Base Guitaristic Arbiter combining component models;
-- DCR-inspired Hard Guitaristic Error Refinement;
-- a retained production checkpoint;
-- GuitarTab Engine shadow/production integration.
+Real fitting may be opened only by a later separately merged training protocol after independently sufficient reliability evidence and explicit training-corpus rules exist. A caller-supplied flag or dictionary cannot open the fit path.
 
-## Why the architecture changed
+## S1-G state
 
-The earlier architecture treated the hard decision mainly as a conservative `open_low` versus `compact` routing problem. E3-D showed that this representation can learn useful development-domain signal, and E3-E showed positive transfer on a genuinely new family-disjoint evaluation set. However, later quality analysis showed that this was not enough to justify promotion.
+S1-G v1 is merged historical preregistration and must remain immutable.
 
-R2 failed the preregistered ultra-quality target and S0 found recurrent overfit, family sensitivity, thin `compact` support, and regime-specific errors. S0-B then showed that many errors were multi-factor rather than attributable to one simple rule.
+Open draft PR #70 contains an S1-G v2 STRING-only protocol based on `ac146e9…`. It is not part of current `main`; current `main` is nine commits ahead of that branch. Therefore PR #70 is not an architectural dependency of S1-H-A and must not be described as current merged behavior.
 
-The most important teacher-label finding came from S0-C. Repeating 60 previously answered A/B tasks under blind reordering produced only 34/60 exact semantic agreement (56.67%) and Cohen kappa 0.1333, far below the frozen reliability gate. Those repeat labels are reliability evidence only and are forbidden from training/tuning/model selection.
+The merged S1-H-A contract records the stricter current scientific boundary:
 
-S0-D-A therefore decomposed “which is more natural?” into position, string distribution, finger spread, open-string advantage, and overall preference. But asking all five as repeated A/B choices did not create independent supervision: all five judgments were collinear on all 20 tasks.
+- S1-E v2 pilot labels: never training;
+- S1-E repeat labels: never training;
+- S1-G v2 first-pass: diagnostic-only / never training;
+- S1-G repeat: do not run;
+- S1-F real model fit: hard-closed.
 
-S0-D-B changed the elicitation method. A and B were scored independently on 1–5 component scales before the overall A/B choice was shown. This produced genuine component separation: 16/40 option ratings had non-identical component scores and 13/20 tasks showed separation in at least one option. `OPEN_STRING_UTILITY` was the most distinct component, while position/string/finger scores remained strongly coupled. The result supports component-oriented architecture design but explicitly does **not** authorize specialist training, rubric-weight fitting, checkpoint retention, or integration.
+## S1-H-A deterministic plausibility contract
 
-S1 then scaled that rubric under a preregistered reliability contract. The 120-task first pass has been completed, but the labels remain quarantined until the sealed 48-task blind repeat is completed and all preregistered component reliability gates are evaluated.
+`valid_chord_voicings()` remains the sole physical authority. S1-H-A may classify and conservatively prune existing physically-valid candidates, but may never create a candidate, repair an invalid mapping, or reinterpret preference as physical truth.
 
-## DCR-inspired future refinement principle
+The lower-level analyzer accepts a supplied raw candidate collection only when that collection is exactly equal to the authoritative full set. Non-authoritative candidates, duplicates, and incomplete authoritative subsets fail closed.
 
-Bowen Cheng and colleagues' DCR work on object detection motivates a **future research hypothesis** for this project: after a reliable base guitaristic model exists, high-confidence wrong development predictions may be handled by a separate refinement stage rather than forcing the base model to absorb every difficult regime.
+### v1 classes and precedence
 
-This is an architectural analogy only. The DCR paper is not guitar-fingering evidence. The project-specific design candidate is documented in `docs/DCR_HARD_GUITARISTIC_ERROR_REFINEMENT.md`.
+`IMPRACTICAL > DOMINATED > BORDERLINE > PLAUSIBLE`
 
-A future refiner may be studied only after:
+### v1 hard prune
 
-1. the S1 component reliability gate passes;
-2. a separate component-model training protocol is preregistered and merged;
-3. component/base-arbiter models are trained under family isolation;
-4. hard errors are defined from family-isolated development predictions, preferably out-of-fold;
-5. the hard-error definition, confidence rule, sample mixture, model class, and comparison gate are frozen before the refinement experiment.
+Only one hard-prune rule is frozen:
 
-Stage 7E, E3-E, S0-C repeat labels, and S1 repeat labels may not be mined as refinement training/tuning data.
+`H001_MIN_FINGER_PROXY_GE_6`
 
-## Authority boundary
+The conservative minimum-finger proxy is the number of distinct positive fret values. Six or more distinct positive fret values are outside the ordinary single-fretting-hand simultaneous-chord envelope and are classified `IMPRACTICAL`.
 
-1. Deterministic guitar rules own physical validity. AI may never manufacture, legalize, or select a placement outside the deterministic candidate set.
-2. Learned specialists, analyzers, routers, arbiters, refiners, or future rankers may only operate on candidates that already passed deterministic physical validation.
-3. Source XML pitch is not trusted blindly. Sounding pitch is independently recomputed from tuning + string + fret whenever observed technical placement exists.
-4. Standard-notation and TAB staves representing the same event are one lineage, not two independent labels.
-5. Written-guitar octave conventions are recorded explicitly and never silently mixed with sounding pitch.
-6. Dataset families never cross a declared train/held-out split.
-7. Observed source placement, rule-derived property supervision, blind pairwise Teacher-GOLD, full-candidate Teacher-GOLD, repeat-reliability labels, and independent 1–5 component scores are distinct supervision types and must not be silently mixed.
-8. `open_low` remains the conservative fallback/default proposal. `compact` is a secondary proposal; neither specialist is allowed to override physical validity.
-9. Stage 7E is permanently consumed/evaluation-only and forbidden for training, tuning, calibration, feature selection, or new validation.
-10. E3-E Teacher-GOLD is also permanently consumed/evaluation-only. Its positive result opened design work only; it did not authorize promotion.
-11. The original 556 decisive E1/E2 pairwise labels are consumed development evidence. They are not fresh validation.
-12. E3 Batch01 contains 400 pairwise Teacher-GOLD responses from the 40-family development domain: 399 decisive and 1 equal/unsure. These are development evidence, not untouched validation.
-13. S0-C repeat labels are reliability evidence only and may not be used for training, threshold tuning, or model selection.
-14. S0-D-A/B pilot labels are architecture-design evidence. They are not automatically a specialist-training corpus; any future training use requires a new preregistered data/training protocol.
-15. No simple or fitted weighting of the four S0-D-B component dimensions is authorized from the 20-task pilot.
-16. S1 first-pass component labels remain quarantined until the frozen repeat-reliability gate passes and a separate training protocol is merged.
-17. S1 repeat labels are permanently reliability-only and may not be added as extra training rows.
-18. A future component architecture must measure repeat reliability under the decomposed rubric before specialist activation.
-19. Any DCR-inspired refiner must be trained/evaluated from preregistered family-isolated development evidence and may only rerank already-valid candidates.
-20. No DCR-inspired hard-error threshold, sample mixture, or refiner model may be selected by inspecting Stage 7E, E3-E, or another untouched promotion corpus.
-21. Production/shadow integration remains closed until a separately preregistered checkpoint/promotion gate passes.
+### Retained diagnostic classes
 
-## Current learning state
+- Five distinct positive fret values => `BORDERLINE`, retained.
+- Same-topology mechanical dominance based only on minimum-finger proxy and effective fretted-hand span => `DOMINATED`, retained in v1.
 
-The project has evidence that guitarist preference is learnable, but also evidence that a single global A/B “naturalness” target is too unstable to be treated as the sole specialist target. The current architecture therefore separates **physical validity**, **candidate proposals**, **guitaristic component judgments**, a future **base arbiter**, and—only if later evidence justifies it—a **hard-error refinement stage**.
+### Explicit non-rules
 
-The next executable scientific step remains **the sealed S1 blind repeat reliability test**, not model training and not DCR refinement training. Only after the reliability evidence is adequate should component-model training be opened. Hard-error refinement comes later, after a valid family-isolated base model exists.
+No candidate is hard-pruned merely because of open-string count, high position, internal string gaps, multiple fretted runs, isolated fretted strings, lower-position preference, tone, resonance, color, or artistic preference.
+
+## Evidence and status semantics
+
+Frozen JSON evidence/preregistration records capture the state at the time they were sealed. They are historical artifacts and may still contain values such as `PREPARATION_ONLY_DRAFT_PR` or `merge_authorized=false` after a later authorized merge. Those fields must not be retroactively rewritten solely to make history look current.
+
+Live repository status is maintained in `README.md`, `STATUS.md`, `ROADMAP.md`, and this file.
+
+## Current continuation point
+
+There is no merged post-S1-H-A next-stage protocol yet. The safe next sequence is:
+
+1. finish global documentation synchronization;
+2. reconcile open PR #70 with current `main` and the S1-H-A scientific boundary;
+3. preregister a new bounded deterministic S1-H continuation before runtime changes;
+4. keep all learned-model fitting, checkpoint retention, and integration closed unless a later explicit gate opens them.
+
+A plausible next research direction is a deterministic hand/finger feasibility refinement that improves on the current lower-bound finger proxy, but this is a proposal for the next preregistration stage, not current repository truth.
+
+## Non-negotiable authority rules
+
+1. Deterministic guitar rules own physical validity.
+2. Learned systems may only rank candidates already inside the deterministic valid set.
+3. Dataset families may not leak across declared evaluation boundaries.
+4. Repeat/reliability labels are distinct from training labels.
+5. Consumed untouched evidence may not be recycled for training/tuning or a fresh validation claim.
+6. No checkpoint or GuitarTab Engine shadow/production integration exists without a separately preregistered promotion gate.
