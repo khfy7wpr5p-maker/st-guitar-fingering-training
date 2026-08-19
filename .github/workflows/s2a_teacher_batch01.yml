@@ -33,14 +33,14 @@ jobs:
           test "$(find /tmp/st-guitar-s2a-batch01/teacher -name '*_manifest.json' | wc -l)" -eq 6
           test "$(find /tmp/st-guitar-s2a-batch01/internal -name '*_audit.json' | wc -l)" -eq 6
       - name: Upload blind Teacher package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: st-guitar-s2a-batch01-teacher
           path: /tmp/st-guitar-s2a-batch01/teacher
           if-no-files-found: error
           retention-days: 14
       - name: Upload internal audit package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: st-guitar-s2a-batch01-internal-audit
           path: /tmp/st-guitar-s2a-batch01/internal
