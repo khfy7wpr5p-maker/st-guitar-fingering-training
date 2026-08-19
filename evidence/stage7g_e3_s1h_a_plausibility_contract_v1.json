@@ -11,6 +11,7 @@
     "may_legalize_invalid_candidate": false,
     "may_repair_candidate": false,
     "must_validate_raw_membership": true,
+    "must_validate_complete_authoritative_set": true,
     "must_preserve_raw_candidates_for_audit": true
   },
   "classes": [
@@ -72,16 +73,18 @@
     "all_candidates_pruned_status": "NO_PLAUSIBLE_CANDIDATE",
     "non_authoritative_candidate": "ERROR",
     "duplicate_raw_candidate": "ERROR",
+    "incomplete_authoritative_set": "ERROR",
     "silent_reintroduction_of_pruned_candidates": false
   },
   "required_invariants": [
+    "raw_candidates_exactly_equal_valid_chord_voicings",
     "retained_subset_of_valid_chord_voicings",
     "no_new_voicing",
     "same_input_same_result_and_reason_codes",
     "candidate_order_semantic_invariance",
     "raw_candidate_audit_preserved",
     "stable_candidate_and_compared_ids",
-    "explicit_no_plausible_status"
+    "explicit_no_plausible_status_only_after_full_authoritative_set_pruned"
   ],
   "scientific_boundary": {
     "s1e_v2_pilot_labels": "NEVER_TRAINING",
