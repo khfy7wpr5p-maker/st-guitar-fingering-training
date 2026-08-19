@@ -1,0 +1,80 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-batch01-seal-v1",
+  "stage": "7G-E3-S2-A-BATCH01",
+  "status": "SEALED_BLIND_FIRST_PASS_PACKAGE_READY_FOR_COLLECTION",
+  "base_main_sha": "f474025a29f18e8b1f976b9fa1718a884e8c1ba9",
+  "protocol_version": "S2-A.v1",
+  "provenance": "S2A_STATIC_NATURALNESS_FIRST_PASS",
+  "target": "STATIC_STANDARD_FINGERING_NATURALNESS",
+  "source": {
+    "dataset": "AnimeTAB",
+    "commit": "18c0993cbe0a0948cbf0b7768bcb09ff81c23a9a",
+    "pinned_manifest": "evidence/stage7g_c_r1_animetab_batch01_manifest.json",
+    "pinned_manifest_sha256": "ba4be924f4c3d642fd4acb11c73996ecddb9e0d7201bf34a5a304a31bcc3c490",
+    "family_count": 40,
+    "part_id": "P1",
+    "staff_id": "2",
+    "pitch_mode": "sounding_exact",
+    "tuning_midi": [64, 59, 55, 50, 45, 40],
+    "historical_teacher_responses_reused": false,
+    "source_family_identities_reused_as_label_free_music_sources": true,
+    "raw_source_bytes_retained": false,
+    "license_claim_from_pinned_manifest": "CC BY-NC",
+    "commercial_or_production_rights_verified": false,
+    "research_only_until_rights_review": true
+  },
+  "batch": {
+    "task_count": 720,
+    "family_count": 40,
+    "event_count": 320,
+    "eligible_event_package_count": 320,
+    "min_tasks_per_family": 18,
+    "max_tasks_per_family": 18,
+    "pair_type_counts": {
+      "FINGER_ONLY": 360,
+      "MIXED": 360
+    },
+    "distance_stratum_counts": {
+      "NEAR": 240,
+      "MID": 240,
+      "FAR": 240
+    },
+    "cell_counts": {
+      "FINGER_ONLY|NEAR": 120,
+      "FINGER_ONLY|MID": 120,
+      "FINGER_ONLY|FAR": 120,
+      "MIXED|NEAR": 120,
+      "MIXED|MID": 120,
+      "MIXED|FAR": 120
+    },
+    "session_count": 6,
+    "session_task_counts": [120, 120, 120, 120, 120, 120],
+    "session_manifest_sha256": [
+      "2630217922aa0d8dbcc93e419e103ae846b6a9d9997766f52cd9c8a32eb17887",
+      "706c90007407a726be11f6214e76afbde4fd5327225fcb4de7f8df8320a31595",
+      "f141112202f5cc0da72f06689788239f4d8248a7e1bb386d998f1aa00dc54e32",
+      "ec6909f2d4aa63cd4085bf6e1c616b52b84922db93da48a8f9b9dfea82e0f12b",
+      "35949faab17db283f294351a451a2410724f2c2fbe977d185d9c5d0d2a7d2ab1",
+      "e6248c57a6f4c88f1981139840f0fd6c1a595ddbc2a15fdcca5ce0057e6989cb"
+    ]
+  },
+  "blinding": {
+    "teacher_sees_family_identity": false,
+    "teacher_sees_pair_type": false,
+    "teacher_sees_distance_stratum": false,
+    "teacher_sees_feature_values": false,
+    "teacher_sees_model_scores": false,
+    "teacher_sees_historical_responses": false,
+    "teacher_sees_exact_pitch_string_fret_finger": true,
+    "teacher_sees_barre_metadata": true
+  },
+  "scientific_boundary": {
+    "human_labels_collected": false,
+    "real_model_fit_executed": false,
+    "repeat_reliability_executed": false,
+    "untouched_final_opened": false,
+    "checkpoint_retained": false,
+    "shadow_or_production_integration": false
+  },
+  "next_gate": "COLLECT_ALL_SIX_FIRST_PASS_SESSIONS_THEN_VALIDATE_AND_BUILD_REPEAT"
+}
