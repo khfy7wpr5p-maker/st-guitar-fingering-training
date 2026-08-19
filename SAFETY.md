@@ -1,89 +1,82 @@
 # Safety
 
-- Parse untrusted XML with `defusedxml`.
-- No network DTD/schema fetching.
-- Reject unsupported string numbers, fret ranges, missing tuning, malformed durations, and impossible physical mappings.
-- Permit a source XML pitch differing by exactly +12 semitones only when the complete selected stream consistently demonstrates written-guitar octave notation; store this mode explicitly.
-- Never infer left-hand finger numbers from string/fret alone.
-- Deterministic guitar rules remain authoritative for physical validity; learned models may only score/rank/route/refine already-valid candidates.
-- No user upload, teacher correction, annotation, or repeat answer is automatic training consent.
-- Copyrighted/rights-unclear source files remain outside Git.
-- Training/evaluation split is by source family, never by individual event.
-- Observed corpus placement, rule-derived synthetic targets, blind pairwise Teacher-GOLD, blind full-candidate Teacher-GOLD, independent 1–5 component labels, and repeat-reliability labels are distinct supervision types and must never be silently mixed.
-- `EQUAL_OR_UNSURE` teacher responses are preserved and are never coerced into A/B.
+## Physical-authority invariants
 
-## Consumed evidence boundaries
+- Parse untrusted XML with safe parsers; do not fetch network DTD/schema resources.
+- Reject unsupported string/fret mappings, missing tuning, malformed durations, and impossible physical placements.
+- Deterministic guitar rules own physical validity.
+- `valid_chord_voicings()` is the authoritative physically-valid candidate generator for S1-H-A.
+- Learned systems may only score/rank candidates already accepted by the deterministic physical engine.
+- No learned model may create, repair, legalize, or silently reintroduce an invalid/pruned placement.
 
-- Stage 7E is permanently consumed/evaluation-only. It is forbidden for training, tuning, calibration, feature selection, or new validation.
-- The original 556 decisive Stage 7G E1/E2 pairwise labels are consumed development evidence. E2 patterns may generate hypotheses, but those labels cannot be retuned and presented as fresh validation.
-- The E3 curriculum Batch01 contains 400 additional blind pairwise Teacher-GOLD responses from the same 40-family development domain: 399 decisive and 1 equal/unsure. It is valid E3 development data but not untouched validation.
-- E3-E Teacher-GOLD is permanently consumed untouched evaluation evidence. It may not be used for training, threshold selection, feature/model selection, calibration, post-hoc retuning, hard-error mining, or another fresh validation claim.
-- S0-C repeat labels are reliability evidence only. They may not be used for training, threshold tuning, model selection, or hard-error mining.
-- S0-D-A and S0-D-B pilot labels are architecture-design/calibration evidence. They do not automatically become a specialist-training corpus; any future training use requires an explicit preregistered data/training protocol.
-- S1 first-pass component labels are quarantined until the frozen S1-D primary reliability gate passes and a separate component-model training protocol is merged.
-- S1 repeat labels are permanently reliability-only. They may not be added as additional training rows, used for model selection, or mined as hard-error examples.
+## S1-H-A plausibility safety
 
-## Model / architecture safety
+S1-H-A is deterministic and conservative.
 
-- The frozen 40-descriptor target-blind ergonomics representation may describe valid candidate geometry, but it never grants physical validity.
-- `open_low` remains the conservative fallback/default proposal until a later promotion gate explicitly changes that policy.
-- A `compact` proposal is a secondary alternative, not an independently authoritative answer.
-- E3-D and E3-E produced positive research signals, but neither result authorized checkpoint retention or production/shadow integration.
-- R2/S0/S0-B are diagnostic evidence. No epoch, architecture, threshold, or specialist may be promoted post hoc from those diagnostics.
-- The S0-C reliability failure means a single global pairwise “naturalness” label must not be treated as proven stable specialist supervision.
-- S0-D-A showed that repeated A/B subquestions can remain collinear and must not be mislabeled as independent component supervision.
-- S0-D-B showed component separation under independent 1–5 per-option scoring, but the 20-task pilot is too small to authorize specialist training or fitted component weights.
-- `POSITION_COMFORT`, `STRING_DISTRIBUTION`, and `FINGER_SPREAD` remained strongly coupled in the S0-D-B pilot. Do not assume they require three independent learned models without larger evidence.
-- `OPEN_STRING_UTILITY` was more distinct in the S0-D-B pilot, but that observation is an architecture-design signal, not a promoted rule or model.
-- No simple unweighted sum or fitted weighting of component scores is authorized by S0-D-B or S1-D.
-- S1-A/B/C established the preregistered reliability contract, sealed exact first-pass/repeat identities, and completed 120/120 first-pass responses. S1-D is a reliability test only.
-- No component specialist may be trained or activated during S1-D.
-- A S1-D component-reliability PASS opens only a separate preregistered component-model training protocol design. It does not itself authorize fitting, checkpoint retention, or integration.
-- If the secondary overall-preference repeat gate fails while the primary component gate passes, component-model design may proceed, but direct overall-preference / Base Guitaristic Arbiter target training remains closed.
-- A validation result is not a production-quality claim.
-- Checkpoint-retention criteria must be fixed before the untouched evaluation used to decide retention.
-- A true sealed benchmark requires fresh, separately controlled material not inspected during development.
-- GuitarTab Engine production/shadow integration remains closed until an explicit later gate authorizes it.
+- The analyzer must receive the complete authoritative candidate set for the same pitches/tuning.
+- Non-authoritative candidates, duplicates, and incomplete authoritative subsets fail closed.
+- Raw physically-valid candidates are preserved for audit.
+- v1 hard-prune authority is limited to `H001_MIN_FINGER_PROXY_GE_6`.
+- Five distinct positive fret values are retained as `BORDERLINE`.
+- Same-topology mechanical dominance is diagnostic-only and retained in v1.
+- Open-note count, high position, internal gaps, lower-position preference, tone, resonance, and artistic preference are not single-factor hard-prune rules.
+- If the complete authoritative set is pruned, the result must be explicit as `NO_PLAUSIBLE_CANDIDATE`.
 
-## DCR-inspired refinement safety
+## Training and label boundaries
 
-The future **Hard Guitaristic Error Refinement** layer is a research design candidate only. It is not active during S1.
+No user upload, teacher correction, annotation, pilot answer, or repeat answer is automatic training consent.
 
-A refiner may be studied only after all of the following exist:
+The current merged S1-H-A contract records:
 
-1. S1 component reliability passes;
-2. a separate component-model training protocol is preregistered and merged;
-3. valid component/base-arbiter models exist under family-isolated development evaluation;
-4. high-confidence wrong decisions are defined from family-isolated development predictions, preferably out-of-fold;
-5. the hard-error definition, confidence rule, hard/ordinary sample mixture, refiner model class, and base-vs-refined comparison gate are frozen before the experiment.
+- S1-E v2 pilot labels: `NEVER_TRAINING`;
+- S1-E repeat labels: `NEVER_TRAINING`;
+- S1-G v2 first-pass: `DESIGN_FAIL_DIAGNOSTIC_ONLY_NEVER_TRAINING`;
+- S1-G repeat: `DO_NOT_RUN`;
+- S1-F real project-label model fit: `HARD_CLOSED`.
 
-Additional invariants:
+Historical S1 repeat/reliability labels remain reliability-only. `EQUAL_OR_UNSURE` responses are preserved and never coerced into binary labels.
 
-- the refiner may only rerank candidates already accepted by the deterministic physical engine;
-- the refiner may never manufacture or legalize a new physical placement;
-- Stage 7E, E3-E, S0-C repeat labels, and S1 repeat labels are forbidden for refiner training/tuning/hard-error mining;
-- no hard-error threshold or sample mixture may be selected by inspecting an untouched promotion corpus;
-- the Base Guitaristic Arbiter remains the conservative bypass/fallback if a future refiner is not justified or fails its gate.
+## Consumed evidence
 
-## Manual training control
+- Stage 7E is permanently evaluation-only.
+- E3-E Teacher-GOLD is permanently consumed untouched evaluation evidence.
+- Historical development labels may not be relabeled as fresh validation.
+- Repeat/reliability corpora may not be recycled as training or hard-error-mining data unless an explicitly newer merged protocol says otherwise; the current S1-H-A contract does not open such reuse.
 
-- Agreed model training/evaluation execution is manual in Colab unless a later protocol explicitly changes that rule.
-- The merged preregistered protocol is the design gate; the user's manual execution of a clearly separated TRAIN cell is the execution gate.
-- Training does not imply checkpoint retention, model promotion, or production authorization.
-- Do not select an epoch/checkpoint/threshold after seeing the same validation result unless the protocol explicitly preregistered that selection rule.
+## Model / promotion gates
 
-## Development control and approval gates
+The existence of an executable training harness does not authorize training.
 
-The project uses fewer approval interruptions while preserving the high-risk gates.
+The following remain closed:
 
-No separate approval is required for routine read-only analysis, fresh reads, branch creation, work inside an already approved bounded stage, tests, CI inspection, draft/ready PR preparation, or evidence/documentation maintenance that does not change runtime/model behavior.
+- real S1-F component fitting;
+- component specialist activation;
+- Base Guitaristic Arbiter training/activation;
+- learned hard-error refiner training/activation;
+- checkpoint retention/promotion;
+- GuitarTab Engine shadow integration;
+- production integration.
 
-An explicit approval remains required for materially consequential gates:
+Any later opening must be explicit, separately preregistered, reviewed, and merged before execution/retention decisions.
 
-1. merging a code or model-behavior PR into `main`;
-2. retaining/promoting a model checkpoint;
-3. production or GuitarTab Engine shadow integration;
-4. destructive history operations such as force-push/reset/rewrite;
-5. materially expanding a previously approved stage beyond its stated scope.
+## Historical evidence files
 
-For a documentation/evidence-only maintenance task that the user explicitly requests, that same bounded request may authorize the maintenance PR through merge once the diff is verified and CI is green; a second mechanical confirmation is not required.
+Frozen preregistration/evidence JSON files are immutable historical snapshots. A field such as `PREPARATION_ONLY_DRAFT_PR` or `merge_authorized=false` may correctly describe the state when the record was sealed even after a later authorized merge.
+
+Do not rewrite frozen evidence solely to make it match current live repository status. Live status belongs in the top-level documentation.
+
+## Open PR #70 safety
+
+PR #70 is open/draft and diverged from current `main`. It is not a dependency of merged S1-H-A and must not be merged mechanically.
+
+Before any action on PR #70, reconcile its intended S1-G v2 behavior with the stronger merged S1-H-A boundary, especially the `S1-G v2 first-pass = diagnostic-only` and `S1-G repeat = do not run` rules.
+
+## Future deterministic extensions
+
+A future S1-H hand/finger feasibility layer may add deterministic constraints only after its contract is preregistered. It must distinguish physical/ordinary-technique feasibility from musical preference and must preserve the S1-H-A complete-authoritative-set and audit invariants.
+
+## Development-control gates
+
+Routine read-only analysis, bounded documentation maintenance, branch preparation, tests, CI inspection, and PR preparation are allowed inside an approved maintenance task.
+
+Explicit approval remains required for consequential gates including runtime/model-behavior merges, checkpoint retention/promotion, shadow/production integration, destructive history operations, or material stage expansion.
