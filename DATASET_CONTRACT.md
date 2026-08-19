@@ -19,41 +19,36 @@ Observed placement is eligible only when tuning/pitch mode are resolved and ever
 The repository distinguishes:
 
 1. observed corpus placement;
-2. rule-derived synthetic/property targets;
+2. rule-derived deterministic metadata/targets;
 3. blind full-candidate Teacher preference;
 4. blind pairwise Teacher preference;
 5. independent per-candidate component score;
 6. pilot/calibration label;
 7. repeat/reliability label;
-8. diagnostic-only label.
+8. diagnostic-only label;
+9. future assignment-level ranking supervision, only if explicitly introduced by a new model-development protocol.
 
 These types may not be silently collapsed into one training target. `EQUAL_OR_UNSURE` is preserved and is never coerced into A/B.
 
-## Current S1 label boundary
+## Protected historical label boundary
 
-The merged S1-H-A scientific contract supersedes older assumptions that completion of the S1-D-era reliability workflow would automatically make project labels trainable.
-
-Current status:
+Current rules remain:
 
 - S1-E v2 pilot labels: `NEVER_TRAINING`;
 - S1-E repeat labels: `NEVER_TRAINING`;
 - S1-G v2 first-pass: `DESIGN_FAIL_DIAGNOSTIC_ONLY_NEVER_TRAINING`;
 - S1-G repeat: `DO_NOT_RUN`;
-- S1-F project-label model fit: `HARD_CLOSED`.
+- historical repeat/reliability labels: not additional training rows;
+- S1-F project-label fit: `HARD_CLOSED` until a separately approved newer model-development protocol explicitly replaces that gate.
 
-S1-G v1 remains immutable merged preregistration history. Open PR #70 is not merged dataset policy.
-
-## S1-F future-training provenance contract
-
-The preparation harness recognizes future supervised provenance only under its exact frozen contract and does not itself authorize real fitting. Pilot, repeat, diagnostic, or manually renamed sources must not be admitted through provenance-string tricks.
-
-A later training protocol must explicitly define the eligible first-pass corpus, minimum sample/family counts, validation policy, and model-retention gate before real project-label fitting can be opened.
+S1-G v1 remains immutable merged preregistration history. PR #70 was closed as superseded without merge and is not active dataset policy.
 
 ## Family isolation
 
 - family identity is the primary leakage boundary;
-- train/validation/test families must remain disjoint unless a separately preregistered nested-development design explicitly defines inner folds;
-- a source family may not be split event-by-event to manufacture a larger apparent validation set.
+- train/validation/test families must remain disjoint unless a preregistered nested-development design explicitly defines inner folds;
+- event-level random splitting may not divide one source family across train and evaluation sets;
+- any future assignment-level rows inherit the family identity of the source musical event.
 
 ## Consumed evidence
 
@@ -61,14 +56,12 @@ A later training protocol must explicitly define the eligible first-pass corpus,
 - E3-E Teacher-GOLD: permanently consumed untouched evaluation evidence;
 - historical development labels: not fresh validation;
 - S0-C and S1 repeat labels: reliability-only;
-- S1-E pilot/repeat labels: never training under the current merged contract;
-- S1-G v2 first-pass: diagnostic-only/never-training under the current merged contract.
+- S1-E pilot/repeat labels: never training;
+- S1-G v2 first-pass: diagnostic-only/never-training.
 
 ## S1-H-A deterministic candidate records
 
-S1-H-A adds deterministic candidate-analysis facts, not Teacher labels.
-
-A valid plausibility record must be derived from the complete authoritative `valid_chord_voicings()` set for the same pitch set and tuning. Candidate records may contain:
+H-A records rule-derived candidate metadata from the complete authoritative `valid_chord_voicings()` set:
 
 - stable candidate ID;
 - deterministic geometry/topology facts;
@@ -76,14 +69,69 @@ A valid plausibility record must be derived from the complete authoritative `val
 - fixed-order reason codes;
 - prune boolean;
 - optional compared-candidate ID;
-- top-level rule version.
+- rule version.
 
-These fields are rule-derived deterministic metadata. They must not be presented as Teacher-GOLD or learned preference targets.
+These are deterministic facts, not Teacher-GOLD preference labels.
+
+## S1-H-B deterministic fretting-resource records
+
+For every authoritative H-A candidate, H-B may record:
+
+- inherited stable candidate ID and upstream class;
+- H-B class (`UPSTREAM_PRUNED`, `RESOURCE_INFEASIBLE`, `RESOURCE_FEASIBLE`);
+- positive fret set;
+- deterministic continuous-barre groups;
+- blockers by fret;
+- `minimum_standard_fingers`;
+- canonical resource witness when feasible;
+- H-B reason codes;
+- rule version.
+
+These fields describe the frozen ordinary four-finger/barre resource model. They are not human preference labels and must not be presented as evidence of comfort or naturalness.
+
+## S1-H-C deterministic assignment records
+
+For every H-B-retained voicing, H-C emits zero or more standard finger-assignment records with:
+
+- source voicing candidate ID;
+- stable `assignment_id`;
+- exact `(pitch, string, fret, finger)` placements;
+- explicit barre metadata `(finger, fret, span_start_string, span_end_string)`;
+- H-C rule version.
+
+Contract invariants:
+
+- open strings use finger `0`;
+- fretted notes use fingers `1..4`;
+- exact pitch/string/fret placement is unchanged;
+- different H-B groups use distinct fretting fingers;
+- strictly lower-fret groups use lower-numbered fingers than strictly higher-fret groups;
+- upstream-pruned voicings receive no assignments;
+- every H-B-retained voicing produces at least one assignment or fails closed;
+- assignment IDs are stable/deterministic.
+
+An H-C assignment is a **deterministic candidate**, not a positive Teacher label and not proof that it is the best fingering.
+
+## Future learned assignment-ranking rows
+
+No real assignment-ranking training corpus is currently authorized.
+
+A future protocol may create one only after explicitly freezing:
+
+- how a Teacher or other legitimate target source compares/selects H-C assignments;
+- exact provenance value(s) eligible for fit;
+- family ID propagation;
+- handling of ties/unsure;
+- whether labels are pairwise, listwise, ordinal, or scalar;
+- minimum sample/family support;
+- separation of development, reliability, and untouched evaluation roles.
+
+The model target must reference H-C `assignment_id` values and must never redefine physical validity.
 
 ## Authority boundary
 
-Dataset labels, descriptors, Teacher judgments, and learned predictions never override deterministic physical validity. S1-H-A may only classify/prune candidates already inside the complete authoritative valid set, and future learned ranking may only consume candidates retained by the deterministic boundary defined by the active merged protocol.
+Teacher judgments and learned predictions never override deterministic physical/feasibility state. A future learned ranker may only choose among S1-H-C assignments supplied for the same event. Output outside that set is an error, not a new candidate.
 
 ## Frozen evidence semantics
 
-Frozen preregistration/evidence JSON files are historical snapshots. Their status fields should not be rewritten solely because a later PR was merged. Current live status is tracked in the top-level project documentation.
+Frozen preregistration/evidence JSON files are historical snapshots. Their status fields are not rewritten solely because a later PR is merged. Current live status is tracked in the top-level project documentation.

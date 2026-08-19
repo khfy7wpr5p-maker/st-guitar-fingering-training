@@ -4,79 +4,106 @@
 
 - Parse untrusted XML with safe parsers; do not fetch network DTD/schema resources.
 - Reject unsupported string/fret mappings, missing tuning, malformed durations, and impossible physical placements.
-- Deterministic guitar rules own physical validity.
-- `valid_chord_voicings()` is the authoritative physically-valid candidate generator for S1-H-A.
-- Learned systems may only score/rank candidates already accepted by the deterministic physical engine.
-- No learned model may create, repair, legalize, or silently reintroduce an invalid/pruned placement.
+- `valid_chord_voicings()` remains the authoritative physical candidate generator.
+- Deterministic downstream layers may only remove or expand metadata/assignments for candidates from that set; they may never manufacture or legalize a new physical placement.
+- Learned systems may only rank final deterministic assignment IDs supplied to them.
 
 ## S1-H-A plausibility safety
 
-S1-H-A is deterministic and conservative.
+- complete authoritative candidate set required;
+- non-authoritative candidates, duplicates, and incomplete subsets fail closed;
+- raw physical set preserved for audit;
+- v1 hard prune limited to `H001_MIN_FINGER_PROXY_GE_6`;
+- five distinct positive frets retained as `BORDERLINE` at H-A;
+- dominance remains diagnostic-only at H-A;
+- tone/style/resonance/preference are not physical hard-prune rules.
 
-- The analyzer must receive the complete authoritative candidate set for the same pitches/tuning.
-- Non-authoritative candidates, duplicates, and incomplete authoritative subsets fail closed.
-- Raw physically-valid candidates are preserved for audit.
-- v1 hard-prune authority is limited to `H001_MIN_FINGER_PROXY_GE_6`.
-- Five distinct positive fret values are retained as `BORDERLINE`.
-- Same-topology mechanical dominance is diagnostic-only and retained in v1.
-- Open-note count, high position, internal gaps, lower-position preference, tone, resonance, and artistic preference are not single-factor hard-prune rules.
-- If the complete authoritative set is pruned, the result must be explicit as `NO_PLAUSIBLE_CANDIDATE`.
+## S1-H-B fretting-resource safety
+
+S1-H-B is an ordinary four-fretting-finger resource model, not full biomechanics.
+
+- it recomputes the complete H-A state;
+- it may only further prune H-A-retained candidates;
+- open strings consume no fretting finger;
+- same-fret notes may share one continuous barre only under the frozen crossing rules;
+- required open strings and lower positive frets block a higher-fret barre crossing;
+- unused strings and higher-fret overrides are passable;
+- v1 hard prune is limited to `H101_MIN_STANDARD_FINGERS_GE_5`;
+- H-A-pruned candidates remain audited and may never be reintroduced;
+- zero surviving candidates is explicit as `NO_STANDARD_FINGERING_CANDIDATE`.
+
+H-B must not be described as proving comfort, reach, naturalness, wrist safety, or impossibility under extended techniques such as thumb-over or two-hand tapping.
+
+## S1-H-C assignment-generation safety
+
+S1-H-C enumerates standard assignments but does not choose a preferred one.
+
+- only H-B-retained voicings receive assignments;
+- open strings use finger `0`;
+- fretted groups use distinct fingers `1..4`;
+- notes in one H-B group share a finger;
+- strictly increasing frets require strictly increasing finger numbers;
+- exact pitch/string/fret placement is preserved;
+- barre metadata must match the upstream group span;
+- assignment identities are stable and deterministic;
+- a retained voicing with zero assignments is a fail-closed invariant error;
+- upstream-pruned voicings receive zero assignments.
+
+A future learned ranker must not output an assignment ID that was not supplied by S1-H-C for that event.
 
 ## Training and label boundaries
 
 No user upload, teacher correction, annotation, pilot answer, or repeat answer is automatic training consent.
 
-The current merged S1-H-A contract records:
+Current protected label rules:
 
 - S1-E v2 pilot labels: `NEVER_TRAINING`;
 - S1-E repeat labels: `NEVER_TRAINING`;
 - S1-G v2 first-pass: `DESIGN_FAIL_DIAGNOSTIC_ONLY_NEVER_TRAINING`;
 - S1-G repeat: `DO_NOT_RUN`;
-- S1-F real project-label model fit: `HARD_CLOSED`.
+- historical repeat/reliability labels: not extra training rows;
+- S1-F real project-label fit remains `HARD_CLOSED` until superseded by an explicitly approved newer model-development protocol.
 
-Historical S1 repeat/reliability labels remain reliability-only. `EQUAL_OR_UNSURE` responses are preserved and never coerced into binary labels.
+`EQUAL_OR_UNSURE` responses remain explicit and must not be silently coerced into binary targets.
 
 ## Consumed evidence
 
 - Stage 7E is permanently evaluation-only.
 - E3-E Teacher-GOLD is permanently consumed untouched evaluation evidence.
-- Historical development labels may not be relabeled as fresh validation.
-- Repeat/reliability corpora may not be recycled as training or hard-error-mining data unless an explicitly newer merged protocol says otherwise; the current S1-H-A contract does not open such reuse.
+- historical development results are not fresh validation.
+- consumed untouched or reliability corpora may not be recycled for model selection, threshold tuning, hard-error mining, or a new validation claim.
 
-## Model / promotion gates
+## Real model-development gate
 
-The existence of an executable training harness does not authorize training.
+The repository is now complete through deterministic S1-H-C and has reached the real learned-model boundary.
 
-The following remain closed:
+Before any fit/tuning begins, a separately approved protocol must freeze:
 
-- real S1-F component fitting;
-- component specialist activation;
-- Base Guitaristic Arbiter training/activation;
-- learned hard-error refiner training/activation;
-- checkpoint retention/promotion;
+- prediction target over S1-H-C assignments;
+- eligible and forbidden label provenance;
+- feature contract;
+- family-isolated split/evaluation policy;
+- baselines and acceptance metrics;
+- model/hyperparameter selection policy;
+- tie/unsure handling;
+- output restriction to supplied assignment IDs;
+- checkpoint-retention criteria fixed before the deciding evaluation.
+
+Model-development approval does **not** automatically authorize checkpoint retention, shadow integration, or production.
+
+## Promotion gates
+
+These remain separately closed even after a future model fit:
+
+- retained/promoted checkpoint;
+- learned arbiter/refiner activation beyond its approved experiment;
 - GuitarTab Engine shadow integration;
 - production integration.
 
-Any later opening must be explicit, separately preregistered, reviewed, and merged before execution/retention decisions.
-
 ## Historical evidence files
 
-Frozen preregistration/evidence JSON files are immutable historical snapshots. A field such as `PREPARATION_ONLY_DRAFT_PR` or `merge_authorized=false` may correctly describe the state when the record was sealed even after a later authorized merge.
+Frozen preregistration/evidence JSON files are immutable historical snapshots. Do not rewrite them solely to match a later merge. Live status belongs in the top-level documentation.
 
-Do not rewrite frozen evidence solely to make it match current live repository status. Live status belongs in the top-level documentation.
+## Development-control rule
 
-## Open PR #70 safety
-
-PR #70 is open/draft and diverged from current `main`. It is not a dependency of merged S1-H-A and must not be merged mechanically.
-
-Before any action on PR #70, reconcile its intended S1-G v2 behavior with the stronger merged S1-H-A boundary, especially the `S1-G v2 first-pass = diagnostic-only` and `S1-G repeat = do not run` rules.
-
-## Future deterministic extensions
-
-A future S1-H hand/finger feasibility layer may add deterministic constraints only after its contract is preregistered. It must distinguish physical/ordinary-technique feasibility from musical preference and must preserve the S1-H-A complete-authoritative-set and audit invariants.
-
-## Development-control gates
-
-Routine read-only analysis, bounded documentation maintenance, branch preparation, tests, CI inspection, and PR preparation are allowed inside an approved maintenance task.
-
-Explicit approval remains required for consequential gates including runtime/model-behavior merges, checkpoint retention/promotion, shadow/production integration, destructive history operations, or material stage expansion.
+Pre-model deterministic technical development through S1-H-C was authorized and completed without repeated approval interruptions. The next action that opens real learned-model development is a separate explicit gate. Destructive history operations, checkpoint promotion, and shadow/production integration remain separately consequential gates.

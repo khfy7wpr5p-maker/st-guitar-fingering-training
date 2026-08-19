@@ -15,107 +15,108 @@ valid_chord_voicings()
         │
         │ AUTHORITATIVE PHYSICAL BOUNDARY
         ↓
-S1-H-A deterministic guitaristic plausibility analyzer ✅ MERGED
-  ├─ requires the complete authoritative candidate set
-  ├─ preserves raw physically-valid candidates for audit
-  ├─ canonical candidate IDs + stable reason codes
-  ├─ PLAUSIBLE
-  ├─ BORDERLINE
-  ├─ DOMINATED (diagnostic-only in v1; retained)
-  └─ IMPRACTICAL
-       └─ hard prune v1: H001_MIN_FINGER_PROXY_GE_6 only
+S1-H-A deterministic guitaristic plausibility                 ✅ MERGED
+  ├─ complete authoritative candidate-set guard
+  ├─ stable audit IDs/reason codes
+  └─ hard prune H001_MIN_FINGER_PROXY_GE_6
         ↓
-Future ranking / component-analysis layer 🔒 CLOSED
+S1-H-B deterministic four-finger/barre resource feasibility   ✅ MERGED
+  ├─ continuous same-fret barre grouping
+  ├─ open/lower-fret blockers, higher-fret overrides
+  └─ hard prune H101_MIN_STANDARD_FINGERS_GE_5
         ↓
-Future Base Guitaristic Arbiter / Ranker 🔒 CLOSED
+S1-H-C deterministic standard finger-assignment enumeration   ✅ MERGED
+  ├─ open strings use finger 0
+  ├─ fretted groups use distinct fingers 1..4
+  ├─ monotonic finger order across increasing frets
+  ├─ explicit barre metadata
+  └─ stable assignment IDs; no preference/ranking
         ↓
-Optional future hard-error refinement 🔒 CLOSED
+┌─────────────────────────────────────────────────────────────┐
+│ REAL MODEL DEVELOPMENT GATE                                │
+│ A future learned model may rank only S1-H-C assignments.  │
+│ It may not manufacture or legalize a placement/fingering. │
+└─────────────────────────────────────────────────────────────┘
+        ↓ only after explicit model-development approval
+Future learned fingering ranker                               🔒 CLOSED
         ↓
-Checkpoint-retention gate 🔒 CLOSED
+Future checkpoint-retention / promotion gate                  🔒 CLOSED
         ↓
-GuitarTab Engine shadow / production integration 🔒 CLOSED
+GuitarTab Engine shadow / production integration              🔒 CLOSED
 ```
 
-## Implemented and merged
+## Implemented deterministic boundary
 
-- safe Guitar Pro / MusicXML intake and normalization;
-- deterministic physical validation and candidate generation;
-- historical `open_low` / `compact` research proposal layers;
-- target-blind geometry/ergonomics descriptors and family-isolated evaluation infrastructure;
-- Teacher-GOLD pairwise and independent-component research machinery;
-- S1-F preparation-only component-training harness;
-- S1-G v1 full-reliability preregistration as immutable merged history;
-- S1-H-A deterministic plausibility analyzer and conservative pruning contract.
+The repository now has three distinct deterministic layers after physical enumeration.
 
-## S1-F boundary
+### S1-H-A — plausibility
 
-S1-F prepares fixed features, provenance validation, family-safe folds, and a baseline model shape, but `fit_component_specialist()` remains deliberately hard-closed for project-label fitting.
+`valid_chord_voicings()` remains the sole physical authority. H-A requires the complete authoritative set, preserves it for audit, and only conservatively prunes the declared `H001_MIN_FINGER_PROXY_GE_6` cases. Five distinct positive frets and mechanical dominance remain retained at this layer.
 
-Real fitting may be opened only by a later separately merged training protocol after independently sufficient reliability evidence and explicit training-corpus rules exist. A caller-supplied flag or dictionary cannot open the fit path.
+### S1-H-B — fretting-resource feasibility
 
-## S1-G state
+H-B improves on H-A's coarse distinct-fret proxy without pretending to solve full biomechanics. It partitions same-fret targets into continuous barre groups under explicit blocking rules and counts the minimum ordinary fretting-finger resources required.
 
-S1-G v1 is merged historical preregistration and must remain immutable.
+A barre may cross an unused string or a higher-fretted note that can override the lower barre. It may not cross a string that must remain open or must sound a lower positive fret. Under the declared ordinary four-finger envelope, `minimum_standard_fingers >= 5` is pruned by `H101_MIN_STANDARD_FINGERS_GE_5`.
 
-Open draft PR #70 contains an S1-G v2 STRING-only protocol based on `ac146e9…`. It is not part of current `main`; current `main` is nine commits ahead of that branch. Therefore PR #70 is not an architectural dependency of S1-H-A and must not be described as current merged behavior.
+H-B may only remove H-A-retained candidates and never resurrect an upstream prune.
 
-The merged S1-H-A contract records the stricter current scientific boundary:
+### S1-H-C — standard finger assignments
 
-- S1-E v2 pilot labels: never training;
-- S1-E repeat labels: never training;
-- S1-G v2 first-pass: diagnostic-only / never training;
-- S1-G repeat: do not run;
-- S1-F real model fit: hard-closed.
+H-C expands each H-B-retained voicing into every deterministic ordinary four-finger assignment admitted by the frozen v1 rules. It preserves pitch/string/fret exactly, uses finger `0` for open strings, assigns one distinct finger to each H-B fretting group, records barre spans, and enforces increasing finger numbers across strictly increasing fret positions.
 
-## S1-H-A deterministic plausibility contract
+H-C is an **enumerator, not a ranker**. It deliberately emits multiple legal standard fingering candidates when the deterministic rules do not justify choosing one.
 
-`valid_chord_voicings()` remains the sole physical authority. S1-H-A may classify and conservatively prune existing physically-valid candidates, but may never create a candidate, repair an invalid mapping, or reinterpret preference as physical truth.
+## Why the model should come after H-C
 
-The lower-level analyzer accepts a supplied raw candidate collection only when that collection is exactly equal to the authoritative full set. Non-authoritative candidates, duplicates, and incomplete authoritative subsets fail closed.
+The earlier research tried to learn guitaristic preference while the candidate representation was still coarse. H-A/B/C now move facts that can be decided safely and explainably out of the learned layer:
 
-### v1 classes and precedence
+- physical pitch/string/fret validity;
+- obvious ordinary-hand resource impossibility;
+- exact standard finger-assignment candidate generation.
 
-`IMPRACTICAL > DOMINATED > BORDERLINE > PLAUSIBLE`
+A future learned model therefore has a narrower job: rank already-valid, already-resource-feasible standard assignments by guitaristic quality. That makes model errors auditable and prevents preference learning from becoming a hidden physical-validity engine.
 
-### v1 hard prune
+## What remains intentionally non-deterministic
 
-Only one hard-prune rule is frozen:
+The deterministic boundary does not claim to encode:
 
-`H001_MIN_FINGER_PROXY_GE_6`
+- most natural/comfortable fingering;
+- player-specific hand anatomy;
+- detailed stretch or wrist comfort;
+- transition quality across previous/next chords;
+- musical style, tone, resonance, or expressive intent.
 
-The conservative minimum-finger proxy is the number of distinct positive fret values. Six or more distinct positive fret values are outside the ordinary single-fretting-hand simultaneous-chord envelope and are classified `IMPRACTICAL`.
+Those are potential learned or separately validated contextual signals. They must not be converted into new hard rules merely to avoid model development.
 
-### Retained diagnostic classes
+## Historical learning boundary
 
-- Five distinct positive fret values => `BORDERLINE`, retained.
-- Same-topology mechanical dominance based only on minimum-finger proxy and effective fretted-hand span => `DOMINATED`, retained in v1.
+- S1-F preparation code exists, but real project-label fitting remains hard-closed.
+- S1-G v1 is immutable merged historical preregistration.
+- S1-G v2 / PR #70 was closed as superseded without merge.
+- S1-E pilot/repeat labels remain never-training.
+- S1-G v2 first-pass remains diagnostic-only / never-training; its repeat is not run.
+- Stage 7E and E3-E are consumed evaluation-only evidence.
+- repeat/reliability labels remain separate from training labels.
 
-### Explicit non-rules
+## Required contract for the next learned stage
 
-No candidate is hard-pruned merely because of open-string count, high position, internal string gaps, multiple fretted runs, isolated fretted strings, lower-position preference, tone, resonance, color, or artistic preference.
+Before real model fitting, a new model-development protocol must freeze:
+
+1. prediction target over S1-H-C assignments;
+2. exact eligible label provenance and forbidden corpora;
+3. target-blind/deterministic input features;
+4. family-isolated training and evaluation splits;
+5. baseline(s), metrics, and acceptance gates;
+6. handling of ties/unsure labels;
+7. checkpoint-retention policy fixed before the deciding evaluation;
+8. fail-closed guarantee that model output is always one of the supplied S1-H-C assignments;
+9. no production/shadow integration from training success alone.
 
 ## Evidence and status semantics
 
-Frozen JSON evidence/preregistration records capture the state at the time they were sealed. They are historical artifacts and may still contain values such as `PREPARATION_ONLY_DRAFT_PR` or `merge_authorized=false` after a later authorized merge. Those fields must not be retroactively rewritten solely to make history look current.
-
-Live repository status is maintained in `README.md`, `STATUS.md`, `ROADMAP.md`, and this file.
+Frozen JSON preregistration/evidence records describe the state when sealed and are not retroactively rewritten after merge. Current status belongs in the live top-level documentation.
 
 ## Current continuation point
 
-There is no merged post-S1-H-A next-stage protocol yet. The safe next sequence is:
-
-1. finish global documentation synchronization;
-2. reconcile open PR #70 with current `main` and the S1-H-A scientific boundary;
-3. preregister a new bounded deterministic S1-H continuation before runtime changes;
-4. keep all learned-model fitting, checkpoint retention, and integration closed unless a later explicit gate opens them.
-
-A plausible next research direction is a deterministic hand/finger feasibility refinement that improves on the current lower-bound finger proxy, but this is a proposal for the next preregistration stage, not current repository truth.
-
-## Non-negotiable authority rules
-
-1. Deterministic guitar rules own physical validity.
-2. Learned systems may only rank candidates already inside the deterministic valid set.
-3. Dataset families may not leak across declared evaluation boundaries.
-4. Repeat/reliability labels are distinct from training labels.
-5. Consumed untouched evidence may not be recycled for training/tuning or a fresh validation claim.
-6. No checkpoint or GuitarTab Engine shadow/production integration exists without a separately preregistered promotion gate.
+**S1-H-C is merged. The repository has reached the real model-development gate.** Do not add more learned behavior, fit a model, select a checkpoint, or begin shadow/production integration without the separate model-development approval.
