@@ -1,0 +1,116 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-batch01-diagnostic-decision-v1",
+  "stage": "7G-E3-S2-A-BATCH01-DIAGNOSTIC-CLOSEOUT",
+  "status": "DIAGNOSTIC_ONLY_NEVER_TRAINING",
+  "base_main_sha": "0ddd22a2133bc8539305212d9b6b77fbd0c0e9a8",
+  "protocol_version": "S2-A.v1",
+  "inputs": {
+    "first_pass_response_seal": "evidence/stage7g_e3_s2a_batch01_first_pass_response_seal.json",
+    "batch_source_manifest": "evidence/stage7g_c_r1_animetab_batch01_manifest.json",
+    "historical_teacher_response_seal": "evidence/stage7g_e3_c_teacher_batch01_response_seal.json",
+    "preregistration": "docs/STAGE_7G_E3_S2A_LEARNED_FINGERING_RANKER_PREREGISTRATION.md",
+    "internal_audit_rows_recomputed_from_sealed_batch": 720,
+    "raw_teacher_rows_committed_to_git": false
+  },
+  "source_policy_review": {
+    "batch01_family_count": 40,
+    "same_40_source_families_were_used_in_prior_teacher_preference_development": true,
+    "historical_teacher_answers_reused_as_s2a_labels": false,
+    "source_family_identity_reuse_detected": true,
+    "protocol_rule": "historical development sources do not establish new S2-A evaluation evidence",
+    "fit_eligibility": false,
+    "effective_s2a_fit_rows_from_batch01": 0,
+    "classification": "DIAGNOSTIC_ONLY_NEVER_TRAINING"
+  },
+  "response_diagnostics": {
+    "tasks": 720,
+    "A": 164,
+    "B": 167,
+    "EQUAL_OR_UNSURE": 389,
+    "decisive": 331,
+    "decisive_rate": 0.4597222222222222,
+    "A_share_among_decisive": 0.4954682779456193,
+    "B_share_among_decisive": 0.5045317220543807,
+    "pair_type": {
+      "FINGER_ONLY": {
+        "tasks": 360,
+        "decisive": 139,
+        "EQUAL_OR_UNSURE": 221,
+        "decisive_rate": 0.3861111111111111
+      },
+      "MIXED": {
+        "tasks": 360,
+        "decisive": 192,
+        "EQUAL_OR_UNSURE": 168,
+        "decisive_rate": 0.5333333333333333
+      }
+    },
+    "distance_stratum": {
+      "NEAR": {
+        "tasks": 240,
+        "decisive": 128,
+        "EQUAL_OR_UNSURE": 112,
+        "decisive_rate": 0.5333333333333333
+      },
+      "MID": {
+        "tasks": 240,
+        "decisive": 105,
+        "EQUAL_OR_UNSURE": 135,
+        "decisive_rate": 0.4375
+      },
+      "FAR": {
+        "tasks": 240,
+        "decisive": 98,
+        "EQUAL_OR_UNSURE": 142,
+        "decisive_rate": 0.4083333333333333
+      }
+    },
+    "pair_type_x_distance": {
+      "FINGER_ONLY|NEAR": {"tasks": 120, "A": 28, "B": 31, "EQUAL_OR_UNSURE": 61, "decisive": 59, "decisive_rate": 0.49166666666666664},
+      "FINGER_ONLY|MID": {"tasks": 120, "A": 27, "B": 19, "EQUAL_OR_UNSURE": 74, "decisive": 46, "decisive_rate": 0.38333333333333336},
+      "FINGER_ONLY|FAR": {"tasks": 120, "A": 18, "B": 16, "EQUAL_OR_UNSURE": 86, "decisive": 34, "decisive_rate": 0.2833333333333333},
+      "MIXED|NEAR": {"tasks": 120, "A": 28, "B": 41, "EQUAL_OR_UNSURE": 51, "decisive": 69, "decisive_rate": 0.575},
+      "MIXED|MID": {"tasks": 120, "A": 29, "B": 30, "EQUAL_OR_UNSURE": 61, "decisive": 59, "decisive_rate": 0.49166666666666664},
+      "MIXED|FAR": {"tasks": 120, "A": 34, "B": 30, "EQUAL_OR_UNSURE": 56, "decisive": 64, "decisive_rate": 0.5333333333333333}
+    },
+    "interpretation_guards": {
+      "no_obvious_A_B_side_imbalance_among_decisive": true,
+      "distance_l1_is_not_monotonic_with_decisiveness_in_this_pilot": true,
+      "do_not_redefine_FAR_as_human_confidence": true,
+      "do_not_coerce_equal_or_unsure": true
+    }
+  },
+  "decision": {
+    "run_repeat_on_batch01": false,
+    "fit_model_on_batch01": false,
+    "change_frozen_v1_model_from_batch01_labels": false,
+    "next_data_must_use_teacher_naive_source_families": true,
+    "reserve_untouched_final_families_before_new_development_labels": true,
+    "keep_pair_sampling_target_blind": true,
+    "keep_A_B_EQUAL_OR_UNSURE_semantics": true
+  },
+  "fresh_collection_plan": {
+    "protocol": "continue S2-A.v1 without changing model family, features, thresholds, or label semantics",
+    "source_pool": "pinned AnimeTAB full-track sources never used in any prior Teacher preference experiment",
+    "primary_development_family_target": 80,
+    "primary_development_task_target": 1440,
+    "tasks_per_primary_family": 18,
+    "pair_type_x_distance_target_each": 240,
+    "pre_reserved_contingency_family_count": 20,
+    "contingency_task_target": 360,
+    "pre_reserved_untouched_final_family_count": 20,
+    "selection_rule": "all source and task identities are frozen label-blind before any new response is collected",
+    "contingency_trigger": "only frozen corpus-count failure after the primary batch; never model performance or label direction",
+    "repeat_deferred_until_fresh_development_corpus_gate_passes": true
+  },
+  "scientific_boundary": {
+    "batch01_repeat_executed": false,
+    "batch01_fit_executed": false,
+    "fresh_development_labels_collected": false,
+    "real_model_fit_executed": false,
+    "untouched_final_opened": false,
+    "checkpoint_retained": false,
+    "shadow_or_production_integration": false
+  },
+  "next_gate": "FREEZE_FRESH_SOURCE_RESERVATION_AND_BATCH02_TASK_IDENTITIES_BEFORE_COLLECTION"
+}
