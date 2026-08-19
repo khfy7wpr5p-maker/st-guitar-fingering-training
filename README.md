@@ -1,71 +1,90 @@
 # st-guitar-fingering-training
 
-Training, evaluation, and deterministic guitar-fingering research for polyphony, voicing, string/fret selection, and guitaristic plausibility.
+Training, evaluation, and deterministic guitar-fingering research for polyphony, voicing, string/fret selection, and guitaristic fingering.
 
 ## Core rule
 
-Physical validity is deterministic and authoritative. Learned systems may score or rank only candidates already produced by `valid_chord_voicings()`; they may never create, repair, or legalize an invalid placement.
+Physical validity and ordinary-technique candidate feasibility are deterministic and authoritative. A learned system may only rank assignments already emitted by the active deterministic pipeline; it may never create, repair, legalize, or silently reintroduce an invalid/pruned placement.
 
 ## Current architecture
 
 ```text
 Guitar Pro / MusicXML
-  -> safe normalization
-  -> deterministic pitch/string/fret validation
-  -> valid_chord_voicings()                         [authoritative]
-  -> S1-H-A deterministic plausibility analyzer     [merged]
-       - PLAUSIBLE / BORDERLINE / DOMINATED / IMPRACTICAL
-       - v1 hard prune: H001_MIN_FINGER_PROXY_GE_6 only
-       - complete authoritative candidate set required
-       - raw set preserved for audit
-  -> future ranking / component-model work           [closed]
-  -> future checkpoint / GuitarTab Engine shadow     [closed]
+  → safe normalization
+  → deterministic pitch/string/fret validation
+  → valid_chord_voicings()                         [authoritative physical set]
+  → S1-H-A deterministic plausibility              [merged]
+  → S1-H-B four-finger/barre resource feasibility [merged]
+  → S1-H-C standard finger assignments            [merged]
+  → REAL MODEL DEVELOPMENT GATE                   [stopped here]
+  → learned fingering ranker                      [not started]
+  → checkpoint / GuitarTab Engine integration     [closed]
 ```
 
 ## Verified repository position
 
-Current `main` includes:
+Current `main` after PR #74 is `154d8d4c514849535a523ca79ea22b6fae7e77de`.
 
-- ✅ S1-F component-training preparation harness, with real fitting **hard-closed**;
-- ✅ S1-G v1 full-reliability preregistration, retained as immutable merged history;
-- ✅ S1-H-A deterministic guitaristic plausibility analyzer, merged by PR #71;
-- 🔒 no component-model fit, checkpoint retention, shadow integration, or production integration.
+Implemented pre-model boundary:
 
-Open draft PR #70 proposes an S1-G v2 STRING-only protocol, but it is **not merged repository truth** and is based on an older `main`. It must be reconciled or superseded before it can be treated as an active stage.
+- ✅ S1-H-A requires the complete `valid_chord_voicings()` set and applies only its conservative plausibility rule;
+- ✅ S1-H-B rejects ordinary four-finger/barre resource impossibilities under an explicit deterministic model;
+- ✅ S1-H-C enumerates every standard finger assignment admitted by that deterministic boundary;
+- ✅ PR #70 is closed as superseded without merge;
+- 🔒 no real project model fit, checkpoint retention, shadow integration, or production integration has been opened.
 
-## Human-label reliability boundary
+## S1-H-B in brief
 
-Earlier single global A/B naturalness supervision was not reliable enough for promotion. Later component work therefore separated deterministic facts from human judgments. The current safety boundary is stricter than the older S1-D-era documents:
+H-B counts deterministic fretting resources rather than guessing comfort.
 
-- S1-F real fit remains hard-closed;
-- S1-E pilot/repeat labels are never-training evidence;
-- S1-G v2 first-pass evidence is diagnostic-only / never-training according to the merged S1-H-A contract;
-- S1-G repeat is not to be run under the merged S1-H-A contract;
-- S1 repeat/reliability evidence is never additional training data.
+- open strings consume no fretting finger;
+- same-fret notes may share a continuous barre;
+- unused strings may lie under a barre;
+- a higher-fret note may override a lower underlying barre;
+- a required open string or required lower positive fret blocks a higher-fret barre crossing;
+- `minimum_standard_fingers >= 5` is pruned by `H101_MIN_STANDARD_FINGERS_GE_5`.
 
-## S1-H-A deterministic plausibility v1
+This is an ordinary four-finger envelope, not a claim about extended techniques.
 
-S1-H-A is intentionally conservative.
+## S1-H-C in brief
 
-- `H001_MIN_FINGER_PROXY_GE_6`: six or more distinct positive fret values => `IMPRACTICAL`, prune.
-- `B001_FIVE_DISTINCT_POSITIVE_FRETS`: five distinct positive fret values => `BORDERLINE`, retain.
-- `D001_MECHANICALLY_DOMINATED_SAME_TOPOLOGY`: diagnostic `DOMINATED`, retain in v1.
-- Open-string count, high fret, internal gaps, multiple fretted runs, lower position, tone, resonance, and artistic preference are **not** single-factor prune rules.
+H-C is an assignment enumerator, not a preference engine.
 
-The analyzer fails closed if the supplied raw set is not exactly the complete authoritative `valid_chord_voicings()` set for the same pitches and tuning.
+- open strings use finger `0`;
+- each fretted H-B group gets a distinct finger `1..4`;
+- lower fret groups use lower-numbered fingers than strictly higher fret groups;
+- same-fret groups have no frozen preference order;
+- pitch/string/fret is preserved exactly;
+- barre spans are explicit;
+- assignment IDs are stable SHA-256 identities;
+- upstream-pruned voicings receive no assignments.
 
-## What should happen next
+## Verification
 
-Repository truth does not yet contain a merged post-S1-H-A next-stage protocol. The controlled continuation point is therefore:
+- PR #73 / CI #193: **236 tests PASS**, compile validation PASS; Stage 7B-C2 comparison step skipped by branch condition.
+- PR #74 / CI #195: **245 tests PASS**, compile validation PASS; Stage 7B-C2 comparison step skipped by branch condition.
 
-1. synchronize stale global documentation to S1-H-A;
-2. review open PR #70 against current `main` and decide whether to archive/supersede it rather than treating it as current architecture;
-3. only then preregister the next bounded S1-H step (for example, a stronger deterministic hand/finger feasibility stage) before changing runtime behavior.
+A skipped workflow step is not counted as PASS evidence.
 
-No model training should be resumed merely because the training harness exists.
+## What remains for a learned model
+
+The deterministic pipeline intentionally does not decide which surviving assignment is most natural, comfortable, stylistically appropriate, or best in musical context. Detailed hand comfort, player-specific anatomy, transitions, style, tone, and preference remain outside hard physical truth.
+
+The next justified stage is therefore a learned **fingering ranker** over S1-H-C assignment IDs, not another arbitrary deterministic preference rule.
+
+Before real fitting begins, a separate model-development protocol must freeze the target, eligible label provenance, features, family-isolated evaluation, baselines/metrics, tie handling, model-selection policy, checkpoint gate, and strict output restriction to S1-H-C assignments.
 
 ## Protected evidence
 
-Stage 7E and E3-E remain consumed evaluation-only evidence. Historical repeat/reliability labels remain separate from training data. Frozen preregistration/evidence JSON files are historical records and should not be rewritten merely to reflect a later merge; live status belongs in `README.md`, `STATUS.md`, `ROADMAP.md`, and `ARCHITECTURE.md`.
+- Stage 7E and E3-E remain consumed evaluation-only evidence.
+- S1-E pilot/repeat labels remain never-training.
+- S1-G v2 first-pass remains diagnostic-only/never-training; its repeat is not run.
+- historical repeat/reliability labels are not extra training rows.
+- S1-G v1 remains immutable merged history.
+- frozen evidence JSON files remain historical snapshots and are not rewritten after merge.
 
-See `ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`, `SAFETY.md`, `DATASET_CONTRACT.md`, `docs/STAGE_7G_E3_S1F_COMPONENT_TRAINING_PREP.md`, `docs/STAGE_7G_E3_S1G_FULL_RELIABILITY_PREREG_V1.md`, and `docs/STAGE_7G_E3_S1H_A_GUITARISTIC_PLAUSIBILITY.md`.
+## Current stop
+
+**The repository has reached the real model-development gate. No real model fit has been started.**
+
+See `ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`, `SAFETY.md`, `DATASET_CONTRACT.md`, `docs/STAGE_7G_E3_S1H_A_GUITARISTIC_PLAUSIBILITY.md`, `docs/STAGE_7G_E3_S1H_B_FRETTING_RESOURCE_FEASIBILITY.md`, and `docs/STAGE_7G_E3_S1H_C_STANDARD_FINGER_ASSIGNMENTS.md`.
