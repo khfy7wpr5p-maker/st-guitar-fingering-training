@@ -8,6 +8,7 @@ from st_guitar_fingering_training.guitaristic_plausibility import (
     D001_MECHANICALLY_DOMINATED_SAME_TOPOLOGY,
     H001_MIN_FINGER_PROXY_GE_6,
     S1H_NO_PLAUSIBLE_CANDIDATE,
+    S1H_OK,
     analyze_guitaristic_plausibility,
     analyze_valid_chord_voicings,
 )
@@ -26,7 +27,7 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
         pitches = (55, 60, 64)
         observed = ((55, 3, 0), (60, 2, 1), (64, 1, 0))
         self.assertIn(observed, valid_chord_voicings(pitches, STANDARD_TUNING))
-        result = analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, (observed,))
+        result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
         item = _assessment(result, observed)
         self.assertEqual(item.classification, "PLAUSIBLE")
         self.assertFalse(item.pruned)
@@ -34,8 +35,9 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
         self.assertEqual(item.facts.conservative_minimum_finger_proxy, 1)
 
     def test_geometry_helper_is_reused_and_extended_deterministically(self):
+        pitches = (55, 60, 64)
         candidate = ((55, 3, 0), (60, 2, 1), (64, 1, 0))
-        result = analyze_guitaristic_plausibility((55, 60, 64), STANDARD_TUNING, (candidate,))
+        result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
         facts = _assessment(result, candidate).facts
         geometry = dict(facts.geometry)
         self.assertEqual(geometry["open_note_count"], 2.0)
@@ -57,27 +59,43 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
             (65, 1, 1),
         )
         pitches = tuple(pitch for pitch, _, _ in candidate)
-        self.assertIn(candidate, valid_chord_voicings(pitches, STANDARD_TUNING))
-        result = analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, (candidate,))
+        authority = valid_chord_voicings(pitches, STANDARD_TUNING)
+        self.assertIn(candidate, authority)
+        result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
         item = _assessment(result, candidate)
         self.assertEqual(item.classification, "IMPRACTICAL")
         self.assertTrue(item.pruned)
         self.assertEqual(item.reason_codes, (H001_MIN_FINGER_PROXY_GE_6,))
-        self.assertEqual(result.status, S1H_NO_PLAUSIBLE_CANDIDATE)
-        self.assertEqual(result.raw_candidates, (candidate,))
+        self.assertEqual(result.status, S1H_OK)
+        self.assertNotIn(candidate, result.retained_candidates)
+        self.assertEqual(set(result.raw_candidates), set(authority))
+
+    def test_full_authoritative_all_pruned_reports_no_plausible_candidate(self):
+        pitches = (41, 47, 53, 59, 80, 81)
+        authority = valid_chord_voicings(pitches, STANDARD_TUNING)
+        self.assertEqual(len(authority), 2)
+        result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
+        self.assertEqual(set(result.raw_candidates), set(authority))
         self.assertEqual(result.retained_candidates, ())
+        self.assertEqual(result.status, S1H_NO_PLAUSIBLE_CANDIDATE)
+        self.assertTrue(all(item.pruned for item in result.assessments))
+        self.assertTrue(all(
+            item.reason_codes == (H001_MIN_FINGER_PROXY_GE_6,)
+            for item in result.assessments
+        ))
 
     def test_five_distinct_positive_frets_is_borderline_but_retained(self):
+        pitches = (41, 47, 53, 59, 64)
         candidate = (
-            (54, 5, 9),
-            (57, 4, 7),
-            (60, 3, 5),
-            (62, 2, 3),
-            (65, 1, 1),
+            (41, 6, 1),
+            (47, 5, 2),
+            (53, 4, 3),
+            (59, 3, 4),
+            (64, 2, 5),
         )
-        pitches = tuple(pitch for pitch, _, _ in candidate)
-        self.assertIn(candidate, valid_chord_voicings(pitches, STANDARD_TUNING))
-        result = analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, (candidate,))
+        authority = valid_chord_voicings(pitches, STANDARD_TUNING)
+        self.assertIn(candidate, authority)
+        result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
         item = _assessment(result, candidate)
         self.assertEqual(item.classification, "BORDERLINE")
         self.assertFalse(item.pruned)
@@ -94,10 +112,10 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
             pitches = tuple(sorted(pitch for pitch, _, _ in candidate))
             with self.subTest(candidate=candidate):
                 self.assertIn(tuple(sorted(candidate)), valid_chord_voicings(pitches, STANDARD_TUNING))
-                result = analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, (candidate,))
+                result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
                 item = _assessment(result, candidate)
                 self.assertFalse(item.pruned)
-                self.assertIn(item.classification, ("PLAUSIBLE", "BORDERLINE"))
+                self.assertIn(item.classification, ("PLAUSIBLE", "BORDERLINE", "DOMINATED"))
 
     def test_dominance_is_diagnostic_only_and_compared_id_is_stable(self):
         wider = ((65, 1, 1), (67, 2, 8))
@@ -106,7 +124,7 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
         authority = valid_chord_voicings(pitches, STANDARD_TUNING)
         self.assertIn(wider, authority)
         self.assertIn(tuple(sorted(narrower)), authority)
-        result = analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, (wider, narrower))
+        result = analyze_valid_chord_voicings(pitches, STANDARD_TUNING)
         wider_item = _assessment(result, wider)
         narrower_item = _assessment(result, narrower)
         self.assertEqual(wider_item.classification, "DOMINATED")
@@ -117,14 +135,16 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
         self.assertIn(tuple(sorted(narrower)), result.retained_candidates)
 
     def test_order_invariance_and_ten_of_ten_repeatability(self):
-        a = ((65, 1, 1), (67, 2, 8))
-        b = ((65, 2, 6), (67, 1, 3))
-        expected = analyze_guitaristic_plausibility((65, 67), STANDARD_TUNING, (a, b))
-        reversed_result = analyze_guitaristic_plausibility((65, 67), STANDARD_TUNING, (b, a))
+        pitches = (65, 67)
+        authority = valid_chord_voicings(pitches, STANDARD_TUNING)
+        expected = analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, authority)
+        reversed_result = analyze_guitaristic_plausibility(
+            pitches, STANDARD_TUNING, tuple(reversed(authority))
+        )
         self.assertEqual(reversed_result, expected)
         for _ in range(10):
             self.assertEqual(
-                analyze_guitaristic_plausibility((65, 67), STANDARD_TUNING, (a, b)),
+                analyze_guitaristic_plausibility(pitches, STANDARD_TUNING, authority),
                 expected,
             )
 
@@ -143,6 +163,17 @@ class GuitaristicPlausibilityTests(unittest.TestCase):
                 self.assertTrue(set(result.retained_candidates).issubset(set(authority)))
                 self.assertTrue(all(item.candidate in authority for item in result.assessments))
                 self.assertEqual(len(result.raw_candidates), len(result.assessments))
+
+    def test_incomplete_authoritative_subset_fails_closed(self):
+        pitches = (65, 67)
+        authority = valid_chord_voicings(pitches, STANDARD_TUNING)
+        self.assertGreater(len(authority), 1)
+        with self.assertRaisesRegex(ValueError, "exactly match authoritative"):
+            analyze_guitaristic_plausibility(
+                pitches,
+                STANDARD_TUNING,
+                authority[:-1],
+            )
 
     def test_invalid_non_authoritative_candidate_and_duplicates_fail_closed(self):
         invalid = ((65, 1, 2), (67, 2, 8))
