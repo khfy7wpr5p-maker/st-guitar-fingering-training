@@ -14,7 +14,7 @@ The layer may analyze or prune existing physically-valid candidates. It must nev
 
 `valid_chord_voicings()` remains the sole physical authority.
 
-The analyzer validates every supplied candidate against the authoritative candidate set for the same pitch-set and tuning. Non-authoritative candidates and duplicate raw candidates fail closed.
+The analyzer requires the raw candidate set to be the complete authoritative `valid_chord_voicings()` output for the same pitch-set and tuning. Non-authoritative candidates, duplicate raw candidates, and incomplete authoritative subsets fail closed. This prevents a caller from manufacturing a global `NO_PLAUSIBLE_CANDIDATE` result by submitting only a selected subset.
 
 Preferred full-set entry point:
 
@@ -23,6 +23,8 @@ Preferred full-set entry point:
 Lower-level entry point:
 
 `analyze_guitaristic_plausibility(pitches, tuning, raw_candidates)`
+
+The lower-level entry point is still full-set only: `raw_candidates` must exactly equal the authoritative `valid_chord_voicings()` set. Candidate ordering may differ, but set membership may not.
 
 ## Deterministic facts
 
@@ -122,34 +124,37 @@ Every assessment contains:
 
 Input candidate order does not change semantic output. Candidate and assessment ordering is canonicalized by stable candidate ID.
 
-If every supplied physically-valid candidate is hard-pruned, the result is:
+If every authoritative physically-valid candidate is hard-pruned, the result is:
 
 `NO_PLAUSIBLE_CANDIDATE`
 
-The complete raw physically-valid candidate set remains present in the result for audit. The analyzer does not silently feed pruned candidates back to a downstream AI.
+The complete authoritative physically-valid candidate set remains present in the result for audit. The analyzer does not silently feed pruned candidates back to a downstream AI.
 
 ## Required invariants
 
-1. retained candidate set is a subset of `valid_chord_voicings()` output;
-2. no new voicing is created;
-3. same input produces the same result and reason codes;
-4. input candidate ordering does not alter semantic output;
-5. raw physically-valid candidates are preserved for audit;
-6. reason codes and compared IDs are stable and traceable;
-7. all-pruned state is explicit as `NO_PLAUSIBLE_CANDIDATE`;
-8. non-authoritative or duplicate raw inputs fail closed.
+1. raw candidate set exactly equals `valid_chord_voicings()` output;
+2. retained candidate set is a subset of `valid_chord_voicings()` output;
+3. no new voicing is created;
+4. same input produces the same result and reason codes;
+5. input candidate ordering does not alter semantic output;
+6. raw physically-valid candidates are preserved for audit;
+7. reason codes and compared IDs are stable and traceable;
+8. all-authoritative-candidates-pruned state is explicit as `NO_PLAUSIBLE_CANDIDATE`;
+9. non-authoritative, duplicate, or incomplete raw inputs fail closed.
 
 ## Test strategy
 
 The implementation includes unit/property-style deterministic tests for:
 
-- authoritative membership and subset invariants across canonical pitch sets;
+- exact authoritative full-set equality and subset invariants across canonical pitch sets;
+- rejection of incomplete authoritative subsets;
 - no-new-voicing behavior;
 - input-order invariance;
 - 10/10 repeatability;
 - raw-set preservation;
 - stable dominance comparison IDs;
-- the single hard-prune case;
+- the single hard-prune rule on a candidate inside a larger full set;
+- a true full-authoritative-set `NO_PLAUSIBLE_CANDIDATE` regression;
 - five-fret borderline retention;
 - open strings, high fret, and internal gap as non-pruning single factors;
 - the repository's existing observed open-C Guitar/MusicXML voicing regression.
