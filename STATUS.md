@@ -3,8 +3,9 @@
 ## Current repository truth
 
 - Default branch: `main`
-- Verified current `main`: `154d8d4c514849535a523ca79ea22b6fae7e77de`
-- Latest merged stage: **Stage 7G-E3-S1-H-C** via PR #74
+- Deterministic runtime baseline through S1-H-C: `154d8d4c514849535a523ca79ea22b6fae7e77de`
+- Latest merged technical stage: **Stage 7G-E3-S1-H-C** via PR #74
+- Later documentation-only merges may advance `main` without changing that runtime baseline; use GitHub history for the live branch head rather than freezing a self-staling `main` SHA here.
 - PR #72 documentation synchronization: ✅ merged
 - PR #73 / S1-H-B: ✅ merged at `0029cb0ab263fbc61bcb1106e3f997811f1455aa`
 - PR #74 / S1-H-C: ✅ merged at `154d8d4c514849535a523ca79ea22b6fae7e77de`

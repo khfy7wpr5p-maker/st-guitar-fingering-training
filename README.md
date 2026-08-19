@@ -23,7 +23,7 @@ Guitar Pro / MusicXML
 
 ## Verified repository position
 
-Current `main` after PR #74 is `154d8d4c514849535a523ca79ea22b6fae7e77de`.
+The deterministic runtime baseline through PR #74 / S1-H-C is `154d8d4c514849535a523ca79ea22b6fae7e77de`. Later documentation-only merges may advance the live `main` head without changing this runtime baseline; use GitHub history for the current branch head.
 
 Implemented pre-model boundary:
 
