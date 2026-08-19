@@ -21,7 +21,7 @@
 
 The deterministic pre-model pipeline is complete through **Stage 7G-E3-S1-H-C**.
 
-Current verified `main` after H-C merge: `154d8d4c514849535a523ca79ea22b6fae7e77de`.
+The deterministic runtime baseline through H-C is `154d8d4c514849535a523ca79ea22b6fae7e77de`. Later documentation-only merges may advance the live `main` head without changing that runtime baseline.
 
 The current pipeline is:
 
