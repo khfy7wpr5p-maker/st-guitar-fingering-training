@@ -1,0 +1,47 @@
+name: s2a-teacher-batch01
+
+on:
+  push:
+    branches:
+      - agent/stage7g-e3-s2a-teacher-batch01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-teacher-batch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install project
+        run: python -m pip install --upgrade pip && python -m pip install -e .
+      - name: Build pinned S2-A Batch01
+        run: |
+          python scripts/build_s2a_teacher_batch01.py \
+            --manifest evidence/stage7g_c_r1_animetab_batch01_manifest.json \
+            --output-dir /tmp/st-guitar-s2a-batch01
+      - name: Validate teacher/internal separation
+        run: |
+          test -d /tmp/st-guitar-s2a-batch01/teacher
+          test -d /tmp/st-guitar-s2a-batch01/internal
+          test "$(find /tmp/st-guitar-s2a-batch01/teacher -name '*.html' | wc -l)" -eq 6
+          test "$(find /tmp/st-guitar-s2a-batch01/teacher -name '*_manifest.json' | wc -l)" -eq 6
+          test "$(find /tmp/st-guitar-s2a-batch01/internal -name '*_audit.json' | wc -l)" -eq 6
+      - name: Upload blind Teacher package
+        uses: actions/upload-artifact@v4
+        with:
+          name: st-guitar-s2a-batch01-teacher
+          path: /tmp/st-guitar-s2a-batch01/teacher
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload internal audit package
+        uses: actions/upload-artifact@v4
+        with:
+          name: st-guitar-s2a-batch01-internal-audit
+          path: /tmp/st-guitar-s2a-batch01/internal
+          if-no-files-found: error
+          retention-days: 14
