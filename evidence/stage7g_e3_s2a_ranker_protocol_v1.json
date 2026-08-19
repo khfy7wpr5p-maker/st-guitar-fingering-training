@@ -1,0 +1,138 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-ranker-protocol-v1",
+  "stage": "7G-E3-S2-A",
+  "version": "v1",
+  "status": "PREREGISTRATION_ONLY_NO_FIT",
+  "base_main_sha": "ccd919b9ce68de41138cb2847301067bd183d3af",
+  "deterministic_runtime_baseline_sha": "154d8d4c514849535a523ca79ea22b6fae7e77de",
+  "upstream_rule_version": "S1-H-C.v1",
+  "target": {
+    "name": "STATIC_STANDARD_FINGERING_NATURALNESS",
+    "form": "blind_pairwise",
+    "responses": ["A", "B", "EQUAL_OR_UNSURE"],
+    "stateless": true,
+    "previous_next_context": false,
+    "tempo_style_tone_context": false,
+    "extended_technique": false
+  },
+  "provenance": {
+    "fit_eligible": "S2A_STATIC_NATURALNESS_FIRST_PASS",
+    "repeat_never_fit": "S2A_STATIC_NATURALNESS_REPEAT",
+    "untouched_final_never_fit": "S2A_STATIC_NATURALNESS_UNTOUCHED_FINAL",
+    "equal_or_unsure_fit": false
+  },
+  "pair_sampling": {
+    "same_event_only": true,
+    "pair_types": ["FINGER_ONLY", "MIXED"],
+    "distance": "L1_ON_FROZEN_30D_FEATURES",
+    "distance_strata": ["NEAR", "MID", "FAR"],
+    "max_pairs_per_event": 6,
+    "max_one_pair_per_pair_type_distance_cell": true,
+    "label_blind": true,
+    "ab_order": "SHA256_FIXED_BEFORE_ANNOTATION"
+  },
+  "minimum_development_corpus": {
+    "families": 40,
+    "eligible_events": 200,
+    "decisive_first_pass_pairs": 600,
+    "finger_only_decisive_pairs": 150,
+    "mixed_decisive_pairs": 150,
+    "decisive_pairs_per_distance_stratum": 100
+  },
+  "reliability_gate": {
+    "repeat_count": "max(120, 20_percent_of_development_tasks)",
+    "repeat_interval_hours": [24, 72],
+    "ab_reversal_fraction": 0.5,
+    "three_class_exact_agreement_gte": 0.85,
+    "decisive_cohen_kappa_gte": 0.75,
+    "repeat_rows_trainable": false
+  },
+  "feature_contract": {
+    "feature_count": 30,
+    "max_fret": 24,
+    "names": [
+      "string_1_used", "string_1_fret_norm", "string_1_finger_norm",
+      "string_2_used", "string_2_fret_norm", "string_2_finger_norm",
+      "string_3_used", "string_3_fret_norm", "string_3_finger_norm",
+      "string_4_used", "string_4_fret_norm", "string_4_finger_norm",
+      "string_5_used", "string_5_fret_norm", "string_5_finger_norm",
+      "string_6_used", "string_6_fret_norm", "string_6_finger_norm",
+      "open_note_ratio",
+      "mean_positive_fret_norm",
+      "positive_fret_span_norm",
+      "used_string_span_norm",
+      "internal_string_gap_ratio",
+      "standard_finger_count_norm",
+      "barre_count_norm",
+      "max_barre_span_norm",
+      "total_barre_span_norm",
+      "barre_override_note_ratio",
+      "max_finger_fret_step_norm",
+      "same_fret_multi_finger_pair_ratio"
+    ],
+    "teacher_label_in_features": false,
+    "source_or_family_identity_in_features": false,
+    "observed_source_fingering_in_features": false,
+    "previous_next_event_in_features": false,
+    "learned_scaler": false
+  },
+  "learning": {
+    "representation": "MIRRORED_PAIR_DIFFERENCES",
+    "score": "w_dot_phi_assignment",
+    "probability": "sigmoid(score_A_minus_score_B)",
+    "model": "LogisticRegression",
+    "penalty": "l2",
+    "C": 1.0,
+    "fit_intercept": false,
+    "class_weight": null,
+    "solver": "lbfgs",
+    "max_iter": 2000,
+    "random_state": 0,
+    "hyperparameter_search": false
+  },
+  "baselines": [
+    "HASH_BASELINE",
+    "LOW_FRET_BASELINE",
+    "COMPACT_BASELINE"
+  ],
+  "development_evaluation": {
+    "folds": 5,
+    "split_unit": "family_id",
+    "pairwise_accuracy_gte": 0.65,
+    "macro_family_accuracy_gte": 0.65,
+    "roc_auc_gte": 0.70,
+    "macro_family_delta_vs_selected_baseline_gte": 0.05,
+    "family_wins_gt_losses": true,
+    "finger_only_accuracy_gte_when_n_gte_100": 0.60,
+    "mixed_accuracy_gte_when_n_gte_100": 0.60,
+    "same_environment_repeatability": "10_of_10_identical_predictions_rankings_metrics"
+  },
+  "untouched_final": {
+    "minimum_families": 20,
+    "minimum_decisive_pairs": 200,
+    "pairwise_accuracy_gte": 0.65,
+    "macro_family_accuracy_gte": 0.65,
+    "roc_auc_gte": 0.70,
+    "macro_family_delta_vs_frozen_baseline_gte": 0.05,
+    "family_wins_gt_losses": true,
+    "finger_only_accuracy_gte_when_n_gte_50": 0.60,
+    "mixed_accuracy_gte_when_n_gte_50": 0.60,
+    "family_block_bootstrap_delta_ci95_lower_gt": 0.0,
+    "posthoc_retuning": false
+  },
+  "authority": {
+    "may_create_assignment": false,
+    "may_repair_assignment": false,
+    "may_reintroduce_pruned_candidate": false,
+    "must_rank_only_supplied_s1hc_assignment_ids": true,
+    "out_of_set_output": "ERROR"
+  },
+  "scientific_boundary": {
+    "historical_consumed_final_training": false,
+    "historical_repeat_training": false,
+    "real_fit_authorized": false,
+    "checkpoint_retention_authorized": false,
+    "shadow_integration_authorized": false,
+    "production_integration_authorized": false
+  }
+}

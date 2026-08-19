@@ -26,7 +26,7 @@ The repository distinguishes:
 6. pilot/calibration label;
 7. repeat/reliability label;
 8. diagnostic-only label;
-9. future assignment-level ranking supervision, only if explicitly introduced by a new model-development protocol.
+9. S2-A assignment-level blind pairwise static-naturalness supervision.
 
 These types may not be silently collapsed into one training target. `EQUAL_OR_UNSURE` is preserved and is never coerced into A/B.
 
@@ -39,7 +39,8 @@ Current rules remain:
 - S1-G v2 first-pass: `DESIGN_FAIL_DIAGNOSTIC_ONLY_NEVER_TRAINING`;
 - S1-G repeat: `DO_NOT_RUN`;
 - historical repeat/reliability labels: not additional training rows;
-- S1-F project-label fit: `HARD_CLOSED` until a separately approved newer model-development protocol explicitly replaces that gate.
+- S1-F project-label fit remains `HARD_CLOSED`;
+- S2-A preregistration does not retroactively authorize any S1 label for fit.
 
 S1-G v1 remains immutable merged preregistration history. PR #70 was closed as superseded without merge and is not active dataset policy.
 
@@ -48,7 +49,9 @@ S1-G v1 remains immutable merged preregistration history. PR #70 was closed as s
 - family identity is the primary leakage boundary;
 - train/validation/test families must remain disjoint unless a preregistered nested-development design explicitly defines inner folds;
 - event-level random splitting may not divide one source family across train and evaluation sets;
-- any future assignment-level rows inherit the family identity of the source musical event.
+- assignment-level S2-A rows inherit the family identity of the source musical event;
+- mirrored pair-difference rows remain in the same family/fold as the original human judgment;
+- S2-A untouched-final families may never enter S2-A development or fit.
 
 ## Consumed evidence
 
@@ -58,6 +61,8 @@ S1-G v1 remains immutable merged preregistration history. PR #70 was closed as s
 - S0-C and S1 repeat labels: reliability-only;
 - S1-E pilot/repeat labels: never training;
 - S1-G v2 first-pass: diagnostic-only/never-training.
+
+Consumed historical labels and final-test evidence may not be reclassified as S2-A supervision.
 
 ## S1-H-A deterministic candidate records
 
@@ -112,25 +117,70 @@ Contract invariants:
 
 An H-C assignment is a **deterministic candidate**, not a positive Teacher label and not proof that it is the best fingering.
 
-## Future learned assignment-ranking rows
+## S2-A assignment-ranking supervision preregistration
 
-No real assignment-ranking training corpus is currently authorized.
+S2-A v1 introduces one new target only:
 
-A future protocol may create one only after explicitly freezing:
+`STATIC_STANDARD_FINGERING_NATURALNESS`
 
-- how a Teacher or other legitimate target source compares/selects H-C assignments;
-- exact provenance value(s) eligible for fit;
-- family ID propagation;
-- handling of ties/unsure;
-- whether labels are pairwise, listwise, ordinal, or scalar;
-- minimum sample/family support;
-- separation of development, reliability, and untouched evaluation roles.
+It is a blind A/B comparison between two H-C assignments of the same event under an isolated, ordinary left-hand-technique prompt. Previous/next context, tempo, style, right-hand pattern, tone-color goals and extended technique are outside the target.
 
-The model target must reference H-C `assignment_id` values and must never redefine physical validity.
+Exact provenance roles are frozen:
+
+- `S2A_STATIC_NATURALNESS_FIRST_PASS` — only decisive A/B rows are potentially fit-eligible after all S2-A gates pass;
+- `S2A_STATIC_NATURALNESS_REPEAT` — reliability-only, never training/tuning/model selection;
+- `S2A_STATIC_NATURALNESS_UNTOUCHED_FINAL` — final evaluation only, never training/tuning/model selection.
+
+`EQUAL_OR_UNSURE` is retained as ambiguity evidence and is never forced to A/B.
+
+Every S2-A human row must reference two stable H-C `assignment_id` values from the same exact event and H-C output. A row referencing an absent/out-of-set assignment is invalid.
+
+Pair construction must be label-blind and is allowed only after complete H-C enumeration. Pair metadata may distinguish `FINGER_ONLY` and `MIXED` pairs and `NEAR/MID/FAR` feature-distance strata, but these metadata are audit/sampling facts, not Teacher labels.
+
+### Minimum S2-A development evidence before fit can even be considered
+
+- >=40 development families;
+- >=200 eligible events;
+- >=600 decisive first-pass pairs;
+- >=150 decisive `FINGER_ONLY` pairs;
+- >=150 decisive `MIXED` pairs;
+- >=100 decisive pairs in each distance stratum;
+- reliability gate PASS.
+
+### Reliability role
+
+At least `max(120, 20% of development tasks)` must be repeated after 24–72 hours, with exactly 50% A/B presentation reversal. Repeat rows remain non-trainable even if perfectly consistent.
+
+### Untouched final role
+
+S2-A final evaluation requires >=20 family-disjoint untouched families and >=200 decisive final pairs. These labels may not be inspected before the frozen all-development model, comparator and evaluation code are sealed.
+
+## S2-A feature/data separation
+
+The S2-A model feature vector is deterministic and assignment-derived only. It may not contain:
+
+- Teacher response or response history;
+- annotator identity;
+- family/source identity;
+- observed source fingering;
+- previous/next event information;
+- historical specialist prediction;
+- model score;
+- any consumed final label.
+
+The frozen S2-A v1 feature list and exact formulas live in `docs/STAGE_7G_E3_S2A_LEARNED_FINGERING_RANKER_PREREGISTRATION.md` and its frozen evidence JSON.
+
+## S2-A fit state
+
+The S2-A protocol design is preregistered, but **real fitting remains closed** until the implementation, corpus minimums, reliability evidence, and execution gate are separately verified.
+
+A future execution stage may open fitting only for exact `S2A_STATIC_NATURALNESS_FIRST_PASS` decisive rows under the merged S2-A protocol. It may not open S1-F historical project labels by side effect.
 
 ## Authority boundary
 
-Teacher judgments and learned predictions never override deterministic physical/feasibility state. A future learned ranker may only choose among S1-H-C assignments supplied for the same event. Output outside that set is an error, not a new candidate.
+Teacher judgments and learned predictions never override deterministic physical/feasibility state. S2-A may only score/rank S1-H-C assignments supplied for the same event. Output outside that exact set is an error, not a new candidate.
+
+Checkpoint retention, GuitarTab Engine shadow integration, and production integration remain separate later gates even if S2-A evaluation passes.
 
 ## Frozen evidence semantics
 
