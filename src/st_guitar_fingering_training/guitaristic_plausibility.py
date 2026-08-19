@@ -172,11 +172,12 @@ def analyze_guitaristic_plausibility(
     tuning: tuple[int, ...],
     raw_candidates: Iterable[Voicing],
 ) -> GuitaristicPlausibilityResult:
-    """Analyze and conservatively prune a physically-valid candidate set.
+    """Analyze and conservatively prune the complete physically-valid candidate set.
 
-    Every supplied candidate must already belong to the authoritative
-    ``valid_chord_voicings()`` set for the same pitch-set and tuning. The analyzer
-    never invents, repairs, or legalizes a voicing.
+    The supplied set must exactly equal ``valid_chord_voicings()`` for the same
+    pitch-set and tuning. This prevents subset callers from manufacturing a global
+    ``NO_PLAUSIBLE_CANDIDATE`` result. The analyzer never invents, repairs, or
+    legalizes a voicing.
     """
 
     pitches = tuple(sorted(int(value) for value in pitches_midi))
@@ -190,9 +191,15 @@ def analyze_guitaristic_plausibility(
         raise ValueError("raw physically-valid candidate set must not be empty")
     if len(supplied) != len(set(supplied)):
         raise ValueError("raw physically-valid candidate set contains duplicates")
+    supplied_set = set(supplied)
     invalid = tuple(candidate for candidate in supplied if candidate not in authoritative)
     if invalid:
         raise ValueError("candidate outside authoritative valid_chord_voicings() set")
+    if supplied_set != authoritative:
+        raise ValueError(
+            "raw physically-valid candidate set must exactly match authoritative "
+            "valid_chord_voicings() output"
+        )
 
     raw = tuple(sorted(supplied, key=_candidate_id))
     facts_by_id = {_candidate_id(candidate): _facts(candidate) for candidate in raw}
