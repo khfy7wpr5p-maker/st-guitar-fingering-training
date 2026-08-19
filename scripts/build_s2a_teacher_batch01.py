@@ -10,11 +10,11 @@ import urllib.request
 
 from st_guitar_fingering_training.s2a_batch import (
     batch_summary,
-    build_event_packages,
     render_teacher_html,
     select_balanced_batch,
     split_sessions,
 )
+from st_guitar_fingering_training.s2a_source_pool import build_bounded_real_source_pool
 from st_guitar_fingering_training.target_free_musicxml import parse_target_free_musicxml
 
 
@@ -71,7 +71,7 @@ def build(manifest_path: Path, output_dir: Path) -> dict:
                 raise RuntimeError("STOP: parsed source identity drift")
             sources.append(source)
 
-    event_packages = build_event_packages(sources)
+    event_packages = build_bounded_real_source_pool(tuple(sources))
     selected = select_balanced_batch(event_packages)
     sessions = split_sessions(selected)
     summary = batch_summary(selected, sessions)
@@ -96,8 +96,13 @@ def build(manifest_path: Path, output_dir: Path) -> dict:
 
     for index, (teacher_manifest, audit) in enumerate(sessions, start=1):
         stem = f"ST_Guitar_S2A_Batch01_Session{index:02d}"
+        # family_identity is only a literal "withheld" marker. Remove that marker
+        # from the embedded HTML object so the renderer's exact leak guard remains
+        # conservative; the canonical session manifest JSON stays unchanged.
+        html_manifest = dict(teacher_manifest)
+        html_manifest.pop("family_identity", None)
         (teacher_dir / f"{stem}.html").write_text(
-            render_teacher_html(teacher_manifest), encoding="utf-8"
+            render_teacher_html(html_manifest), encoding="utf-8"
         )
         (teacher_dir / f"{stem}_manifest.json").write_text(
             json.dumps(teacher_manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
