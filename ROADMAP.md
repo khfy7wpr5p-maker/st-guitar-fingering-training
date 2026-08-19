@@ -2,100 +2,102 @@
 
 | Stage | Package | State / gate |
 |---|---|---|
-| 0–4 | Safety, dataset, intake, normalization, deterministic physical engine | ✅ complete |
-| 5–7E | bounded placement / routing research and untouched evaluation | ✅ research complete; untouched evidence consumed |
-| 7G-E1/E2/E3 | Teacher-GOLD ergonomics routing research | ✅ completed through positive/negative diagnostics; no production checkpoint |
+| 0–4 | safety, dataset, intake, normalization, deterministic physical engine | ✅ complete |
+| 5–7E | bounded placement/routing research + untouched evaluation | ✅ research complete; untouched evidence consumed |
+| 7G-E1/E2/E3 | Teacher-GOLD ergonomics research | ✅ completed through diagnostics; no production checkpoint |
 | 7G-E3-S0 | failure diagnostics + reliability redesign | ✅ completed |
-| 7G-E3-S1-A/B/C/D | independent-component reliability program | ✅ historical evidence path; no direct training authorization |
-| 7G-E3-S1-F | fail-closed component-training preparation harness | ✅ merged; real fit hard-closed |
-| 7G-E3-S1-G v1 | full-reliability preregistration | ✅ merged immutable historical record |
-| PR #70 / S1-G v2 | STRING-only protocol proposal | 🟡 open draft, diverged from current `main`, not merged truth |
-| 7G-E3-S1-H-A | deterministic guitaristic plausibility analyzer | ✅ merged in PR #71 |
-| Next S1-H stage | stronger deterministic hand/finger feasibility | 🟠 candidate direction only; not yet preregistered |
-| Learned component fitting | component-model training | 🔒 hard-closed |
-| Arbiter / refiner | learned ranking / refinement | 🔒 closed |
-| Checkpoint retention | model retention / promotion | 🔒 closed |
-| GuitarTab Engine integration | shadow / production | 🔒 closed |
+| 7G-E3-S1-A/B/C/D | independent-component reliability program | ✅ historical evidence path |
+| 7G-E3-S1-F | fail-closed model-preparation harness | ✅ merged; real fit still hard-closed |
+| 7G-E3-S1-G v1 | full-reliability preregistration | ✅ immutable merged history |
+| PR #70 / S1-G v2 | obsolete STRING-only proposal | ✅ closed superseded, never merged |
+| 7G-E3-S1-H-A | deterministic guitaristic plausibility | ✅ merged PR #71 |
+| 7G-E3-S1-H-B | four-finger/barre resource feasibility | ✅ merged PR #73 |
+| 7G-E3-S1-H-C | standard finger-assignment enumeration | ✅ merged PR #74 |
+| Next | real learned fingering-ranking model | ⛔ approval gate reached; not started |
+| Later | checkpoint retention / promotion | 🔒 closed |
+| Later | GuitarTab Engine shadow / production | 🔒 closed |
 
 ## Current position
 
-The repository is now **after merged Stage 7G-E3-S1-H-A**.
+The deterministic pre-model pipeline is complete through **Stage 7G-E3-S1-H-C**.
 
-Current `main` is `1a8acf654f21d36c928fdd45b3a21a443b6ebe5a`, the merge commit for PR #71.
+Current verified `main` after H-C merge: `154d8d4c514849535a523ca79ea22b6fae7e77de`.
 
-S1-H-A inserted a deterministic plausibility layer directly after `valid_chord_voicings()` and before any future learned ranking path. It keeps physical validity fully deterministic and introduces only one v1 hard-prune rule: `H001_MIN_FINGER_PROXY_GE_6`.
+The current pipeline is:
 
-## What is completed
+```text
+valid_chord_voicings()
+  → S1-H-A plausibility
+  → S1-H-B ordinary four-finger/barre resource feasibility
+  → S1-H-C complete standard finger-assignment candidate enumeration
+  → REAL MODEL DEVELOPMENT GATE
+```
 
-### S1-F — preparation only
-
-- frozen target-blind feature contract;
-- fail-closed provenance validation;
-- family-safe fold construction;
-- fixed baseline model shape;
-- project-label fitting remains hard-closed.
-
-### S1-G v1
-
-- merged and frozen as historical preregistration;
-- must not be retroactively rewritten after later architecture changes.
+## Completed deterministic milestones
 
 ### S1-H-A
 
-- complete authoritative candidate set required;
-- raw physically-valid set retained for audit;
-- deterministic classes and stable reason codes;
-- incomplete subsets fail closed;
-- `IMPRACTICAL` hard prune only for minimum-finger proxy >=6;
-- five-fret borderline and same-topology dominance cases retained;
-- 10/10 repeatability and full-set fail-closed tests included;
-- final PR head CI passed.
+- full authoritative candidate-set requirement;
+- stable audit IDs/reason codes;
+- `H001_MIN_FINGER_PROXY_GE_6` hard prune;
+- no preference/ranking learned or hard-coded.
 
-## Open architecture inconsistency: PR #70
+### S1-H-B
 
-PR #70 is still open/draft and was created from `ac146e9…`. Current `main` is nine commits ahead of that branch. The branch contains three commits not in `main`.
+- explicit ordinary four-fretting-finger envelope;
+- deterministic continuous-barre grouping;
+- open/lower-fret blocking rules and higher-fret override behavior;
+- `H101_MIN_STANDARD_FINGERS_GE_5` hard prune;
+- no upstream-pruned candidate may be reintroduced;
+- PR #73 CI #193: 236 tests PASS + compile PASS; Stage 7B-C2 step skipped by branch condition.
 
-Its S1-G v2 STRING-only protocol therefore cannot be treated as current architecture without a fresh reconciliation. The merged S1-H-A contract already records a stronger boundary: S1-G v2 first-pass evidence is diagnostic-only/never-training and S1-G repeat is not to be run.
+### S1-H-C
 
-**Do not merge PR #70 mechanically.** First determine whether it should be superseded, archived, or rewritten as historical documentation.
+- all standard finger assignments enumerated for every H-B-retained voicing;
+- open strings use finger 0;
+- fretted groups use distinct fingers 1..4;
+- increasing fret positions require increasing finger numbers;
+- exact pitch/string/fret preservation;
+- explicit barre metadata;
+- stable SHA-256 assignment identities;
+- PR #74 CI #195: 245 tests PASS + compile PASS; Stage 7B-C2 step skipped by branch condition.
 
-## Next controlled milestone
+## What is deliberately not solved by deterministic rules
 
-No post-S1-H-A stage is merged or preregistered yet.
+H-A/B/C do not choose the most natural fingering and do not encode player-specific anatomy, detailed reach comfort, musical transitions, tone, resonance, or style as hard truth.
 
-Recommended next milestone:
+Adding arbitrary hard thresholds for those factors would move subjective guitaristic preference into the wrong architectural layer. The next justified step is therefore learned ranking, not more speculative pruning.
 
-### Stage 7G-E3-S1-H-B — deterministic hand/finger feasibility design
+## Next milestone — real learned fingering ranker
 
-This is a proposed next stage, not current repository truth.
+This milestone has **not started**.
 
-Goal: replace the very coarse lower-bound `distinct positive frets` proxy with a deterministic, explainable feasibility analysis that can reason about actual finger assignment constraints without introducing learned musical preference.
+Before fitting any project model, freeze a separate protocol that defines:
 
-A valid H-B preregistration should freeze before implementation:
+- target: what constitutes a better S1-H-C assignment;
+- exact eligible Teacher-GOLD/training provenance;
+- excluded pilot/repeat/diagnostic/consumed evidence;
+- assignment-level feature contract;
+- family-isolated train/validation/test policy;
+- baselines and metrics;
+- tie/unsure handling;
+- model family and hyperparameter policy;
+- checkpoint-retention criteria fixed before deciding evaluation;
+- fail-closed output restriction to supplied S1-H-C assignment IDs.
 
-- supported hand model and excluded extended techniques;
-- barre representation rules;
-- one-finger / one-fret and shared-fret assumptions;
-- reach/span limits, if any, and their source/justification;
-- deterministic reason-code precedence;
-- fail-closed behavior;
-- candidate-set invariants inherited from S1-H-A;
-- regression matrix and repeatability requirements;
-- explicit statement that musical preference remains outside the deterministic feasibility layer.
+Real training, tuning, or checkpoint selection must not begin before the model-development gate is explicitly opened.
 
-Only after that contract is frozen should runtime changes be made.
+## Promotion gates remain separate
 
-## Training and promotion gates
+Even a successful future model experiment would not by itself authorize:
 
-The following remain closed regardless of the existence of S1-F preparation code:
-
-- S1-F real model fit;
-- use of S1-E or S1-G diagnostic/repeat labels for training;
 - checkpoint retention;
-- Base Guitaristic Arbiter activation;
-- hard-error refiner activation;
-- GuitarTab Engine shadow/production integration.
+- Base Guitaristic Arbiter or refiner promotion;
+- GuitarTab Engine shadow integration;
+- production integration.
+
+Each remains a later, separately evidence-backed gate.
 
 ## Evidence semantics
 
-Frozen preregistration/evidence JSON files are historical snapshots. A file that says `PREPARATION_ONLY_DRAFT_PR` is not automatically stale evidence after merge; it records the state when sealed. Current live status is documented in the top-level project documents.
+Frozen preregistration/evidence files remain immutable historical snapshots. Live repository status is maintained in the top-level documents.
