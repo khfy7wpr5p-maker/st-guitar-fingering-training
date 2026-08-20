@@ -13,6 +13,8 @@ from urllib.request import Request, urlopen
 
 from st_guitar_fingering_training.intake import MAX_SOURCE_BYTES
 from st_guitar_fingering_training.s2a_source_isolation import (
+    QualifiedIsolatedSource,
+    assign_origin_isolated_roles,
     evaluate_source_isolation,
     exposed_origin_keys_from_filenames,
     historical_origin_quarantine,
@@ -21,7 +23,6 @@ from st_guitar_fingering_training.s2a_source_isolation import (
 )
 from st_guitar_fingering_training.s2a_source_reservation import (
     TOTAL_RESERVED_FAMILIES,
-    assign_reservation_roles,
     exposed_work_keys_from_filenames,
     fresh_work_groups,
     parse_full_track_tree_entries,
@@ -191,12 +192,11 @@ def build_reservation(
     if len(groups) < TOTAL_RESERVED_FAMILIES:
         raise ValueError(
             f"only {len(groups)} fresh canonical works remain before source isolation; "
-            f"need {TOTAL_RESERVED_FAMILIES}"
+            f"need at least {TOTAL_RESERVED_FAMILIES} source candidates"
         )
 
-    qualified = []
-    qualified_origin_by_path: dict[str, str] = {}
-    reserved_origins: set[str] = set()
+    qualified: list[QualifiedIsolatedSource] = []
+    qualified_raw_hashes: set[str] = set()
     structural_rejected_reasons = Counter()
     isolation_rejected_reasons = Counter()
     attempted_works = 0
@@ -216,65 +216,86 @@ def build_reservation(
         decision = evaluate_source_isolation(
             variants[0].filename,
             historical_quarantine=historical_quarantine,
-            already_reserved_origins=reserved_origins,
         )
         if not decision.accepted:
             isolation_rejected_reasons[decision.reason] += 1
             continue
 
-        family_id = f"animetabs2a-{sha256(work_key.encode('utf-8')).hexdigest()[:20]}"
+        source_family_id = f"animetabs2a-origin-{sha256(origin.encode('utf-8')).hexdigest()[:20]}"
         accepted = None
         for entry in variants:
             attempted_variants += 1
             try:
                 raw_sha256, pitched_events, chord_events = _validate_variant(
                     entry,
-                    family_id=family_id,
+                    family_id=source_family_id,
                     quarantine_sha256=quarantine_sha256,
                     min_chord_events=min_chord_events,
                 )
             except (ValueError, RuntimeError, OSError) as exc:
                 structural_rejected_reasons[str(exc)] += 1
                 continue
-            accepted = (work_key, entry, raw_sha256, pitched_events, chord_events)
+            if raw_sha256 in qualified_raw_hashes:
+                isolation_rejected_reasons["S2A_SRC_001_EXACT_SOURCE_DUPLICATE"] += 1
+                continue
+            accepted = QualifiedIsolatedSource(
+                canonical_work_key=work_key,
+                origin_group_key=origin,
+                path=entry.path,
+                blob_sha=entry.blob_sha,
+                raw_sha256=raw_sha256,
+                byte_size=entry.size,
+                pitched_event_count=pitched_events,
+                chord_event_count=chord_events,
+            )
             break
         if accepted is not None:
             qualified.append(accepted)
-            reserved_origins.add(origin)
-            qualified_origin_by_path[accepted[1].path] = origin
-        if len(qualified) >= TOTAL_RESERVED_FAMILIES:
-            break
+            qualified_raw_hashes.add(accepted.raw_sha256)
 
-    reserved = assign_reservation_roles(qualified)
+    reserved = assign_origin_isolated_roles(qualified, pinned_commit=ANIMETAB_COMMIT)
     role_counts = Counter(item.role for item in reserved)
-    reservation_identity = []
-    for item in reserved:
-        origin = qualified_origin_by_path.get(item.path)
-        if origin is None:
-            raise AssertionError("reserved source lost origin isolation lineage")
-        reservation_identity.append(
-            {
-                "role": item.role,
-                "ordinal": item.ordinal,
-                "family_id": item.family_id,
-                "canonical_work_key": item.canonical_work_key,
-                "origin_group_key": origin,
-                "path": item.path,
-                "blob_sha": item.blob_sha,
-                "raw_sha256": item.raw_sha256,
-                "byte_size": item.byte_size,
-                "pitched_event_count": item.pitched_event_count,
-                "chord_event_count": item.chord_event_count,
-            }
+    family_counts_by_role = {
+        role: len({item.family_id for item in reserved if item.role == role})
+        for role in role_counts
+    }
+    origins_by_role = {
+        role: {item.origin_group_key for item in reserved if item.role == role}
+        for role in role_counts
+    }
+    cross_role_origin_overlap_count = sum(
+        len(origins_by_role[left] & origins_by_role[right])
+        for left, right in (
+            ("PRIMARY_DEVELOPMENT", "CONTINGENCY_DEVELOPMENT"),
+            ("PRIMARY_DEVELOPMENT", "UNTOUCHED_FINAL"),
+            ("CONTINGENCY_DEVELOPMENT", "UNTOUCHED_FINAL"),
         )
-    if len({row["origin_group_key"] for row in reservation_identity}) != TOTAL_RESERVED_FAMILIES:
-        raise AssertionError("accepted S2-A reservation contains origin/franchise reuse")
+    )
+    reservation_identity = [
+        {
+            "role": item.role,
+            "ordinal": item.ordinal,
+            "family_id": item.family_id,
+            "canonical_work_key": item.canonical_work_key,
+            "origin_group_key": item.origin_group_key,
+            "path": item.path,
+            "blob_sha": item.blob_sha,
+            "raw_sha256": item.raw_sha256,
+            "byte_size": item.byte_size,
+            "pitched_event_count": item.pitched_event_count,
+            "chord_event_count": item.chord_event_count,
+        }
+        for item in reserved
+    ]
     if any(row["origin_group_key"] in historical_quarantine for row in reservation_identity):
         raise AssertionError("accepted S2-A reservation overlaps historical origin quarantine")
+    if cross_role_origin_overlap_count:
+        raise AssertionError("origin family leaked across development/contingency/final roles")
 
     identity_bytes = json.dumps(
         reservation_identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
+    qualified_origin_count = len({item.origin_group_key for item in qualified})
 
     return {
         "schema": "st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v2",
@@ -291,7 +312,9 @@ def build_reservation(
             "historical_origin_franchise_quarantine_enabled": True,
             "origin_alias_manifest_sha256": _canonical_json_sha256(alias_payload),
             "missing_or_ambiguous_origin_policy": "REJECT",
-            "reserved_origin_reuse_policy": "REJECT",
+            "cross_role_origin_reuse_policy": "REJECT",
+            "same_primary_origin_multiple_sources_policy": "ALLOWED_ONLY_AS_ONE_SHARED_FAMILY",
+            "family_id_semantics": "canonical origin/franchise group",
             "one_source_variant_per_canonical_work": True,
             "raw_source_bytes_retained": False,
             "part_id": "P1",
@@ -308,20 +331,23 @@ def build_reservation(
             "teacher_exposed_origin_key_count": len(exposed_origin_keys),
             "historical_origin_quarantine_key_count": len(historical_quarantine),
             "fresh_canonical_work_count_before_source_isolation": len(groups),
-            "attempted_work_count_until_120_qualified": attempted_works,
-            "attempted_variant_count_until_120_qualified": attempted_variants,
-            "qualified_unique_origin_count": len(qualified),
+            "attempted_work_count": attempted_works,
+            "attempted_variant_count": attempted_variants,
+            "qualified_work_count": len(qualified),
+            "qualified_origin_family_count": qualified_origin_count,
             "source_isolation_rejected_reason_counts": dict(sorted(isolation_rejected_reasons.items())),
             "structural_rejected_variant_reason_counts": dict(sorted(structural_rejected_reasons.items())),
             "quarantine_sha256_value_count": len(quarantine_sha256),
         },
         "reservation": {
-            "total": len(reserved),
-            "role_counts": dict(sorted(role_counts.items())),
-            "unique_origin_group_count": len({row["origin_group_key"] for row in reservation_identity}),
+            "total_source_count": len(reserved),
+            "source_role_counts": dict(sorted(role_counts.items())),
+            "family_counts_by_role": dict(sorted(family_counts_by_role.items())),
+            "unique_origin_family_count": len({row["origin_group_key"] for row in reservation_identity}),
             "historical_origin_overlap_count": sum(
                 row["origin_group_key"] in historical_quarantine for row in reservation_identity
             ),
+            "cross_role_origin_overlap_count": cross_role_origin_overlap_count,
             "identity_sha256": sha256(identity_bytes).hexdigest(),
             "sources": reservation_identity,
         },
@@ -364,9 +390,10 @@ def main() -> int:
     print(
         "S2-A isolated fresh source census PASS: "
         f"full_track_xml={census['full_track_xml_blob_count']} "
-        f"historical_origin_quarantine={census['historical_origin_quarantine_key_count']} "
-        f"qualified_unique_origins={census['qualified_unique_origin_count']} "
-        f"reserved={reservation['total']} "
+        f"qualified_works={census['qualified_work_count']} "
+        f"qualified_origins={census['qualified_origin_family_count']} "
+        f"reserved_sources={reservation['total_source_count']} "
+        f"reserved_families={reservation['unique_origin_family_count']} "
         f"identity={reservation['identity_sha256']}"
     )
     return 0
