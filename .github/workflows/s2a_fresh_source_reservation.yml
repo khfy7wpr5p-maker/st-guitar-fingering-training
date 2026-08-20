@@ -59,7 +59,8 @@ jobs:
           assert data['selection']['missing_or_ambiguous_origin_policy'] == 'REJECT'
           assert data['selection']['cross_role_origin_reuse_policy'] == 'REJECT'
           assert data['selection']['same_primary_origin_multiple_sources_policy'] == 'ALLOWED_ONLY_AS_ONE_SHARED_FAMILY'
-          assert data['selection']['family_id_semantics'] == 'canonical origin/franchise group'
+          assert data['selection']['alias_groups_resolve_all_source_family_identities'] is True
+          assert data['selection']['family_id_semantics'] == 'canonical alias-resolved origin/franchise group'
           reservation = data['reservation']
           assert reservation['total_source_count'] == 120
           assert reservation['source_role_counts'] == {
