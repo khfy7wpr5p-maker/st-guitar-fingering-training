@@ -1,4 +1,3 @@
-import copy
 import json
 from pathlib import Path
 import unittest
@@ -164,6 +163,20 @@ class TeacherCorrectionV1Tests(unittest.TestCase):
         self.assertEqual(payload["rejected_task_fingerprints"], [])
         self.assertTrue(payload["policy"]["rejected_tasks_never_future_batches"])
         self.assertTrue(payload["policy"]["rejected_tasks_never_training"])
+
+    def test_old_batch02_is_superseded_without_imported_labels_or_training_authority(self):
+        path = Path("evidence/stage7g_e3_s2a_batch02_supersession_v1.json")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        stored = payload.pop("manifest_sha256")
+        self.assertEqual(_canonical_sha(payload), stored)
+        self.assertEqual(payload["status"], "SUPERSEDED_WITHOUT_IMPORTED_LABELS")
+        self.assertEqual(payload["superseded_batch_id"], "S2A_BATCH02")
+        self.assertEqual(payload["replacement_protocol"], "TEACHER_CORRECTION.v1")
+        self.assertEqual(payload["imported_teacher_response_count"], 0)
+        self.assertFalse(payload["old_batch_training_authorized"])
+        self.assertFalse(payload["old_batch_repeat_authorized"])
+        self.assertFalse(payload["old_batch_model_selection_authorized"])
+        self.assertFalse(payload["old_batch_metrics_authorized"])
 
 
 if __name__ == "__main__":
