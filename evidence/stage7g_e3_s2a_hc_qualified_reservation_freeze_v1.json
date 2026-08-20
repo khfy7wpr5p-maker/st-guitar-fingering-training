@@ -1,0 +1,55 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-hc-qualified-reservation-freeze-v1",
+  "stage": "7G-E3-S2-A-HC-QUALIFIED-RESERVATION-FREEZE",
+  "status": "FROZEN",
+  "source_dataset": {
+    "name": "AnimeTAB",
+    "commit": "18c0993cbe0a0948cbf0b7768bcb09ff81c23a9a",
+    "scope": "AnimeTAB/Entire songs/*.xml"
+  },
+  "lineage": {
+    "source_isolation_merge_sha": "a1174d3231f4865a379790f8ec59bb1f2fc53a62",
+    "hc_capacity_merge_sha": "cd4cbbb411dd60ce33ab8ddbb42ae956cd12b37a",
+    "hc_capacity_tested_head_sha": "9ef200a35334e97bae0b556bf4d56df4c67f427e",
+    "hc_capacity_workflow_run_id": 32366119173,
+    "hc_capacity_workflow_artifact_id": 9405362258,
+    "hc_capacity_audit_raw_sha256": "ceef385681ca762bf4a76272d51de5c9841d00f47d70c1603cfdea5b73ccb031",
+    "hc_capacity_audit_canonical_sha256": "af266ce03838c8a1376aaf98e7c099a04eff8d1955b11f192663ba390a5b0d06"
+  },
+  "reservation": {
+    "identity_sha256": "cf7faf6f8f86fbd4819be3b393850dd3e43e7647edaf51584c9e9a4593482807",
+    "total_source_count": 120,
+    "source_counts_by_role": {
+      "PRIMARY_DEVELOPMENT": 80,
+      "CONTINGENCY_DEVELOPMENT": 20,
+      "UNTOUCHED_FINAL": 20
+    },
+    "family_counts_by_role": {
+      "PRIMARY_DEVELOPMENT": 51,
+      "CONTINGENCY_DEVELOPMENT": 20,
+      "UNTOUCHED_FINAL": 20
+    },
+    "hc_pass_source_count": 120,
+    "hc_fail_source_count": 0,
+    "cross_role_origin_overlap_count": 0
+  },
+  "freeze_policy": {
+    "reservation_identity_immutable": true,
+    "regenerate_and_match_identity_before_batch_generation": true,
+    "batch02_source_role": "PRIMARY_DEVELOPMENT",
+    "batch02_may_use_contingency": false,
+    "batch02_may_use_untouched_final": false,
+    "teacher_labels_used_for_freeze": false,
+    "model_scores_used_for_freeze": false
+  },
+  "scientific_boundary": {
+    "teacher_task_identities_frozen": false,
+    "new_teacher_labels_collected": false,
+    "real_model_fit_executed": false,
+    "untouched_final_labels_opened": false,
+    "checkpoint_retained": false,
+    "shadow_or_production_integration": false
+  },
+  "next_gate": "GENERATE_BATCH02_ONLY_AFTER_EXACT_RESERVATION_IDENTITY_REPRODUCTION",
+  "manifest_sha256": "39c2349695c0679929fbf506fdf1f79cec5a1b7b00823d396c849cd226b56eb6"
+}

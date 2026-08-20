@@ -1,0 +1,107 @@
+name: s2a-teacher-batch02
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/s2a_teacher_batch02.yml'
+      - 'scripts/build_s2a_teacher_batch02.py'
+      - 'src/st_guitar_fingering_training/s2a_batch.py'
+      - 'src/st_guitar_fingering_training/s2a_source_pool.py'
+      - 'src/st_guitar_fingering_training/s2a_teacher.py'
+      - 'src/st_guitar_fingering_training/finger_assignments.py'
+      - 'evidence/stage7g_e3_s2a_hc_qualified_reservation_freeze_v1.json'
+      - 'evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json'
+      - 'evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json'
+      - 'evidence/stage7g_c_r1_animetab_batch01_manifest.json'
+      - 'evidence/stage7e_final_test_seal.json'
+      - 'evidence/stage7g_e3_e_a1_source_manifest.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-batch02:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install project
+        run: python -m pip install --upgrade pip && python -m pip install -e .
+      - name: Build Batch02 from exact frozen reservation
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf /tmp/st-guitar-s2a-batch02
+          python scripts/build_s2a_teacher_batch02.py \
+            --freeze-manifest evidence/stage7g_e3_s2a_hc_qualified_reservation_freeze_v1.json \
+            --old-teacher-manifest evidence/stage7g_c_r1_animetab_batch01_manifest.json \
+            --origin-alias-manifest evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json \
+            --quarantine-manifest evidence/stage7e_final_test_seal.json \
+            --quarantine-manifest evidence/stage7g_e3_e_a1_source_manifest.json \
+            --prior-final-semantic-quarantine evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json \
+            --output-dir /tmp/st-guitar-s2a-batch02
+      - name: Validate teacher package and scientific boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/st-guitar-s2a-batch02')
+          summary = json.loads((root/'teacher'/'ST_Guitar_S2A_Batch02_manifest.json').read_text(encoding='utf-8'))
+          assert summary['schema'] == 'st-guitar-stage7g-e3-s2a-batch02-manifest-v1'
+          assert summary['status'] == 'READY_FOR_BLIND_FIRST_PASS_COLLECTION'
+          assert summary['task_count'] == 720
+          assert summary['family_count'] == 40
+          assert summary['selected_primary_family_count'] == 40
+          assert summary['selected_primary_source_count'] == 40
+          assert summary['contingency_sources_used'] == 0
+          assert summary['untouched_final_sources_used'] == 0
+          assert summary['historical_teacher_responses_reused'] is False
+          assert summary['teacher_task_generation_used_labels'] is False
+          assert summary['teacher_task_generation_used_model_scores'] is False
+          assert summary['source_freeze_manifest_sha256'] == '39c2349695c0679929fbf506fdf1f79cec5a1b7b00823d396c849cd226b56eb6'
+          assert summary['reproduced_reservation_identity_sha256'] == 'cf7faf6f8f86fbd4819be3b393850dd3e43e7647edaf51584c9e9a4593482807'
+          assert summary['pair_type_counts'] == {'FINGER_ONLY': 360, 'MIXED': 360}
+          assert summary['distance_stratum_counts'] == {'FAR': 240, 'MID': 240, 'NEAR': 240}
+          assert summary['session_count'] == 6
+          assert summary['session_task_counts'] == [120] * 6
+          manifests = sorted((root/'teacher').glob('ST_Guitar_S2A_Batch02_Session*_manifest.json'))
+          htmls = sorted((root/'teacher').glob('ST_Guitar_S2A_Batch02_Session*.html'))
+          audits = sorted((root/'internal').glob('ST_Guitar_S2A_Batch02_Session*_audit.json'))
+          assert len(manifests) == len(htmls) == len(audits) == 6
+          task_ids = []
+          forbidden_keys = {'family_id', 'origin_group_key', 'source_sha256', 'raw_sha256', 'source_path'}
+          def walk(value):
+              if isinstance(value, dict):
+                  assert forbidden_keys.isdisjoint(value.keys())
+                  for child in value.values(): walk(child)
+              elif isinstance(value, list):
+                  for child in value: walk(child)
+          for manifest_path in manifests:
+              m = json.loads(manifest_path.read_text(encoding='utf-8'))
+              assert m['provenance'] == 'S2A_STATIC_NATURALNESS_FIRST_PASS'
+              assert m['annotation_blinded'] is True
+              assert m['task_count'] == 120
+              assert m['session_id'].startswith('S2A_BATCH02_SESSION_')
+              walk(m)
+              task_ids.extend(row['task_id'] for row in m['tasks'])
+          assert len(task_ids) == 720
+          assert len(set(task_ids)) == 720
+          PY
+      - name: Upload blind Teacher Batch02
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: st-guitar-s2a-batch02-teacher
+          path: /tmp/st-guitar-s2a-batch02/teacher
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload internal Batch02 audit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: st-guitar-s2a-batch02-internal
+          path: /tmp/st-guitar-s2a-batch02/internal
+          if-no-files-found: error
+          retention-days: 14
