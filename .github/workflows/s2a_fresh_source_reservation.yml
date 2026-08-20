@@ -6,7 +6,10 @@ on:
       - '.github/workflows/s2a_fresh_source_reservation.yml'
       - 'scripts/build_s2a_fresh_source_reservation.py'
       - 'src/st_guitar_fingering_training/s2a_source_reservation.py'
+      - 'src/st_guitar_fingering_training/s2a_source_isolation.py'
       - 'tests/test_s2a_source_reservation.py'
+      - 'tests/test_s2a_source_isolation.py'
+      - 'evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json'
       - 'evidence/stage7g_c_r1_animetab_batch01_manifest.json'
       - 'evidence/stage7e_final_test_seal.json'
       - 'evidence/stage7g_e3_e_a1_source_manifest.json'
@@ -25,39 +28,49 @@ jobs:
           python-version: '3.11'
       - name: Install project
         run: python -m pip install --upgrade pip && python -m pip install -e .
-      - name: Unit-test reservation primitives
-        run: python -m unittest tests.test_s2a_source_reservation -v
-      - name: Build provisional fresh-source reservation
+      - name: Unit-test reservation and isolation primitives
+        run: |
+          python -m unittest tests.test_s2a_source_reservation -v
+          python -m unittest tests.test_s2a_source_isolation -v
+      - name: Build provisional isolated fresh-source reservation
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           mkdir -p /tmp/st-guitar-s2a-fresh-source
           python scripts/build_s2a_fresh_source_reservation.py \
             --old-teacher-manifest evidence/stage7g_c_r1_animetab_batch01_manifest.json \
+            --origin-alias-manifest evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json \
             --quarantine-manifest evidence/stage7e_final_test_seal.json \
             --quarantine-manifest evidence/stage7g_e3_e_a1_source_manifest.json \
             --min-chord-events 8 \
             --output /tmp/st-guitar-s2a-fresh-source/reservation_census.json
-      - name: Fail closed on reservation shape
+      - name: Fail closed on isolation and reservation shape
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           path = Path('/tmp/st-guitar-s2a-fresh-source/reservation_census.json')
           data = json.loads(path.read_text(encoding='utf-8'))
-          assert data['status'] == 'PROVISIONAL_STRUCTURAL_RESERVATION_PENDING_HC_CAPACITY_AUDIT'
+          assert data['schema'] == 'st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v2'
+          assert data['status'] == 'PROVISIONAL_ISOLATED_RESERVATION_PENDING_HC_CAPACITY_AUDIT'
           assert data['selection']['label_blind'] is True
           assert data['selection']['teacher_responses_loaded'] is False
           assert data['selection']['model_scores_loaded'] is False
+          assert data['selection']['missing_or_ambiguous_origin_policy'] == 'REJECT'
+          assert data['selection']['reserved_origin_reuse_policy'] == 'REJECT'
           assert data['reservation']['total'] == 120
           assert data['reservation']['role_counts'] == {
               'CONTINGENCY_DEVELOPMENT': 20,
               'PRIMARY_DEVELOPMENT': 80,
               'UNTOUCHED_FINAL': 20,
           }
+          assert data['reservation']['unique_origin_group_count'] == 120
+          assert data['reservation']['historical_origin_overlap_count'] == 0
           assert len({row['canonical_work_key'] for row in data['reservation']['sources']}) == 120
+          assert len({row['origin_group_key'] for row in data['reservation']['sources']}) == 120
           assert len({row['family_id'] for row in data['reservation']['sources']}) == 120
           assert len({row['path'] for row in data['reservation']['sources']}) == 120
+          assert data['scientific_boundary']['source_identity_isolation_gate_passed'] is True
           assert data['scientific_boundary']['h_c_capacity_audit_executed'] is False
           assert data['scientific_boundary']['teacher_task_identities_frozen'] is False
           PY
