@@ -2,7 +2,7 @@
   "schema": "st-guitar-s2a-historical-origin-aliases-v1",
   "stage": "7G-E3-S2-A",
   "status": "LABEL_FREE_SOURCE_ISOLATION_METADATA",
-  "purpose": "Conservative multilingual/franchise alias quarantine for sources already exposed to the Teacher. This manifest contains no Teacher responses and no model scores.",
+  "purpose": "Conservative multilingual and umbrella-franchise identity groups. The same groups quarantine historical Teacher exposure and prevent newly reserved development/contingency/final sources from splitting one franchise into different leakage families. This manifest contains no Teacher responses and no model scores.",
   "ambiguity_policy": "If a source origin cannot be extracted or confidently isolated, reject it rather than treating it as fresh.",
   "alias_groups": [
     {"aliases": ["エアー", "AIR"]},
@@ -54,6 +54,8 @@
         "GUMI", "Megpoid", "IA"
       ]
     },
+    {"aliases": ["Fate Stay Night", "Fate/stay night", "Fate Zero", "Fate/Zero", "Fate"]},
+    {"aliases": ["Princess Maker", "Princess Maker4", "Princess Maker 4"]},
     {"aliases": ["冴えない彼女の育てかた", "路人女主的养成方法", "Saekano"]},
     {"aliases": ["全金属狂潮", "フルメタル・パニック!", "Full Metal Panic!"]},
     {"aliases": ["三つ目がとおる", "三眼神童"]},
