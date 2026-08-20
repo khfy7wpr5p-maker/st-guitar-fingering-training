@@ -1,0 +1,17 @@
+{
+  "schema": "st-guitar-teacher-correction-v1-permanent-quarantine",
+  "protocol_version": "TEACHER_CORRECTION.v1",
+  "status": "ACTIVE",
+  "rejected_task_ids": [],
+  "rejected_task_fingerprints": [],
+  "reason_counts": {},
+  "source_exports": [],
+  "policy": {
+    "append_only": true,
+    "rejected_tasks_never_training": true,
+    "rejected_tasks_never_repeat": true,
+    "rejected_tasks_never_metrics": true,
+    "rejected_tasks_never_future_batches": true
+  },
+  "manifest_sha256": "6b4e81a540a6ef2030d552f5ce0be974e3f7f29ee5313204c45830c592a3ec51"
+}
