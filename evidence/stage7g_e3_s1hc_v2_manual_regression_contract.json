@@ -1,0 +1,31 @@
+{
+  "schema": "st-guitar-s1hc-v2-manual-regression-contract-v1",
+  "status": "PROVISIONAL_REGRESSION_ONLY",
+  "base_main_sha": "b6ef401f0596ea4a442fb1b866ccbb4ab9487983",
+  "hc_rule_version": "S1-H-C.v2",
+  "teacher_protocol_version": "TEACHER_CORRECTION.v1",
+  "same_fret_policy": {
+    "hb_group_is_lower_bound": true,
+    "same_fret_barre_is_optional": true,
+    "same_fret_separate_fingers_are_enumerated": true,
+    "distinct_finger_count_max": 4
+  },
+  "manual_correction_policy": {
+    "teacher_may_enter_string_fret_finger": true,
+    "pitch_multiset_must_be_preserved": true,
+    "one_note_per_string": true,
+    "open_string_requires_finger_zero": true,
+    "fretted_note_requires_finger_1_to_4": true,
+    "must_match_exact_s1hc_v2_assignment": true,
+    "fail_closed_on_mismatch": true
+  },
+  "e_minor_required_regression": {
+    "pitches_midi": [40, 47, 52, 55],
+    "expected_string_fret_finger": [[6, 0, 0], [5, 2, 2], [4, 2, 3], [3, 0, 0]],
+    "expected_barre_count": 0
+  },
+  "training_authorized": false,
+  "checkpoint_retention_authorized": false,
+  "frozen_s2a_v1_evidence_revalidated": false,
+  "merge_into_authoritative_hc": false
+}
