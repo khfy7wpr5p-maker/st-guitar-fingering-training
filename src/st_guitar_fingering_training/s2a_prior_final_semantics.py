@@ -56,6 +56,88 @@ def semantic_work_key(value: str) -> str:
     return key
 
 
+# Frozen label-free identities derived from the prior untouched-final corpora.
+# The provenance/evidence representation is kept in
+# evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json and a unit test
+# requires the manifest to resolve to exactly this set. Keeping this fail-closed
+# set in code ensures direct callers of fresh_work_groups cannot bypass the guard.
+FROZEN_PRIOR_FINAL_SEMANTIC_ALIASES = (
+    "In Da Club",
+    "Flowers of Spring And Moon of Fall",
+    "Chuen Hwa Chou Yue",
+    "Mon A Bo Ya Gar Ki",
+    "Time To Chill",
+    "Time Top Chill",
+    "Weekend Revolution",
+    "Coldat",
+    "Hemae Kyl",
+    "Turkish Delight",
+    "Arabesque L. 66 No. 1 in E Major",
+    "Arabesque",
+    "Ave Maria D839",
+    "Ave Maria",
+    "Bach Minuet in G Major BWV Anh. 114",
+    "Minuet in G Major BWV Anh. 114",
+    "Minuet in G Major",
+    "Bach Toccata and Fugue in D Minor",
+    "Toccata and Fugue in D Minor",
+    "Beethoven Symphony No. 5 1st movement",
+    "Symphony No. 5 1st movement",
+    "Canon in D",
+    "Pachelbel Canon in D",
+    "Chopin Ballade no. 1 in G minor Op. 23",
+    "Ballade no. 1 in G minor Op. 23",
+    "Chopin Nocturne Op. 9 No. 1",
+    "Nocturne Op. 9 No. 1",
+    "Dance of the Sugar Plum Fairy",
+    "Flight of the Bumblebee",
+    "Fur Elise",
+    "Für Elise",
+    "Gnossienne No. 1",
+    "Greensleeves",
+    "Greensleeves for Piano easy and beautiful",
+    "Hungarian Dance No. 5 in G Minor",
+    "Hungarian Dance No. 5",
+    "Air on the G String",
+    "J. S. Bach Air on the G String",
+    "La Campanella",
+    "La Campanella Grandes Etudes de Paganini No. 3",
+    "Lacrimosa",
+    "Lacrimosa Requiem",
+    "Liebestraum No. 3",
+    "Liebesträum No. 3",
+    "Maple Leaf Rag",
+    "Mozart Piano Sonata No. 16 Allegro",
+    "Piano Sonata No. 16 Allegro",
+    "Nocturne No. 20 in C Minor",
+    "Nocturne No. 20 in C Sharp Minor",
+    "Nocturne No. 20 in C# Minor",
+    "Rondo alla Turca",
+    "Turkish March",
+    "Piano Sonata No. 11 K. 331 3rd Movement",
+    "Prelude I in C major BWV 846",
+    "Prelude No. 1 in C major BWV 846",
+    "Prelude No. 2 BWV 847 in C Minor",
+    "Prelude No. 4 in E Minor Op. 28",
+    "Chopin Prelude No. 4 in E Minor Op. 28",
+    "Schubert Serenade Standchen",
+    "Schubert Ständchen",
+    "Ständchen D957 No. 4",
+    "Moonlight Sonata 1st Movement",
+    "Sonata No. 14 Moonlight 1st Movement",
+    "Swan Lake",
+    "The Entertainer",
+    "Waltz Opus 64 No. 2 in C Minor",
+    "Waltz Op. 64 No. 2",
+    "Waltz in A Minor",
+    "Chopin Waltz in A Minor",
+    "Waltz of the Flowers",
+)
+FROZEN_PRIOR_FINAL_SEMANTIC_KEYS = frozenset(
+    semantic_work_key(alias) for alias in FROZEN_PRIOR_FINAL_SEMANTIC_ALIASES
+)
+
+
 def load_prior_final_semantic_quarantine(payload: Mapping[str, object]) -> SemanticQuarantine:
     if payload.get("schema") != "st-guitar-s2a-prior-final-semantic-quarantine-v1":
         raise ValueError("unexpected S2-A prior-final semantic quarantine schema")
@@ -90,10 +172,13 @@ def load_prior_final_semantic_quarantine(payload: Mapping[str, object]) -> Seman
                 raise ValueError("semantic work alias belongs to more than one protected family")
             key_to_family[key] = family_id
 
+    keys = frozenset(key_to_family)
+    if keys != FROZEN_PRIOR_FINAL_SEMANTIC_KEYS:
+        raise ValueError("prior-final semantic manifest differs from frozen code quarantine")
     return SemanticQuarantine(
         family_count=len(family_ids),
         semantic_key_count=len(key_to_family),
-        keys=frozenset(key_to_family),
+        keys=keys,
         key_to_family=dict(sorted(key_to_family.items())),
     )
 

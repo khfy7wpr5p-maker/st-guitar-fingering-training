@@ -5,9 +5,14 @@ from pathlib import Path
 import unittest
 
 from st_guitar_fingering_training.s2a_prior_final_semantics import (
+    FROZEN_PRIOR_FINAL_SEMANTIC_KEYS,
     load_prior_final_semantic_quarantine,
     reserved_semantic_overlaps,
     semantic_work_key,
+)
+from st_guitar_fingering_training.s2a_source_reservation import (
+    AnimeTabTreeEntry,
+    fresh_work_groups,
 )
 
 
@@ -35,6 +40,7 @@ class PriorFinalSemanticQuarantineTests(unittest.TestCase):
         quarantine = load_prior_final_semantic_quarantine(payload)
         self.assertEqual(quarantine.family_count, 40)
         self.assertEqual(quarantine.semantic_key_count, 69)
+        self.assertEqual(quarantine.keys, FROZEN_PRIOR_FINAL_SEMANTIC_KEYS)
         stage7e_rows = [row for row in payload["families"] if row["source_stage"] == "7E-R1"]
         stagee_rows = [row for row in payload["families"] if row["source_stage"] == "7G-E3-E-A1"]
         self.assertEqual(len(stage7e_rows), 8)
@@ -55,6 +61,26 @@ class PriorFinalSemanticQuarantineTests(unittest.TestCase):
         )
         self.assertEqual(len(overlaps), 2)
         self.assertEqual({row[2] for row in overlaps}, {"pachelbel_canon_d", "stage7e_in_da_club"})
+
+    def test_core_fresh_pool_excludes_prior_final_work_before_reservation(self):
+        protected = AnimeTabTreeEntry(
+            path="AnimeTAB/Entire songs/[New Origin]Canon in D.xml",
+            blob_sha="1" * 40,
+            size=123,
+        )
+        fresh = AnimeTabTreeEntry(
+            path="AnimeTAB/Entire songs/[New Origin]Brand New Work.xml",
+            blob_sha="2" * 40,
+            size=456,
+        )
+        groups = fresh_work_groups(
+            (protected, fresh),
+            pinned_commit="a" * 40,
+            exposed_work_keys=(),
+        )
+        self.assertEqual(len(groups), 1)
+        self.assertEqual(groups[0][0], fresh.canonical_work_key)
+        self.assertEqual(groups[0][1], (fresh,))
 
     def test_duplicate_semantic_alias_across_families_fails_closed(self):
         payload = {
