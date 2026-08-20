@@ -7,6 +7,11 @@ import re
 import unicodedata
 from typing import Iterable, Mapping
 
+from .s2a_prior_final_semantics import (
+    FROZEN_PRIOR_FINAL_SEMANTIC_KEYS,
+    semantic_work_key,
+)
+
 
 ANIMETAB_FULL_TRACK_PREFIX = "AnimeTAB/Entire songs/"
 PRIMARY_DEVELOPMENT_FAMILIES = 80
@@ -141,11 +146,21 @@ def fresh_work_groups(
     pinned_commit: str,
     exposed_work_keys: Iterable[str],
 ) -> tuple[tuple[str, tuple[AnimeTabTreeEntry, ...]], ...]:
+    """Return deterministic fresh work groups after all label-free quarantines.
+
+    Prior untouched-final works are excluded by semantic title identity before any
+    structural qualification or role assignment. This guard is in the core helper,
+    not only in CI, so direct callers cannot re-admit a prior final work merely by
+    changing its origin, encoding, arrangement container, or exact source bytes.
+    """
+
     exposed = frozenset(exposed_work_keys)
     grouped: dict[str, list[AnimeTabTreeEntry]] = {}
     for entry in entries:
         key = entry.canonical_work_key
         if key in exposed:
+            continue
+        if semantic_work_key(entry.filename) in FROZEN_PRIOR_FINAL_SEMANTIC_KEYS:
             continue
         grouped.setdefault(key, []).append(entry)
     groups: list[tuple[str, tuple[AnimeTabTreeEntry, ...]]] = []

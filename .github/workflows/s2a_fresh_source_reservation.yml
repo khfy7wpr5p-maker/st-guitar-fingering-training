@@ -5,8 +5,15 @@ on:
     paths:
       - '.github/workflows/s2a_fresh_source_reservation.yml'
       - 'scripts/build_s2a_fresh_source_reservation.py'
+      - 'scripts/build_s2a_fresh_source_reservation_guarded.py'
       - 'src/st_guitar_fingering_training/s2a_source_reservation.py'
+      - 'src/st_guitar_fingering_training/s2a_source_isolation.py'
+      - 'src/st_guitar_fingering_training/s2a_prior_final_semantics.py'
       - 'tests/test_s2a_source_reservation.py'
+      - 'tests/test_s2a_source_isolation.py'
+      - 'tests/test_s2a_prior_final_semantics.py'
+      - 'evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json'
+      - 'evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json'
       - 'evidence/stage7g_c_r1_animetab_batch01_manifest.json'
       - 'evidence/stage7e_final_test_seal.json'
       - 'evidence/stage7g_e3_e_a1_source_manifest.json'
@@ -25,41 +32,76 @@ jobs:
           python-version: '3.11'
       - name: Install project
         run: python -m pip install --upgrade pip && python -m pip install -e .
-      - name: Unit-test reservation primitives
-        run: python -m unittest tests.test_s2a_source_reservation -v
-      - name: Build provisional fresh-source reservation
+      - name: Unit-test reservation and isolation primitives
+        run: |
+          python -m unittest tests.test_s2a_source_reservation -v
+          python -m unittest tests.test_s2a_source_isolation -v
+          python -m unittest tests.test_s2a_prior_final_semantics -v
+      - name: Build semantically guarded fresh-source reservation
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           mkdir -p /tmp/st-guitar-s2a-fresh-source
-          python scripts/build_s2a_fresh_source_reservation.py \
+          python scripts/build_s2a_fresh_source_reservation_guarded.py \
             --old-teacher-manifest evidence/stage7g_c_r1_animetab_batch01_manifest.json \
+            --origin-alias-manifest evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json \
             --quarantine-manifest evidence/stage7e_final_test_seal.json \
             --quarantine-manifest evidence/stage7g_e3_e_a1_source_manifest.json \
+            --prior-final-semantic-quarantine evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json \
             --min-chord-events 8 \
             --output /tmp/st-guitar-s2a-fresh-source/reservation_census.json
-      - name: Fail closed on reservation shape
+      - name: Fail closed on isolation and reservation shape
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           path = Path('/tmp/st-guitar-s2a-fresh-source/reservation_census.json')
           data = json.loads(path.read_text(encoding='utf-8'))
-          assert data['status'] == 'PROVISIONAL_STRUCTURAL_RESERVATION_PENDING_HC_CAPACITY_AUDIT'
+          assert data['schema'] == 'st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v3'
+          assert data['status'] == 'PROVISIONAL_ISOLATED_RESERVATION_PENDING_HC_CAPACITY_AUDIT'
           assert data['selection']['label_blind'] is True
           assert data['selection']['teacher_responses_loaded'] is False
           assert data['selection']['model_scores_loaded'] is False
-          assert data['reservation']['total'] == 120
-          assert data['reservation']['role_counts'] == {
+          assert data['selection']['missing_or_ambiguous_origin_policy'] == 'REJECT'
+          assert data['selection']['cross_role_origin_reuse_policy'] == 'REJECT'
+          assert data['selection']['same_primary_origin_multiple_sources_policy'] == 'ALLOWED_ONLY_AS_ONE_SHARED_FAMILY'
+          assert data['selection']['alias_groups_resolve_all_source_family_identities'] is True
+          assert data['selection']['family_id_semantics'] == 'canonical alias-resolved origin/franchise group'
+          assert data['selection']['prior_final_semantic_quarantine_enabled'] is True
+          assert data['selection']['prior_final_semantic_overlap_policy'] == 'REJECT_BEFORE_SCIENTIFIC_GATE'
+          assert data['census']['prior_final_semantic_family_quarantine_count'] == 40
+          assert data['census']['prior_final_semantic_key_quarantine_count'] == 69
+          reservation = data['reservation']
+          assert reservation['total_source_count'] == 120
+          assert reservation['source_role_counts'] == {
               'CONTINGENCY_DEVELOPMENT': 20,
               'PRIMARY_DEVELOPMENT': 80,
               'UNTOUCHED_FINAL': 20,
           }
-          assert len({row['canonical_work_key'] for row in data['reservation']['sources']}) == 120
-          assert len({row['family_id'] for row in data['reservation']['sources']}) == 120
-          assert len({row['path'] for row in data['reservation']['sources']}) == 120
+          assert reservation['family_counts_by_role']['PRIMARY_DEVELOPMENT'] >= 40
+          assert reservation['family_counts_by_role']['CONTINGENCY_DEVELOPMENT'] == 20
+          assert reservation['family_counts_by_role']['UNTOUCHED_FINAL'] == 20
+          assert reservation['unique_origin_family_count'] >= 80
+          assert reservation['historical_origin_overlap_count'] == 0
+          assert reservation['cross_role_origin_overlap_count'] == 0
+          assert reservation['prior_final_semantic_overlap_count'] == 0
+          sources = reservation['sources']
+          assert len({row['canonical_work_key'] for row in sources}) == 120
+          assert len({row['path'] for row in sources}) == 120
+          assert len({row['raw_sha256'] for row in sources}) == 120
+          by_origin = {}
+          for row in sources:
+              prior = by_origin.setdefault(row['origin_group_key'], row['role'])
+              assert prior == row['role']
+          assert data['scientific_boundary']['source_identity_isolation_gate_passed'] is True
+          assert data['scientific_boundary']['prior_final_semantic_isolation_gate_passed'] is True
           assert data['scientific_boundary']['h_c_capacity_audit_executed'] is False
           assert data['scientific_boundary']['teacher_task_identities_frozen'] is False
+          assert data['scientific_boundary']['new_teacher_labels_collected'] is False
+          assert data['scientific_boundary']['real_model_fit_executed'] is False
+          assert data['scientific_boundary']['untouched_final_opened'] is False
+          assert data['scientific_boundary']['checkpoint_retained'] is False
+          assert data['scientific_boundary']['shadow_or_production_integration'] is False
           PY
       - name: Upload internal reservation census
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
