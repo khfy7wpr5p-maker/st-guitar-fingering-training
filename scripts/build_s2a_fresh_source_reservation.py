@@ -12,6 +12,13 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from st_guitar_fingering_training.intake import MAX_SOURCE_BYTES
+from st_guitar_fingering_training.s2a_source_isolation import (
+    evaluate_source_isolation,
+    exposed_origin_keys_from_filenames,
+    historical_origin_quarantine,
+    load_alias_groups,
+    origin_group_key,
+)
 from st_guitar_fingering_training.s2a_source_reservation import (
     TOTAL_RESERVED_FAMILIES,
     assign_reservation_roles,
@@ -31,6 +38,11 @@ _HEX64 = set("0123456789abcdef")
 
 def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _canonical_json_sha256(value: Any) -> str:
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return sha256(raw).hexdigest()
 
 
 def _headers() -> dict[str, str]:
@@ -125,7 +137,13 @@ def _validate_variant(entry, *, family_id: str, quarantine_sha256: set[str], min
     return raw_sha256, len(source.events), len(chord_events)
 
 
-def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple[Path, ...], min_chord_events: int):
+def build_reservation(
+    *,
+    old_teacher_manifest: Path,
+    origin_alias_manifest: Path,
+    quarantine_manifests: tuple[Path, ...],
+    min_chord_events: int,
+):
     if min_chord_events < 8:
         raise ValueError("fresh reservation minimum chord-event gate cannot be below 8")
 
@@ -138,7 +156,15 @@ def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple
         if not isinstance(row, dict) or not isinstance(row.get("filename"), str):
             raise ValueError("old Teacher-exposed source row is malformed")
         filenames.append(row["filename"])
-    exposed_keys = exposed_work_keys_from_filenames(filenames)
+    exposed_work_keys = exposed_work_keys_from_filenames(filenames)
+    exposed_origin_keys = exposed_origin_keys_from_filenames(filenames)
+
+    alias_payload = _load_json(origin_alias_manifest)
+    alias_groups = load_alias_groups(alias_payload)
+    historical_quarantine = historical_origin_quarantine(
+        exposed_origin_keys=exposed_origin_keys,
+        alias_groups=alias_groups,
+    )
 
     quarantine_sha256: set[str] = set()
     for path in quarantine_manifests:
@@ -160,20 +186,42 @@ def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple
     groups = fresh_work_groups(
         entries,
         pinned_commit=ANIMETAB_COMMIT,
-        exposed_work_keys=exposed_keys,
+        exposed_work_keys=exposed_work_keys,
     )
     if len(groups) < TOTAL_RESERVED_FAMILIES:
         raise ValueError(
-            f"only {len(groups)} fresh canonical works remain before structural validation; "
+            f"only {len(groups)} fresh canonical works remain before source isolation; "
             f"need {TOTAL_RESERVED_FAMILIES}"
         )
 
     qualified = []
-    rejected_reasons = Counter()
+    qualified_origin_by_path: dict[str, str] = {}
+    reserved_origins: set[str] = set()
+    structural_rejected_reasons = Counter()
+    isolation_rejected_reasons = Counter()
     attempted_works = 0
     attempted_variants = 0
+
     for work_key, variants in groups:
         attempted_works += 1
+        try:
+            variant_origins = {origin_group_key(entry.filename) for entry in variants}
+        except ValueError:
+            isolation_rejected_reasons["S2A_SRC_005_IDENTITY_AMBIGUOUS"] += 1
+            continue
+        if len(variant_origins) != 1:
+            isolation_rejected_reasons["S2A_SRC_005_IDENTITY_AMBIGUOUS"] += 1
+            continue
+        origin = next(iter(variant_origins))
+        decision = evaluate_source_isolation(
+            variants[0].filename,
+            historical_quarantine=historical_quarantine,
+            already_reserved_origins=reserved_origins,
+        )
+        if not decision.accepted:
+            isolation_rejected_reasons[decision.reason] += 1
+            continue
+
         family_id = f"animetabs2a-{sha256(work_key.encode('utf-8')).hexdigest()[:20]}"
         accepted = None
         for entry in variants:
@@ -186,40 +234,52 @@ def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple
                     min_chord_events=min_chord_events,
                 )
             except (ValueError, RuntimeError, OSError) as exc:
-                rejected_reasons[str(exc)] += 1
+                structural_rejected_reasons[str(exc)] += 1
                 continue
             accepted = (work_key, entry, raw_sha256, pitched_events, chord_events)
             break
         if accepted is not None:
             qualified.append(accepted)
+            reserved_origins.add(origin)
+            qualified_origin_by_path[accepted[1].path] = origin
         if len(qualified) >= TOTAL_RESERVED_FAMILIES:
             break
 
     reserved = assign_reservation_roles(qualified)
     role_counts = Counter(item.role for item in reserved)
-    reservation_identity = [
-        {
-            "role": item.role,
-            "ordinal": item.ordinal,
-            "family_id": item.family_id,
-            "canonical_work_key": item.canonical_work_key,
-            "path": item.path,
-            "blob_sha": item.blob_sha,
-            "raw_sha256": item.raw_sha256,
-            "byte_size": item.byte_size,
-            "pitched_event_count": item.pitched_event_count,
-            "chord_event_count": item.chord_event_count,
-        }
-        for item in reserved
-    ]
+    reservation_identity = []
+    for item in reserved:
+        origin = qualified_origin_by_path.get(item.path)
+        if origin is None:
+            raise AssertionError("reserved source lost origin isolation lineage")
+        reservation_identity.append(
+            {
+                "role": item.role,
+                "ordinal": item.ordinal,
+                "family_id": item.family_id,
+                "canonical_work_key": item.canonical_work_key,
+                "origin_group_key": origin,
+                "path": item.path,
+                "blob_sha": item.blob_sha,
+                "raw_sha256": item.raw_sha256,
+                "byte_size": item.byte_size,
+                "pitched_event_count": item.pitched_event_count,
+                "chord_event_count": item.chord_event_count,
+            }
+        )
+    if len({row["origin_group_key"] for row in reservation_identity}) != TOTAL_RESERVED_FAMILIES:
+        raise AssertionError("accepted S2-A reservation contains origin/franchise reuse")
+    if any(row["origin_group_key"] in historical_quarantine for row in reservation_identity):
+        raise AssertionError("accepted S2-A reservation overlaps historical origin quarantine")
+
     identity_bytes = json.dumps(
         reservation_identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
 
     return {
-        "schema": "st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v1",
+        "schema": "st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v2",
         "stage": "7G-E3-S2-A-FRESH-SOURCE-RESERVATION",
-        "status": "PROVISIONAL_STRUCTURAL_RESERVATION_PENDING_HC_CAPACITY_AUDIT",
+        "status": "PROVISIONAL_ISOLATED_RESERVATION_PENDING_HC_CAPACITY_AUDIT",
         "selection": {
             "label_blind": True,
             "teacher_responses_loaded": False,
@@ -228,6 +288,10 @@ def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple
             "pinned_commit": ANIMETAB_COMMIT,
             "scope": "AnimeTAB/Entire songs/*.xml only",
             "canonical_work_key_used_for_variant_leakage_control": True,
+            "historical_origin_franchise_quarantine_enabled": True,
+            "origin_alias_manifest_sha256": _canonical_json_sha256(alias_payload),
+            "missing_or_ambiguous_origin_policy": "REJECT",
+            "reserved_origin_reuse_policy": "REJECT",
             "one_source_variant_per_canonical_work": True,
             "raw_source_bytes_retained": False,
             "part_id": "P1",
@@ -240,21 +304,29 @@ def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple
             "full_track_xml_blob_count": len(entries),
             "canonical_work_count_before_exposure_exclusion": len(all_work_keys),
             "teacher_exposed_exact_file_count": len(filenames),
-            "teacher_exposed_canonical_work_key_count": len(exposed_keys),
-            "fresh_canonical_work_count_before_structural_validation": len(groups),
+            "teacher_exposed_canonical_work_key_count": len(exposed_work_keys),
+            "teacher_exposed_origin_key_count": len(exposed_origin_keys),
+            "historical_origin_quarantine_key_count": len(historical_quarantine),
+            "fresh_canonical_work_count_before_source_isolation": len(groups),
             "attempted_work_count_until_120_qualified": attempted_works,
             "attempted_variant_count_until_120_qualified": attempted_variants,
-            "qualified_work_count": len(qualified),
-            "rejected_variant_reason_counts": dict(sorted(rejected_reasons.items())),
+            "qualified_unique_origin_count": len(qualified),
+            "source_isolation_rejected_reason_counts": dict(sorted(isolation_rejected_reasons.items())),
+            "structural_rejected_variant_reason_counts": dict(sorted(structural_rejected_reasons.items())),
             "quarantine_sha256_value_count": len(quarantine_sha256),
         },
         "reservation": {
             "total": len(reserved),
             "role_counts": dict(sorted(role_counts.items())),
+            "unique_origin_group_count": len({row["origin_group_key"] for row in reservation_identity}),
+            "historical_origin_overlap_count": sum(
+                row["origin_group_key"] in historical_quarantine for row in reservation_identity
+            ),
             "identity_sha256": sha256(identity_bytes).hexdigest(),
             "sources": reservation_identity,
         },
         "scientific_boundary": {
+            "source_identity_isolation_gate_passed": True,
             "h_c_capacity_audit_executed": False,
             "teacher_task_identities_frozen": False,
             "new_teacher_labels_collected": False,
@@ -263,13 +335,14 @@ def build_reservation(*, old_teacher_manifest: Path, quarantine_manifests: tuple
             "checkpoint_retained": False,
             "shadow_or_production_integration": False,
         },
-        "next_gate": "RUN_HC_CAPACITY_AUDIT_AND_FREEZE_FINAL_80_20_20_SOURCE_RESERVATION",
+        "next_gate": "RUN_HC_CAPACITY_AUDIT_BEFORE_FREEZING_TEACHER_TASK_IDENTITIES",
     }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--old-teacher-manifest", type=Path, required=True)
+    parser.add_argument("--origin-alias-manifest", type=Path, required=True)
     parser.add_argument("--quarantine-manifest", type=Path, action="append", default=[])
     parser.add_argument("--min-chord-events", type=int, default=8)
     parser.add_argument("--output", type=Path, required=True)
@@ -277,6 +350,7 @@ def main() -> int:
 
     payload = build_reservation(
         old_teacher_manifest=args.old_teacher_manifest,
+        origin_alias_manifest=args.origin_alias_manifest,
         quarantine_manifests=tuple(args.quarantine_manifest),
         min_chord_events=args.min_chord_events,
     )
@@ -288,10 +362,10 @@ def main() -> int:
     census = payload["census"]
     reservation = payload["reservation"]
     print(
-        "S2-A fresh source census PASS: "
+        "S2-A isolated fresh source census PASS: "
         f"full_track_xml={census['full_track_xml_blob_count']} "
-        f"fresh_works={census['fresh_canonical_work_count_before_structural_validation']} "
-        f"qualified={census['qualified_work_count']} "
+        f"historical_origin_quarantine={census['historical_origin_quarantine_key_count']} "
+        f"qualified_unique_origins={census['qualified_unique_origin_count']} "
         f"reserved={reservation['total']} "
         f"identity={reservation['identity_sha256']}"
     )
