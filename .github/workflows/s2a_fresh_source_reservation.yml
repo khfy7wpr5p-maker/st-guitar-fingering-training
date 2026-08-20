@@ -32,6 +32,53 @@ jobs:
         run: |
           python -m unittest tests.test_s2a_source_reservation -v
           python -m unittest tests.test_s2a_source_isolation -v
+      - name: Diagnostic audit of sealed Stage 7E semantic metadata
+        run: |
+          python -m pip download --no-deps PyGuitarPro==0.10.2 -d /tmp/stage7e-wheel
+          echo "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2  /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl" | sha256sum -c -
+          python -m pip install /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl
+          python - <<'PY'
+          from hashlib import sha1
+          import json
+          from pathlib import Path
+          import tempfile
+          import urllib.request
+          import guitarpro
+
+          def git_blob_sha1(data: bytes) -> str:
+              return sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
+
+          seal = json.loads(Path('evidence/stage7e_final_test_seal.json').read_text(encoding='utf-8'))
+          corpus = seal['external_corpus']
+          commit = corpus['repository_commit']
+          with tempfile.TemporaryDirectory() as tmp:
+              for item in corpus['paths']:
+                  relative = item['path']
+                  url = f"https://raw.githubusercontent.com/robust-guitar-tabs/code/{commit}/{relative}"
+                  request = urllib.request.Request(url, headers={'User-Agent': 'st-guitar-s2a-stage7e-semantic-audit/1'})
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      data = response.read()
+                  assert len(data) == int(item['bytes'])
+                  assert git_blob_sha1(data) == item['git_blob_sha1']
+                  local = Path(tmp) / Path(relative).name
+                  local.write_bytes(data)
+                  song = guitarpro.parse(str(local))
+                  metadata = {
+                      'source_path': relative,
+                      'title': str(getattr(song, 'title', '') or ''),
+                      'subtitle': str(getattr(song, 'subtitle', '') or ''),
+                      'artist': str(getattr(song, 'artist', '') or ''),
+                      'album': str(getattr(song, 'album', '') or ''),
+                      'words': str(getattr(song, 'words', '') or ''),
+                      'music': str(getattr(song, 'music', '') or ''),
+                      'copyright': str(getattr(song, 'copyright', '') or ''),
+                      'tab': str(getattr(song, 'tab', '') or ''),
+                      'instructions': str(getattr(song, 'instructions', '') or ''),
+                      'notices': [str(value) for value in (getattr(song, 'notices', ()) or ())],
+                      'track_names': [str(getattr(track, 'name', '') or '') for track in song.tracks],
+                  }
+                  print('STAGE7E_SEMANTIC_METADATA ' + json.dumps(metadata, ensure_ascii=False, sort_keys=True))
+          PY
       - name: Build provisional isolated fresh-source reservation
         env:
           GITHUB_TOKEN: ${{ github.token }}
