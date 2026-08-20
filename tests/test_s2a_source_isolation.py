@@ -12,6 +12,7 @@ from st_guitar_fingering_training.s2a_source_isolation import (
     historical_origin_quarantine,
     origin_family_id,
     origin_group_key,
+    resolved_origin_group_key,
 )
 
 
@@ -50,26 +51,53 @@ class S2ASourceIsolationTests(unittest.TestCase):
         self.assertEqual(decision.reason, "S2A_SRC_004_FRANCHISE_ORIGIN_OVERLAP")
 
     def test_multilingual_alias_closure_rejects_same_franchise(self):
+        aliases = (("SLAM DUNK", "灌篮高手"),)
         exposed = exposed_origin_keys_from_filenames(["[SLAM DUNK]好想大声说爱你.xml"])
         quarantine = historical_origin_quarantine(
             exposed_origin_keys=exposed,
-            alias_groups=(("SLAM DUNK", "灌篮高手"),),
+            alias_groups=aliases,
         )
         decision = evaluate_source_isolation(
             "[灌篮高手]直到世界的尽头.xml",
             historical_quarantine=quarantine,
+            alias_groups=aliases,
         )
         self.assertFalse(decision.accepted)
         self.assertEqual(decision.reason, "S2A_SRC_004_FRANCHISE_ORIGIN_OVERLAP")
 
     def test_known_air_alias_is_quarantined(self):
+        aliases = (("エアー", "AIR"),)
         exposed = exposed_origin_keys_from_filenames(["[エアー]鸟之诗.xml"])
         quarantine = historical_origin_quarantine(
             exposed_origin_keys=exposed,
-            alias_groups=(("エアー", "AIR"),),
+            alias_groups=aliases,
         )
-        decision = evaluate_source_isolation("[AIR]青空.xml", historical_quarantine=quarantine)
+        decision = evaluate_source_isolation(
+            "[AIR]青空.xml",
+            historical_quarantine=quarantine,
+            alias_groups=aliases,
+        )
         self.assertFalse(decision.accepted)
+
+    def test_candidate_aliases_share_one_resolved_franchise_family(self):
+        fate = (("Fate Stay Night", "Fate Zero", "Fate"),)
+        self.assertEqual(
+            resolved_origin_group_key("[Fate Stay Night]A.xml", alias_groups=fate),
+            resolved_origin_group_key("[Fate Zero]B.xml", alias_groups=fate),
+        )
+        princess = (("Princess Maker", "Princess Maker4", "Princess Maker 4"),)
+        self.assertEqual(
+            resolved_origin_group_key("[Princess Maker]A.xml", alias_groups=princess),
+            resolved_origin_group_key("[Princess Maker4]B.xml", alias_groups=princess),
+        )
+
+    def test_transitive_alias_groups_resolve_to_one_family(self):
+        aliases = (("A", "B"), ("B", "C"))
+        keys = {
+            resolved_origin_group_key(f"[{value}]Song.xml", alias_groups=aliases)
+            for value in ("A", "B", "C")
+        }
+        self.assertEqual(len(keys), 1)
 
     def test_missing_origin_is_ambiguous_and_rejected(self):
         decision = evaluate_source_isolation("Lilium modified.xml", historical_quarantine=())
