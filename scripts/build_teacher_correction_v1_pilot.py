@@ -116,6 +116,44 @@ def _candidate_tasks_for_source(source, quarantine: dict) -> tuple[tuple[dict, d
     return tuple(candidates)
 
 
+def _select_distinct_semantic_tasks(
+    family_candidate_sets: list[tuple[str, tuple[tuple[dict, dict], ...]]],
+    *,
+    freeze_sha: str,
+) -> tuple[tuple[dict, dict], ...]:
+    flattened: list[tuple[dict, dict]] = []
+    for _, candidates in family_candidate_sets:
+        flattened.extend(candidates)
+    flattened.sort(
+        key=lambda pair: (
+            int(pair[0]["solution_count"]),
+            sha256(
+                f"{freeze_sha}|{PILOT_BATCH_ID}|candidate|{pair[1]['family_id']}|{pair[0]['task_id']}".encode("utf-8")
+            ).hexdigest(),
+        )
+    )
+
+    selected: list[tuple[dict, dict]] = []
+    used_families: set[str] = set()
+    used_fingerprints: set[str] = set()
+    for pair in flattened:
+        task, audit = pair
+        family_id = str(audit["family_id"])
+        fingerprint = str(task["task_fingerprint"])
+        if family_id in used_families or fingerprint in used_fingerprints:
+            continue
+        selected.append(pair)
+        used_families.add(family_id)
+        used_fingerprints.add(fingerprint)
+        if len(selected) == PILOT_TASK_COUNT:
+            break
+    if len(selected) != PILOT_TASK_COUNT:
+        raise RuntimeError(
+            f"STOP: only {len(selected)} distinct family + semantic-task pairs remain after quarantine/dedup"
+        )
+    return tuple(selected)
+
+
 def build(args) -> dict:
     freeze, freeze_sha = _load_and_verify_freeze(args.freeze_manifest)
     reproduced = _reproduce_frozen_reservation(args, freeze)
@@ -123,28 +161,21 @@ def build(args) -> dict:
     sources = _load_sources(representatives)
     quarantine = _load_quarantine(args.teacher_quarantine_manifest)
 
-    family_candidates = []
+    family_candidate_sets = []
+    manageable_family_count = 0
     for source in sources:
         candidates = _candidate_tasks_for_source(source, quarantine)
         if candidates:
-            task, audit = candidates[0]
-            family_candidates.append((task, audit))
+            manageable_family_count += 1
+            family_candidate_sets.append((source.family_id, candidates))
 
-    if len(family_candidates) < PILOT_TASK_COUNT:
+    if manageable_family_count < PILOT_TASK_COUNT:
         raise RuntimeError(
-            f"STOP: only {len(family_candidates)} primary families have a non-quarantined "
+            f"STOP: only {manageable_family_count} primary families have a non-quarantined "
             f"Teacher Correction event with <= {PILOT_MAX_SOLUTIONS_PER_TASK} solutions"
         )
 
-    family_candidates.sort(
-        key=lambda pair: (
-            int(pair[0]["solution_count"]),
-            sha256(
-                f"{freeze_sha}|{PILOT_BATCH_ID}|family|{pair[1]['family_id']}|{pair[0]['task_id']}".encode("utf-8")
-            ).hexdigest(),
-        )
-    )
-    selected = family_candidates[:PILOT_TASK_COUNT]
+    selected = _select_distinct_semantic_tasks(family_candidate_sets, freeze_sha=freeze_sha)
     tasks = [pair[0] for pair in selected]
     audits = [pair[1] for pair in selected]
 
@@ -187,12 +218,12 @@ def build(args) -> dict:
         "reproduced_reservation_identity_sha256": reproduced["final_reservation"]["identity_sha256"],
         "source_role": PRIMARY_ROLE,
         "primary_family_pool_count": len(representatives),
-        "manageable_family_pool_count": len(family_candidates),
+        "manageable_family_pool_count": manageable_family_count,
         "pilot_selection_policy": (
             "label-free UX pilot: one deterministic representative per frozen primary family; "
-            "scan up to 24 H-C-eligible events; require <=24 exact H-C solutions; choose the "
-            "lowest-complexity clean event per family, then the 20 lowest-complexity families "
-            "with deterministic hash tie-breaks"
+            "scan up to 24 H-C-eligible events; require <=24 exact H-C solutions; globally rank "
+            "manageable candidate events by solution count + deterministic hash; greedily keep "
+            "20 distinct families and 20 distinct semantic task fingerprints"
         ),
         "max_solutions_per_task": PILOT_MAX_SOLUTIONS_PER_TASK,
         "contingency_sources_used": 0,
@@ -202,6 +233,7 @@ def build(args) -> dict:
         "quarantine_manifest_sha256": manifest["quarantine_manifest_sha256"],
         "task_count": len(tasks),
         "family_count": len({row["family_id"] for row in audits}),
+        "semantic_task_count": len({row["task_fingerprint"] for row in tasks}),
         "solution_count_min": min(row["solution_count"] for row in audits),
         "solution_count_max": max(row["solution_count"] for row in audits),
         "solution_count_mean": sum(row["solution_count"] for row in audits) / len(audits),
@@ -221,6 +253,7 @@ def build(args) -> dict:
         "session_id": PILOT_SESSION_ID,
         "task_count": PILOT_TASK_COUNT,
         "family_count": internal["family_count"],
+        "semantic_task_count": internal["semantic_task_count"],
         "primary_family_pool_count": internal["primary_family_pool_count"],
         "manageable_family_pool_count": internal["manageable_family_pool_count"],
         "max_solutions_per_task": PILOT_MAX_SOLUTIONS_PER_TASK,
