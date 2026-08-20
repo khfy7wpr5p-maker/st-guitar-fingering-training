@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -9,7 +10,6 @@ from build_s2a_teacher_batch02 import (
     _load_and_verify_freeze,
     _load_sources,
     _reproduce_frozen_reservation,
-    _select_primary_representatives,
 )
 from st_guitar_fingering_training.teacher_correction import (
     TCV1_MANIFEST_SCHEMA,
@@ -22,8 +22,10 @@ from st_guitar_fingering_training.teacher_correction import (
 
 PILOT_BATCH_ID = "TCV1_PILOT01"
 PILOT_SESSION_ID = "TCV1_PILOT01"
-PILOT_TASK_COUNT = 40
-MAX_ELIGIBLE_EVENTS_SCANNED_PER_SOURCE = 8
+PILOT_TASK_COUNT = 20
+PILOT_MAX_SOLUTIONS_PER_TASK = 24
+MAX_ELIGIBLE_EVENTS_SCANNED_PER_SOURCE = 24
+PRIMARY_ROLE = "PRIMARY_DEVELOPMENT"
 
 
 def _event_id(source, event) -> str:
@@ -45,6 +47,30 @@ def _load_quarantine(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _all_primary_representatives(audit: dict, freeze_sha: str) -> tuple[dict, ...]:
+    primary = [
+        row for row in audit["final_reservation"]["sources"]
+        if row.get("role") == PRIMARY_ROLE
+    ]
+    if len(primary) != 80:
+        raise RuntimeError("STOP: frozen PRIMARY_DEVELOPMENT source count is not 80")
+    by_family: dict[str, list[dict]] = defaultdict(list)
+    for row in primary:
+        by_family[str(row["family_id"])].append(row)
+    if len(by_family) != 51:
+        raise RuntimeError("STOP: frozen PRIMARY_DEVELOPMENT family count is not 51")
+    representatives = []
+    for family_id in sorted(by_family):
+        rows = sorted(
+            by_family[family_id],
+            key=lambda row: sha256(
+                f"{freeze_sha}|TCV1_PILOT01|source|{row['path']}|{row['raw_sha256']}".encode("utf-8")
+            ).hexdigest(),
+        )
+        representatives.append(rows[0])
+    return tuple(representatives)
+
+
 def _candidate_tasks_for_source(source, quarantine: dict) -> tuple[tuple[dict, dict], ...]:
     candidates = []
     eligible_seen = 0
@@ -64,7 +90,7 @@ def _candidate_tasks_for_source(source, quarantine: dict) -> tuple[tuple[dict, d
             raise
         eligible_seen += 1
         clean = filter_quarantined_tasks((task,), quarantine)
-        if clean:
+        if clean and int(task["solution_count"]) <= PILOT_MAX_SOLUTIONS_PER_TASK:
             audit = {
                 "family_id": source.family_id,
                 "source_sha256": source.source_sha256,
@@ -81,12 +107,10 @@ def _candidate_tasks_for_source(source, quarantine: dict) -> tuple[tuple[dict, d
             candidates.append((task, audit))
         if eligible_seen >= MAX_ELIGIBLE_EVENTS_SCANNED_PER_SOURCE:
             break
-    if not candidates:
-        raise RuntimeError(f"STOP: no non-quarantined Teacher Correction event for {source.family_id}")
     candidates.sort(
         key=lambda pair: (
             int(pair[0]["solution_count"]),
-            sha256(f"{PILOT_BATCH_ID}|{pair[0]['task_id']}".encode("utf-8")).hexdigest(),
+            sha256(f"{PILOT_BATCH_ID}|event|{pair[0]['task_id']}".encode("utf-8")).hexdigest(),
         )
     )
     return tuple(candidates)
@@ -95,28 +119,43 @@ def _candidate_tasks_for_source(source, quarantine: dict) -> tuple[tuple[dict, d
 def build(args) -> dict:
     freeze, freeze_sha = _load_and_verify_freeze(args.freeze_manifest)
     reproduced = _reproduce_frozen_reservation(args, freeze)
-    representatives = _select_primary_representatives(reproduced, freeze_sha)
-    if len(representatives) != PILOT_TASK_COUNT:
-        raise RuntimeError("STOP: Teacher Correction pilot requires exactly 40 primary families")
+    representatives = _all_primary_representatives(reproduced, freeze_sha)
     sources = _load_sources(representatives)
     quarantine = _load_quarantine(args.teacher_quarantine_manifest)
 
-    tasks = []
-    audits = []
+    family_candidates = []
     for source in sources:
         candidates = _candidate_tasks_for_source(source, quarantine)
-        task, audit = candidates[0]
-        tasks.append(task)
-        audits.append(audit)
+        if candidates:
+            task, audit = candidates[0]
+            family_candidates.append((task, audit))
 
-    if len(tasks) != PILOT_TASK_COUNT:
-        raise RuntimeError("STOP: Teacher Correction pilot task count drift")
+    if len(family_candidates) < PILOT_TASK_COUNT:
+        raise RuntimeError(
+            f"STOP: only {len(family_candidates)} primary families have a non-quarantined "
+            f"Teacher Correction event with <= {PILOT_MAX_SOLUTIONS_PER_TASK} solutions"
+        )
+
+    family_candidates.sort(
+        key=lambda pair: (
+            int(pair[0]["solution_count"]),
+            sha256(
+                f"{freeze_sha}|{PILOT_BATCH_ID}|family|{pair[1]['family_id']}|{pair[0]['task_id']}".encode("utf-8")
+            ).hexdigest(),
+        )
+    )
+    selected = family_candidates[:PILOT_TASK_COUNT]
+    tasks = [pair[0] for pair in selected]
+    audits = [pair[1] for pair in selected]
+
     if len({row["task_id"] for row in tasks}) != PILOT_TASK_COUNT:
         raise RuntimeError("STOP: Teacher Correction duplicate task ID")
     if len({row["task_fingerprint"] for row in tasks}) != PILOT_TASK_COUNT:
         raise RuntimeError("STOP: Teacher Correction duplicate task fingerprint")
     if len({row["family_id"] for row in audits}) != PILOT_TASK_COUNT:
         raise RuntimeError("STOP: Teacher Correction pilot lost family isolation")
+    if max(int(row["solution_count"]) for row in tasks) > PILOT_MAX_SOLUTIONS_PER_TASK:
+        raise RuntimeError("STOP: Teacher Correction pilot exceeded solution-count UX cap")
 
     manifest = build_teacher_correction_manifest(
         batch_id=PILOT_BATCH_ID,
@@ -146,7 +185,16 @@ def build(args) -> dict:
         "session_id": PILOT_SESSION_ID,
         "source_freeze_manifest_sha256": freeze_sha,
         "reproduced_reservation_identity_sha256": reproduced["final_reservation"]["identity_sha256"],
-        "source_role": "PRIMARY_DEVELOPMENT",
+        "source_role": PRIMARY_ROLE,
+        "primary_family_pool_count": len(representatives),
+        "manageable_family_pool_count": len(family_candidates),
+        "pilot_selection_policy": (
+            "label-free UX pilot: one deterministic representative per frozen primary family; "
+            "scan up to 24 H-C-eligible events; require <=24 exact H-C solutions; choose the "
+            "lowest-complexity clean event per family, then the 20 lowest-complexity families "
+            "with deterministic hash tie-breaks"
+        ),
+        "max_solutions_per_task": PILOT_MAX_SOLUTIONS_PER_TASK,
         "contingency_sources_used": 0,
         "untouched_final_sources_used": 0,
         "historical_teacher_responses_used": False,
@@ -173,6 +221,9 @@ def build(args) -> dict:
         "session_id": PILOT_SESSION_ID,
         "task_count": PILOT_TASK_COUNT,
         "family_count": internal["family_count"],
+        "primary_family_pool_count": internal["primary_family_pool_count"],
+        "manageable_family_pool_count": internal["manageable_family_pool_count"],
+        "max_solutions_per_task": PILOT_MAX_SOLUTIONS_PER_TASK,
         "manifest_sha256": manifest["manifest_sha256"],
         "quarantine_manifest_sha256": manifest["quarantine_manifest_sha256"],
         "solution_count_min": internal["solution_count_min"],
@@ -183,12 +234,13 @@ def build(args) -> dict:
         "untouched_final_sources_used": 0,
         "historical_teacher_responses_used": False,
         "model_scores_used": False,
+        "training_authorized": False,
     }
     return summary
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build the 40-task Teacher Correction v1 pilot")
+    parser = argparse.ArgumentParser(description="Build the 20-task Teacher Correction v1 UX pilot")
     parser.add_argument("--freeze-manifest", type=Path, required=True)
     parser.add_argument("--teacher-quarantine-manifest", type=Path, required=True)
     parser.add_argument("--old-teacher-manifest", type=Path, required=True)
