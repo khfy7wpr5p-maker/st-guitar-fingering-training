@@ -1,0 +1,19 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-batch02-supersession-v1",
+  "stage": "7G-E3-S2-A",
+  "status": "SUPERSEDED_WITHOUT_IMPORTED_LABELS",
+  "superseded_batch_id": "S2A_BATCH02",
+  "superseded_batch_manifest_sha256": "96096242200eb4888f148721123c00b8e9cdf1106c2ebb163ceb4b40c4598894",
+  "reason": "Pairwise Teacher task quality was inefficient: physically feasible H-C assignments can still be obviously unnatural; replace human A/B collection with Teacher Correction v1 pilot.",
+  "replacement_protocol": "TEACHER_CORRECTION.v1",
+  "replacement_batch_id": "TCV1_PILOT01",
+  "imported_teacher_response_count": 0,
+  "old_batch_training_authorized": false,
+  "old_batch_repeat_authorized": false,
+  "old_batch_model_selection_authorized": false,
+  "old_batch_metrics_authorized": false,
+  "untouched_final_opened": false,
+  "checkpoint_retention_authorized": false,
+  "shadow_or_production_authorized": false,
+  "manifest_sha256": "907616582b99e9221e7f73ad376cadd6bd3d9dc84e0fd289bd2e4e4aea9ef844"
+}
