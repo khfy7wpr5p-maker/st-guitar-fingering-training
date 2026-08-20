@@ -1,0 +1,117 @@
+name: s2a-hc-capacity-audit
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/s2a_hc_capacity_audit.yml'
+      - 'scripts/run_s2a_hc_capacity_audit.py'
+      - 'src/st_guitar_fingering_training/s2a_hc_capacity.py'
+      - 'tests/test_s2a_hc_capacity.py'
+      - 'src/st_guitar_fingering_training/finger_assignments.py'
+      - 'src/st_guitar_fingering_training/fingering_feasibility.py'
+      - 'src/st_guitar_fingering_training/s2a_source_isolation.py'
+      - 'src/st_guitar_fingering_training/s2a_source_reservation.py'
+      - 'src/st_guitar_fingering_training/s2a_prior_final_semantics.py'
+      - 'evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json'
+      - 'evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json'
+      - 'evidence/stage7g_c_r1_animetab_batch01_manifest.json'
+      - 'evidence/stage7e_final_test_seal.json'
+      - 'evidence/stage7g_e3_e_a1_source_manifest.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-and-replace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install project
+        run: python -m pip install --upgrade pip && python -m pip install -e .
+      - name: Unit-test H-C capacity gate
+        run: python -m unittest tests.test_s2a_hc_capacity -v
+      - name: Run all-source H-C capacity audit and deterministic replacement
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/st-guitar-s2a-hc
+          python scripts/run_s2a_hc_capacity_audit.py \
+            --old-teacher-manifest evidence/stage7g_c_r1_animetab_batch01_manifest.json \
+            --origin-alias-manifest evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json \
+            --quarantine-manifest evidence/stage7e_final_test_seal.json \
+            --quarantine-manifest evidence/stage7g_e3_e_a1_source_manifest.json \
+            --prior-final-semantic-quarantine evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json \
+            --output /tmp/st-guitar-s2a-hc/hc_capacity_audit.json
+      - name: Fail closed on H-C capacity and final reservation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path('/tmp/st-guitar-s2a-hc/hc_capacity_audit.json').read_text(encoding='utf-8'))
+          assert data['schema'] == 'st-guitar-stage7g-e3-s2a-hc-capacity-audit-v1'
+          assert data['status'] == 'PASS'
+          assert data['policy']['rule_version'] == 'S2A-HC-CAPACITY.v1'
+          assert data['policy']['minimum_hc_eligible_events_per_source'] == 8
+          assert data['policy']['initial_reservation_selected_before_hc_results'] is True
+          assert data['policy']['replacement_selection_uses_teacher_labels'] is False
+          assert data['policy']['replacement_selection_uses_model_scores'] is False
+
+          initial = data['initial_reservation']
+          assert initial['total_source_count'] == 120
+          assert initial['invariants']['pass'] is True
+          assert initial['summary_by_role']['PRIMARY_DEVELOPMENT']['total'] == 80
+          assert initial['summary_by_role']['CONTINGENCY_DEVELOPMENT']['total'] == 20
+          assert initial['summary_by_role']['UNTOUCHED_FINAL']['total'] == 20
+          assert initial['pass_source_count'] + initial['fail_source_count'] == 120
+          assert len(initial['sources']) == 120
+          assert len(initial['failures']) == initial['fail_source_count']
+
+          execution = data['replacement_execution']
+          assert execution['unfilled_failure_count'] == 0
+          assert execution['replacement_count'] == initial['fail_source_count']
+          for row in execution['replacements']:
+              assert row['removed']['hc_capacity']['status'] == 'FAIL'
+              assert row['added']['hc_capacity']['status'] == 'PASS'
+              assert row['added']['candidate_sequence_ordinal'] > 0
+
+          final = data['final_reservation']
+          assert final['total_source_count'] == 120
+          assert final['hc_pass_source_count'] == 120
+          assert final['hc_fail_source_count'] == 0
+          assert final['invariants']['pass'] is True
+          assert final['invariants']['source_counts_by_role'] == {
+              'CONTINGENCY_DEVELOPMENT': 20,
+              'PRIMARY_DEVELOPMENT': 80,
+              'UNTOUCHED_FINAL': 20,
+          }
+          assert final['invariants']['family_counts_by_role']['PRIMARY_DEVELOPMENT'] >= 40
+          assert final['invariants']['family_counts_by_role']['CONTINGENCY_DEVELOPMENT'] == 20
+          assert final['invariants']['family_counts_by_role']['UNTOUCHED_FINAL'] == 20
+          assert final['invariants']['cross_role_origin_overlap_count'] == 0
+          assert len({row['path'] for row in final['sources']}) == 120
+          assert len({row['raw_sha256'] for row in final['sources']}) == 120
+          assert all(row['hc_capacity']['status'] == 'PASS' for row in final['sources'])
+
+          boundary = data['scientific_boundary']
+          assert boundary['h_c_capacity_audit_executed'] is True
+          assert boundary['all_initial_120_sources_audited'] is True
+          assert boundary['teacher_task_identities_frozen'] is False
+          assert boundary['new_teacher_labels_collected'] is False
+          assert boundary['real_model_fit_executed'] is False
+          assert boundary['untouched_final_labels_opened'] is False
+          assert boundary['checkpoint_retained'] is False
+          assert boundary['shadow_or_production_integration'] is False
+          PY
+      - name: Upload H-C capacity audit evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: st-guitar-s2a-hc-capacity-audit
+          path: /tmp/st-guitar-s2a-hc/hc_capacity_audit.json
+          if-no-files-found: error
+          retention-days: 14
