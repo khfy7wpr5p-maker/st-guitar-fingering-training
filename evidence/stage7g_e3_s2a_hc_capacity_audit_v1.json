@@ -1,0 +1,72 @@
+{
+  "schema": "st-guitar-stage7g-e3-s2a-hc-capacity-seal-v1",
+  "stage": "7G-E3-S2-A-HC-CAPACITY",
+  "status": "PASS",
+  "tested_pr": 87,
+  "tested_head_sha": "7f4cba5cab1b611c0d324d0f1c1f10d8bc35f08c",
+  "workflow_run_id": 32365836554,
+  "workflow_artifact_id": 9405271033,
+  "workflow_artifact_zip_sha256": "02fdb91739ef24690136b71717f1fbdbb0c0c818b0745c870b094a3b7837e3c6",
+  "audit_json_raw_sha256": "ceef385681ca762bf4a76272d51de5c9841d00f47d70c1603cfdea5b73ccb031",
+  "audit_json_canonical_sha256": "af266ce03838c8a1376aaf98e7c099a04eff8d1955b11f192663ba390a5b0d06",
+  "policy": {
+    "rule_version": "S2A-HC-CAPACITY.v1",
+    "minimum_hc_eligible_events_per_source": 8,
+    "eligible_event_definition": "target-free chord, <=6 pitches, >=2 distinct S1-H-C assignments",
+    "initial_reservation_selected_before_hc_results": true,
+    "replacement_order": "ascending deterministic clean candidate sequence ordinal",
+    "teacher_labels_used": false,
+    "model_scores_used": false
+  },
+  "candidate_census": {
+    "full_track_xml_blob_count": 403,
+    "deterministic_fresh_work_group_count": 314,
+    "structurally_qualified_clean_source_count": 153,
+    "structurally_qualified_clean_origin_family_count": 91,
+    "replacement_pool_source_count": 33,
+    "hc_capacity_failed_candidate_count": 0
+  },
+  "initial_reservation": {
+    "total": 120,
+    "primary_development": {"total": 80, "pass": 80, "fail": 0},
+    "contingency_development": {"total": 20, "pass": 20, "fail": 0},
+    "untouched_final": {"total": 20, "pass": 20, "fail": 0},
+    "failure_count": 0,
+    "failures": []
+  },
+  "replacement_execution": {
+    "replacement_count": 0,
+    "unfilled_failure_count": 0,
+    "replacements": []
+  },
+  "final_reservation": {
+    "total": 120,
+    "hc_pass": 120,
+    "hc_fail": 0,
+    "identity_sha256": "cf7faf6f8f86fbd4819be3b393850dd3e43e7647edaf51584c9e9a4593482807",
+    "source_counts_by_role": {
+      "PRIMARY_DEVELOPMENT": 80,
+      "CONTINGENCY_DEVELOPMENT": 20,
+      "UNTOUCHED_FINAL": 20
+    },
+    "family_counts_by_role": {
+      "PRIMARY_DEVELOPMENT": 51,
+      "CONTINGENCY_DEVELOPMENT": 20,
+      "UNTOUCHED_FINAL": 20
+    },
+    "cross_role_origin_overlap_count": 0,
+    "unique_path_count": 120,
+    "unique_raw_sha256_count": 120,
+    "unique_work_count": 120
+  },
+  "scientific_boundary": {
+    "all_initial_120_sources_audited": true,
+    "teacher_task_identities_frozen": false,
+    "new_teacher_labels_collected": false,
+    "real_model_fit_executed": false,
+    "untouched_final_labels_opened": false,
+    "checkpoint_retained": false,
+    "shadow_or_production_integration": false
+  },
+  "next_gate": "FREEZE_HC_QUALIFIED_SOURCE_RESERVATION_BEFORE_NEW_TEACHER_TASK_GENERATION"
+}
