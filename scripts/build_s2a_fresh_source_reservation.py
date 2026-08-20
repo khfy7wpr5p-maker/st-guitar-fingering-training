@@ -19,7 +19,8 @@ from st_guitar_fingering_training.s2a_source_isolation import (
     exposed_origin_keys_from_filenames,
     historical_origin_quarantine,
     load_alias_groups,
-    origin_group_key,
+    origin_family_id,
+    resolved_origin_group_key,
 )
 from st_guitar_fingering_training.s2a_source_reservation import (
     TOTAL_RESERVED_FAMILIES,
@@ -158,12 +159,12 @@ def build_reservation(
             raise ValueError("old Teacher-exposed source row is malformed")
         filenames.append(row["filename"])
     exposed_work_keys = exposed_work_keys_from_filenames(filenames)
-    exposed_origin_keys = exposed_origin_keys_from_filenames(filenames)
+    raw_exposed_origin_keys = exposed_origin_keys_from_filenames(filenames)
 
     alias_payload = _load_json(origin_alias_manifest)
     alias_groups = load_alias_groups(alias_payload)
     historical_quarantine = historical_origin_quarantine(
-        exposed_origin_keys=exposed_origin_keys,
+        exposed_origin_keys=raw_exposed_origin_keys,
         alias_groups=alias_groups,
     )
 
@@ -205,7 +206,10 @@ def build_reservation(
     for work_key, variants in groups:
         attempted_works += 1
         try:
-            variant_origins = {origin_group_key(entry.filename) for entry in variants}
+            variant_origins = {
+                resolved_origin_group_key(entry.filename, alias_groups=alias_groups)
+                for entry in variants
+            }
         except ValueError:
             isolation_rejected_reasons["S2A_SRC_005_IDENTITY_AMBIGUOUS"] += 1
             continue
@@ -216,12 +220,15 @@ def build_reservation(
         decision = evaluate_source_isolation(
             variants[0].filename,
             historical_quarantine=historical_quarantine,
+            alias_groups=alias_groups,
         )
         if not decision.accepted:
             isolation_rejected_reasons[decision.reason] += 1
             continue
+        if decision.origin_group_key != origin:
+            raise AssertionError("source isolation resolver changed origin identity")
 
-        source_family_id = f"animetabs2a-origin-{sha256(origin.encode('utf-8')).hexdigest()[:20]}"
+        source_family_id = origin_family_id(origin)
         accepted = None
         for entry in variants:
             attempted_variants += 1
@@ -310,11 +317,12 @@ def build_reservation(
             "scope": "AnimeTAB/Entire songs/*.xml only",
             "canonical_work_key_used_for_variant_leakage_control": True,
             "historical_origin_franchise_quarantine_enabled": True,
+            "alias_groups_resolve_all_source_family_identities": True,
             "origin_alias_manifest_sha256": _canonical_json_sha256(alias_payload),
             "missing_or_ambiguous_origin_policy": "REJECT",
             "cross_role_origin_reuse_policy": "REJECT",
             "same_primary_origin_multiple_sources_policy": "ALLOWED_ONLY_AS_ONE_SHARED_FAMILY",
-            "family_id_semantics": "canonical origin/franchise group",
+            "family_id_semantics": "canonical alias-resolved origin/franchise group",
             "one_source_variant_per_canonical_work": True,
             "raw_source_bytes_retained": False,
             "part_id": "P1",
@@ -328,8 +336,8 @@ def build_reservation(
             "canonical_work_count_before_exposure_exclusion": len(all_work_keys),
             "teacher_exposed_exact_file_count": len(filenames),
             "teacher_exposed_canonical_work_key_count": len(exposed_work_keys),
-            "teacher_exposed_origin_key_count": len(exposed_origin_keys),
-            "historical_origin_quarantine_key_count": len(historical_quarantine),
+            "teacher_exposed_raw_origin_key_count": len(raw_exposed_origin_keys),
+            "historical_origin_family_quarantine_count": len(historical_quarantine),
             "fresh_canonical_work_count_before_source_isolation": len(groups),
             "attempted_work_count": attempted_works,
             "attempted_variant_count": attempted_variants,
