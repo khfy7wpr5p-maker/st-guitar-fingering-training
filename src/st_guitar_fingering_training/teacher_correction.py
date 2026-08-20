@@ -73,12 +73,12 @@ def _event_assignment_set(pitches_midi: tuple[int, ...], tuning: tuple[int, ...]
     return ordered
 
 
-def task_fingerprint(*, event_id: str, assignment_ids: Iterable[str]) -> str:
+def task_fingerprint(*, assignment_ids: Iterable[str]) -> str:
     ids = tuple(sorted(str(value) for value in assignment_ids))
-    if not event_id or len(ids) < 2 or len(ids) != len(set(ids)):
-        raise ValueError("Teacher Correction fingerprint requires one event and unique assignments")
+    if len(ids) < 2 or len(ids) != len(set(ids)):
+        raise ValueError("Teacher Correction fingerprint requires unique semantic assignments")
     return "sha256:" + sha256(
-        f"{TCV1_PROTOCOL_VERSION}|{event_id}|{'|'.join(ids)}".encode("utf-8")
+        f"{TCV1_PROTOCOL_VERSION}|semantic-task|{'|'.join(ids)}".encode("utf-8")
     ).hexdigest()
 
 
@@ -92,9 +92,11 @@ def build_teacher_correction_task(
     tuning = tuple(int(value) for value in tuning)
     assignments = _event_assignment_set(pitches, tuning)
     assignment_ids = tuple(item.assignment_id for item in assignments)
-    fingerprint = task_fingerprint(event_id=event_id, assignment_ids=assignment_ids)
+    if not event_id:
+        raise ValueError("Teacher Correction event_id is required")
+    fingerprint = task_fingerprint(assignment_ids=assignment_ids)
     task_id = "tcv1-task-sha256:" + sha256(
-        f"{TCV1_PROTOCOL_VERSION}|{fingerprint}".encode("utf-8")
+        f"{TCV1_PROTOCOL_VERSION}|event-task|{event_id}|{fingerprint}".encode("utf-8")
     ).hexdigest()
     return {
         "schema": TCV1_TASK_SCHEMA,
@@ -240,18 +242,27 @@ def validate_teacher_correction_export(payload: dict, manifest: dict) -> dict:
 def merge_rejections_into_quarantine(quarantine: dict, export_payload: dict, manifest: dict) -> dict:
     _verify_quarantine(quarantine)
     summary = validate_teacher_correction_export(export_payload, manifest)
+    source_exports = list(quarantine.get("source_exports", []))
+    manifest_sha = str(manifest["manifest_sha256"])
+    if any(str(row.get("manifest_sha256", "")) == manifest_sha for row in source_exports):
+        return dict(quarantine)
+
     task_ids = set(quarantine["rejected_task_ids"])
     fingerprints = set(quarantine["rejected_task_fingerprints"])
+    new_task_ids = set(summary["rejected_task_ids"]) - task_ids
+    new_fingerprints = set(summary["rejected_task_fingerprints"]) - fingerprints
     task_ids.update(summary["rejected_task_ids"])
     fingerprints.update(summary["rejected_task_fingerprints"])
+
     reasons = Counter(quarantine.get("reason_counts", {}))
-    reasons["TEACHER_REJECTED_TASK"] += summary["rejected_permanent_count"]
-    source_exports = list(quarantine.get("source_exports", []))
+    reasons["TEACHER_REJECTED_TASK"] += len(new_fingerprints)
     source_exports.append({
         "batch_id": manifest["batch_id"],
         "session_id": manifest["session_id"],
-        "manifest_sha256": manifest["manifest_sha256"],
+        "manifest_sha256": manifest_sha,
         "rejected_count": summary["rejected_permanent_count"],
+        "new_task_id_count": len(new_task_ids),
+        "new_semantic_rejection_count": len(new_fingerprints),
     })
     updated = {
         "schema": TCV1_QUARANTINE_SCHEMA,
@@ -309,7 +320,7 @@ function save(){localStorage.setItem(storageKey+'_decisions',JSON.stringify(deci
 function done(){return Object.keys(decisions).length}function rejected(){return Object.values(decisions).filter(x=>x.decision==='REJECTED_PERMANENT').length}
 function task(){return tasks[current]}function solutions(t){return t.solutions}
 function selectedId(t){return selected[t.task_id]||t.initial_assignment_id}function selectedIndex(t){const id=selectedId(t);const i=solutions(t).findIndex(x=>x.assignment_id===id);return i<0?0:i}
-function esc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))}
 function renderSolution(t){const s=solutions(t)[selectedIndex(t)];document.getElementById('solutionSelect').value=s.assignment_id;
 document.getElementById('solution').innerHTML=s.placements.map(p=>`<div class="placement">MIDI ${p.pitch_midi} · tel ${p.string} · perde ${p.fret} · <strong>parmak ${p.finger}</strong></div>`).join('');
 document.getElementById('barres').innerHTML=s.barres.length?s.barres.map(b=>`<div><strong>Barre:</strong> parmak ${b.finger}, perde ${b.fret}, tel ${b.span_start_string}–${b.span_end_string}</div>`).join(''):'<span class="muted">Barre yok</span>'}
