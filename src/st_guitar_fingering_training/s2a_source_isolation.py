@@ -26,6 +26,8 @@ def canonical_origin_key(value: str) -> str:
 
 
 def origin_group_key(filename: str) -> str:
+    """Extract the raw normalized bracketed origin identity from one filename."""
+
     name = PurePosixPath(filename).name
     match = _LEADING_ORIGIN.match(unicodedata.normalize("NFKC", name))
     if match is None:
@@ -33,8 +35,67 @@ def origin_group_key(filename: str) -> str:
     return canonical_origin_key(match.group(1))
 
 
-def exposed_origin_keys_from_filenames(filenames: Iterable[str]) -> frozenset[str]:
-    return frozenset(origin_group_key(filename) for filename in filenames)
+def _normalized_alias_components(
+    alias_groups: Iterable[Iterable[str]],
+) -> tuple[frozenset[str], ...]:
+    """Build transitive alias/franchise components deterministically."""
+
+    components: list[set[str]] = []
+    for raw_group in alias_groups:
+        group = {canonical_origin_key(value) for value in raw_group}
+        if len(group) < 2:
+            raise ValueError("origin alias groups must contain at least two distinct aliases")
+        overlapping = [component for component in components if component & group]
+        merged = set(group)
+        for component in overlapping:
+            merged.update(component)
+            components.remove(component)
+        components.append(merged)
+    return tuple(
+        sorted(
+            (frozenset(component) for component in components),
+            key=lambda component: tuple(sorted(component)),
+        )
+    )
+
+
+def build_origin_alias_index(alias_groups: Iterable[Iterable[str]]) -> dict[str, str]:
+    """Map every known alias to one opaque canonical franchise/origin family key."""
+
+    index: dict[str, str] = {}
+    for component in _normalized_alias_components(alias_groups):
+        digest = sha256("|".join(sorted(component)).encode("utf-8")).hexdigest()[:24]
+        group_key = f"s2aalias{digest}"
+        for alias in component:
+            prior = index.get(alias)
+            if prior is not None and prior != group_key:
+                raise AssertionError("origin alias resolved to two franchise groups")
+            index[alias] = group_key
+    return index
+
+
+def resolve_origin_key(origin_key: str, *, alias_groups: Iterable[Iterable[str]] = ()) -> str:
+    raw = canonical_origin_key(origin_key)
+    return build_origin_alias_index(alias_groups).get(raw, raw)
+
+
+def resolved_origin_group_key(
+    filename: str,
+    *,
+    alias_groups: Iterable[Iterable[str]] = (),
+) -> str:
+    return resolve_origin_key(origin_group_key(filename), alias_groups=alias_groups)
+
+
+def exposed_origin_keys_from_filenames(
+    filenames: Iterable[str],
+    *,
+    alias_groups: Iterable[Iterable[str]] = (),
+) -> frozenset[str]:
+    return frozenset(
+        resolved_origin_group_key(filename, alias_groups=alias_groups)
+        for filename in filenames
+    )
 
 
 def historical_origin_quarantine(
@@ -42,25 +103,12 @@ def historical_origin_quarantine(
     exposed_origin_keys: Iterable[str],
     alias_groups: Iterable[Iterable[str]],
 ) -> frozenset[str]:
-    """Return the complete deterministic quarantine closure for historical origins."""
+    """Resolve every historical raw origin to its canonical alias/franchise family."""
 
-    exposed = {canonical_origin_key(value) for value in exposed_origin_keys}
-    quarantine = set(exposed)
-    normalized_groups: list[set[str]] = []
-    for raw_group in alias_groups:
-        group = {canonical_origin_key(value) for value in raw_group}
-        if len(group) < 2:
-            raise ValueError("origin alias groups must contain at least two distinct aliases")
-        normalized_groups.append(group)
-
-    changed = True
-    while changed:
-        changed = False
-        for group in normalized_groups:
-            if group & quarantine and not group <= quarantine:
-                quarantine.update(group)
-                changed = True
-    return frozenset(quarantine)
+    return frozenset(
+        resolve_origin_key(value, alias_groups=alias_groups)
+        for value in exposed_origin_keys
+    )
 
 
 @dataclass(frozen=True)
@@ -79,11 +127,12 @@ def evaluate_source_isolation(
     *,
     historical_quarantine: Iterable[str],
     already_reserved_origins: Iterable[str] = (),
+    alias_groups: Iterable[Iterable[str]] = (),
 ) -> IsolationDecision:
     """Fail-closed source-isolation decision independent of Teacher labels/model scores."""
 
     try:
-        origin = origin_group_key(filename)
+        origin = resolved_origin_group_key(filename, alias_groups=alias_groups)
     except ValueError:
         return IsolationDecision("REJECT", "S2A_SRC_005_IDENTITY_AMBIGUOUS", None)
 
@@ -111,6 +160,8 @@ def load_alias_groups(payload: Mapping[str, object]) -> tuple[tuple[str, ...], .
         if len(normalized) < 2:
             raise ValueError("historical origin alias row must contain two distinct normalized aliases")
         groups.append(aliases)
+    # Validate transitive component construction now, before any source selection.
+    build_origin_alias_index(groups)
     return tuple(groups)
 
 
@@ -164,13 +215,13 @@ def assign_origin_isolated_roles(
     *,
     pinned_commit: str,
 ) -> tuple[ReservedIsolatedSource, ...]:
-    """Assign 80/20/20 sources while keeping origin families isolated by role.
+    """Assign 80/20/20 sources while keeping origin/franchise families isolated by role.
 
     Multiple works from one fresh origin may be used only inside PRIMARY_DEVELOPMENT.
     They share one family_id, so family-isolated CV cannot split one franchise across
     folds. CONTINGENCY_DEVELOPMENT and UNTOUCHED_FINAL each use exactly one source per
-    origin family. Role assignment is label-free and deterministic from the pinned
-    source identity only.
+    origin family. Role assignment is label-free and deterministic from pinned source
+    identity only.
     """
 
     source_rows = tuple(rows)
