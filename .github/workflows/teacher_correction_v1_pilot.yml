@@ -58,8 +58,11 @@ jobs:
           assert m['schema'] == 'st-guitar-teacher-correction-v1-manifest'
           assert m['protocol_version'] == 'TEACHER_CORRECTION.v1'
           assert m['status'] == 'READY_FOR_TEACHER_CORRECTION'
-          assert m['task_count'] == 40
-          assert a['family_count'] == 40
+          assert m['task_count'] == 20
+          assert a['family_count'] == 20
+          assert a['primary_family_pool_count'] == 51
+          assert a['manageable_family_pool_count'] >= 20
+          assert a['max_solutions_per_task'] == 24
           assert a['contingency_sources_used'] == 0
           assert a['untouched_final_sources_used'] == 0
           assert a['historical_teacher_responses_used'] is False
@@ -67,9 +70,9 @@ jobs:
           assert a['training_authorized'] is False
           task_ids = [t['task_id'] for t in m['tasks']]
           fps = [t['task_fingerprint'] for t in m['tasks']]
-          assert len(task_ids) == len(set(task_ids)) == 40
-          assert len(fps) == len(set(fps)) == 40
-          assert all(t['solution_count'] >= 2 for t in m['tasks'])
+          assert len(task_ids) == len(set(task_ids)) == 20
+          assert len(fps) == len(set(fps)) == 20
+          assert all(2 <= t['solution_count'] <= 24 for t in m['tasks'])
           assert all(t['initial_assignment_id'] in {s['assignment_id'] for s in t['solutions']} for t in m['tasks'])
           forbidden = {'family_id','source_sha256','raw_sha256','origin_group_key','source_path'}
           def walk(v):
