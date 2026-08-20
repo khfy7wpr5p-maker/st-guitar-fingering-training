@@ -57,19 +57,30 @@ jobs:
           assert data['selection']['teacher_responses_loaded'] is False
           assert data['selection']['model_scores_loaded'] is False
           assert data['selection']['missing_or_ambiguous_origin_policy'] == 'REJECT'
-          assert data['selection']['reserved_origin_reuse_policy'] == 'REJECT'
-          assert data['reservation']['total'] == 120
-          assert data['reservation']['role_counts'] == {
+          assert data['selection']['cross_role_origin_reuse_policy'] == 'REJECT'
+          assert data['selection']['same_primary_origin_multiple_sources_policy'] == 'ALLOWED_ONLY_AS_ONE_SHARED_FAMILY'
+          assert data['selection']['family_id_semantics'] == 'canonical origin/franchise group'
+          reservation = data['reservation']
+          assert reservation['total_source_count'] == 120
+          assert reservation['source_role_counts'] == {
               'CONTINGENCY_DEVELOPMENT': 20,
               'PRIMARY_DEVELOPMENT': 80,
               'UNTOUCHED_FINAL': 20,
           }
-          assert data['reservation']['unique_origin_group_count'] == 120
-          assert data['reservation']['historical_origin_overlap_count'] == 0
-          assert len({row['canonical_work_key'] for row in data['reservation']['sources']}) == 120
-          assert len({row['origin_group_key'] for row in data['reservation']['sources']}) == 120
-          assert len({row['family_id'] for row in data['reservation']['sources']}) == 120
-          assert len({row['path'] for row in data['reservation']['sources']}) == 120
+          assert reservation['family_counts_by_role']['PRIMARY_DEVELOPMENT'] >= 40
+          assert reservation['family_counts_by_role']['CONTINGENCY_DEVELOPMENT'] == 20
+          assert reservation['family_counts_by_role']['UNTOUCHED_FINAL'] == 20
+          assert reservation['unique_origin_family_count'] >= 80
+          assert reservation['historical_origin_overlap_count'] == 0
+          assert reservation['cross_role_origin_overlap_count'] == 0
+          sources = reservation['sources']
+          assert len({row['canonical_work_key'] for row in sources}) == 120
+          assert len({row['path'] for row in sources}) == 120
+          assert len({row['raw_sha256'] for row in sources}) == 120
+          by_origin = {}
+          for row in sources:
+              prior = by_origin.setdefault(row['origin_group_key'], row['role'])
+              assert prior == row['role']
           assert data['scientific_boundary']['source_identity_isolation_gate_passed'] is True
           assert data['scientific_boundary']['h_c_capacity_audit_executed'] is False
           assert data['scientific_boundary']['teacher_task_identities_frozen'] is False
