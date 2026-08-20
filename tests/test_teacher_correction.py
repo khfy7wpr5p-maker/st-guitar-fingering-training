@@ -69,6 +69,25 @@ class TeacherCorrectionV1Tests(unittest.TestCase):
         self.assertEqual(len({row["assignment_id"] for row in first["solutions"]}), first["solution_count"])
         self.assertIn(first["initial_assignment_id"], {row["assignment_id"] for row in first["solutions"]})
 
+    def test_semantically_identical_task_reuses_fingerprint_across_event_locations(self):
+        first = build_teacher_correction_task(
+            event_id="family-a|source-a|measure-1|onset-0",
+            pitches_midi=(60, 64, 67),
+            tuning=STANDARD_TUNING,
+        )
+        second = build_teacher_correction_task(
+            event_id="family-b|source-b|measure-99|onset-3",
+            pitches_midi=(60, 64, 67),
+            tuning=STANDARD_TUNING,
+        )
+        self.assertEqual(first["task_fingerprint"], second["task_fingerprint"])
+        self.assertNotEqual(first["task_id"], second["task_id"])
+        quarantine = empty_quarantine()
+        quarantine["rejected_task_fingerprints"] = [first["task_fingerprint"]]
+        quarantine.pop("manifest_sha256")
+        quarantine["manifest_sha256"] = _canonical_sha(quarantine)
+        self.assertEqual(filter_quarantined_tasks((second,), quarantine), ())
+
     def test_quarantine_filters_task_id_or_fingerprint_before_batch(self):
         a, b = self._tasks()
         quarantine = empty_quarantine()
@@ -113,6 +132,34 @@ class TeacherCorrectionV1Tests(unittest.TestCase):
         self.assertIn(b["task_id"], updated["rejected_task_ids"])
         self.assertIn(b["task_fingerprint"], updated["rejected_task_fingerprints"])
         self.assertEqual(filter_quarantined_tasks((b,), updated), ())
+
+    def test_quarantine_import_is_idempotent_for_same_manifest(self):
+        a, _ = self._tasks()
+        quarantine = empty_quarantine()
+        manifest = build_teacher_correction_manifest(
+            batch_id="PILOT",
+            session_id="PILOT",
+            tasks=(a,),
+            quarantine=quarantine,
+        )
+        payload = {
+            "schema": "st-guitar-teacher-correction-v1-export-v1",
+            "protocol_version": TCV1_PROTOCOL_VERSION,
+            "manifest_sha256": manifest["manifest_sha256"],
+            "annotator_id": "teacher_001",
+            "decisions": [{
+                "task_id": a["task_id"],
+                "task_fingerprint": a["task_fingerprint"],
+                "decision": "REJECTED_PERMANENT",
+                "selected_assignment_id": None,
+            }],
+        }
+        once = merge_rejections_into_quarantine(quarantine, payload, manifest)
+        twice = merge_rejections_into_quarantine(once, payload, manifest)
+        self.assertEqual(once, twice)
+        self.assertEqual(once["reason_counts"]["TEACHER_REJECTED_TASK"], 1)
+        self.assertEqual(len(once["source_exports"]), 1)
+        self.assertEqual(once["source_exports"][0]["new_semantic_rejection_count"], 1)
 
     def test_rejected_task_cannot_smuggle_selected_assignment(self):
         a, _ = self._tasks()
