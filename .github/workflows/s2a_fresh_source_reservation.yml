@@ -32,52 +32,122 @@ jobs:
         run: |
           python -m unittest tests.test_s2a_source_reservation -v
           python -m unittest tests.test_s2a_source_isolation -v
-      - name: Diagnostic audit of sealed Stage 7E semantic metadata
+      - name: Diagnostic audit of sealed Stage 7E provenance
         run: |
           python -m pip download --no-deps PyGuitarPro==0.10.2 -d /tmp/stage7e-wheel
           echo "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2  /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl" | sha256sum -c -
           python -m pip install /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl
+          git clone --filter=blob:none --no-checkout https://github.com/robust-guitar-tabs/code.git /tmp/robust-guitar-tabs
+          git -C /tmp/robust-guitar-tabs checkout f50309ad06dc734ddae5e3a0eda756fca221e2e7 -- GuitarProConversor/DummyTabs GuitarProConversor/tabs
           python - <<'PY'
-          from hashlib import sha1
+          from hashlib import sha1, sha256
           import json
           from pathlib import Path
-          import tempfile
-          import urllib.request
           import guitarpro
 
-          def git_blob_sha1(data: bytes) -> str:
-              return sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
+          ROOT = Path('/tmp/robust-guitar-tabs')
+          SEAL = json.loads(Path('evidence/stage7e_final_test_seal.json').read_text(encoding='utf-8'))
+          EXTENSIONS = {'.gp', '.gp2', '.gp3', '.gp4', '.gp5'}
 
-          seal = json.loads(Path('evidence/stage7e_final_test_seal.json').read_text(encoding='utf-8'))
-          corpus = seal['external_corpus']
-          commit = corpus['repository_commit']
-          with tempfile.TemporaryDirectory() as tmp:
-              for item in corpus['paths']:
-                  relative = item['path']
-                  url = f"https://raw.githubusercontent.com/robust-guitar-tabs/code/{commit}/{relative}"
-                  request = urllib.request.Request(url, headers={'User-Agent': 'st-guitar-s2a-stage7e-semantic-audit/1'})
-                  with urllib.request.urlopen(request, timeout=30) as response:
-                      data = response.read()
-                  assert len(data) == int(item['bytes'])
-                  assert git_blob_sha1(data) == item['git_blob_sha1']
-                  local = Path(tmp) / Path(relative).name
-                  local.write_bytes(data)
-                  song = guitarpro.parse(str(local))
-                  metadata = {
-                      'source_path': relative,
+          def git_blob_sha1(data: bytes) -> str:
+              return sha1(f"blob {len(data)}\0".encode('ascii') + data).hexdigest()
+
+          def track_fingerprint(track) -> str:
+              payload = {
+                  'name': str(getattr(track, 'name', '') or ''),
+                  'instrument': int(getattr(getattr(track, 'channel', None), 'instrument', -1)),
+                  'strings': [(int(s.number), int(s.value)) for s in track.strings],
+                  'measures': [],
+              }
+              for measure in track.measures:
+                  header = measure.header
+                  measure_row = {
+                      'number': int(getattr(header, 'number', 0)),
+                      'start': int(getattr(header, 'start', 0)),
+                      'time': (
+                          int(getattr(getattr(header, 'timeSignature', None), 'numerator', 0)),
+                          int(getattr(getattr(getattr(header, 'timeSignature', None), 'denominator', None), 'value', 0)),
+                      ),
+                      'voices': [],
+                  }
+                  for voice in measure.voices:
+                      voice_row = []
+                      for beat in voice.beats:
+                          notes = []
+                          for note in beat.notes:
+                              notes.append((
+                                  int(getattr(note, 'string', 0)),
+                                  int(getattr(note, 'value', 0)),
+                                  str(getattr(note, 'type', '')),
+                                  int(getattr(note, 'velocity', 0)),
+                              ))
+                          voice_row.append({
+                              'start': int(getattr(beat, 'start', 0)),
+                              'duration': int(getattr(getattr(beat, 'duration', None), 'value', 0)),
+                              'status': str(getattr(beat, 'status', '')),
+                              'notes': notes,
+                          })
+                      measure_row['voices'].append(voice_row)
+                  payload['measures'].append(measure_row)
+              raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')
+              return sha256(raw).hexdigest()
+
+          sealed = []
+          for item in SEAL['external_corpus']['paths']:
+              local = ROOT / item['path']
+              data = local.read_bytes()
+              assert len(data) == int(item['bytes'])
+              assert git_blob_sha1(data) == item['git_blob_sha1']
+              song = guitarpro.parse(str(local))
+              assert len(song.tracks) == 1
+              sealed.append({
+                  'path': item['path'],
+                  'track_name': str(getattr(song.tracks[0], 'name', '') or ''),
+                  'fingerprint': track_fingerprint(song.tracks[0]),
+                  'metadata': {
                       'title': str(getattr(song, 'title', '') or ''),
                       'subtitle': str(getattr(song, 'subtitle', '') or ''),
                       'artist': str(getattr(song, 'artist', '') or ''),
                       'album': str(getattr(song, 'album', '') or ''),
-                      'words': str(getattr(song, 'words', '') or ''),
                       'music': str(getattr(song, 'music', '') or ''),
-                      'copyright': str(getattr(song, 'copyright', '') or ''),
-                      'tab': str(getattr(song, 'tab', '') or ''),
-                      'instructions': str(getattr(song, 'instructions', '') or ''),
-                      'notices': [str(value) for value in (getattr(song, 'notices', ()) or ())],
-                      'track_names': [str(getattr(track, 'name', '') or '') for track in song.tracks],
-                  }
-                  print('STAGE7E_SEMANTIC_METADATA ' + json.dumps(metadata, ensure_ascii=False, sort_keys=True))
+                      'words': str(getattr(song, 'words', '') or ''),
+                  },
+              })
+
+          source_tracks = []
+          dummy = ROOT / 'GuitarProConversor' / 'DummyTabs'
+          for path in sorted(p for p in dummy.rglob('*') if p.is_file() and p.suffix.lower() in EXTENSIONS):
+              try:
+                  song = guitarpro.parse(str(path))
+              except Exception as exc:
+                  print('STAGE7E_SOURCE_PARSE_SKIP ' + json.dumps({'path': str(path.relative_to(ROOT)), 'error': type(exc).__name__}, sort_keys=True))
+                  continue
+              for track_index, track in enumerate(song.tracks):
+                  instrument = int(getattr(getattr(track, 'channel', None), 'instrument', -1))
+                  if not 24 <= instrument <= 31:
+                      continue
+                  source_tracks.append({
+                      'path': str(path.relative_to(ROOT)),
+                      'track_index': track_index,
+                      'track_name': str(getattr(track, 'name', '') or ''),
+                      'fingerprint': track_fingerprint(track),
+                      'song_title': str(getattr(song, 'title', '') or ''),
+                      'song_artist': str(getattr(song, 'artist', '') or ''),
+                  })
+
+          for item in sealed:
+              matches = [
+                  {key: row[key] for key in ('path', 'track_index', 'track_name', 'song_title', 'song_artist')}
+                  for row in source_tracks
+                  if row['fingerprint'] == item['fingerprint']
+              ]
+              print('STAGE7E_PROVENANCE_MATCH ' + json.dumps({
+                  'sealed_path': item['path'],
+                  'sealed_track_name': item['track_name'],
+                  'sealed_metadata': item['metadata'],
+                  'match_count': len(matches),
+                  'matches': matches,
+              }, ensure_ascii=False, sort_keys=True))
           PY
       - name: Build provisional isolated fresh-source reservation
         env:
