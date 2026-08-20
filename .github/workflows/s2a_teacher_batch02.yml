@@ -73,19 +73,23 @@ jobs:
           audits = sorted((root/'internal').glob('ST_Guitar_S2A_Batch02_Session*_audit.json'))
           assert len(manifests) == len(htmls) == len(audits) == 6
           task_ids = []
+          forbidden_keys = {'family_id', 'origin_group_key', 'source_sha256', 'raw_sha256', 'source_path'}
+          def walk(value):
+              if isinstance(value, dict):
+                  assert forbidden_keys.isdisjoint(value.keys())
+                  for child in value.values(): walk(child)
+              elif isinstance(value, list):
+                  for child in value: walk(child)
           for manifest_path in manifests:
               m = json.loads(manifest_path.read_text(encoding='utf-8'))
               assert m['provenance'] == 'S2A_STATIC_NATURALNESS_FIRST_PASS'
               assert m['annotation_blinded'] is True
               assert m['task_count'] == 120
               assert m['session_id'].startswith('S2A_BATCH02_SESSION_')
+              walk(m)
               task_ids.extend(row['task_id'] for row in m['tasks'])
           assert len(task_ids) == 720
           assert len(set(task_ids)) == 720
-          teacher_text = '\n'.join(p.read_text(encoding='utf-8') for p in manifests)
-          assert 'origin_group_key' not in teacher_text
-          assert 'family_id' not in teacher_text
-          assert 'source_sha256' not in teacher_text
           PY
       - name: Upload blind Teacher Batch02
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
