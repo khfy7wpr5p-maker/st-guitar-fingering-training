@@ -5,11 +5,15 @@ on:
     paths:
       - '.github/workflows/s2a_fresh_source_reservation.yml'
       - 'scripts/build_s2a_fresh_source_reservation.py'
+      - 'scripts/build_s2a_fresh_source_reservation_guarded.py'
       - 'src/st_guitar_fingering_training/s2a_source_reservation.py'
       - 'src/st_guitar_fingering_training/s2a_source_isolation.py'
+      - 'src/st_guitar_fingering_training/s2a_prior_final_semantics.py'
       - 'tests/test_s2a_source_reservation.py'
       - 'tests/test_s2a_source_isolation.py'
+      - 'tests/test_s2a_prior_final_semantics.py'
       - 'evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json'
+      - 'evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json'
       - 'evidence/stage7g_c_r1_animetab_batch01_manifest.json'
       - 'evidence/stage7e_final_test_seal.json'
       - 'evidence/stage7g_e3_e_a1_source_manifest.json'
@@ -32,133 +36,18 @@ jobs:
         run: |
           python -m unittest tests.test_s2a_source_reservation -v
           python -m unittest tests.test_s2a_source_isolation -v
-      - name: Diagnostic audit of sealed Stage 7E provenance
-        run: |
-          python -m pip download --no-deps PyGuitarPro==0.10.2 -d /tmp/stage7e-wheel
-          echo "d9a80f4c920bb66ee0b1c7dbe797006486d04cf153c79eafb6630259fa09dac2  /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl" | sha256sum -c -
-          python -m pip install /tmp/stage7e-wheel/pyguitarpro-0.10.2-py3-none-any.whl
-          git clone --filter=blob:none --no-checkout https://github.com/robust-guitar-tabs/code.git /tmp/robust-guitar-tabs
-          git -C /tmp/robust-guitar-tabs checkout f50309ad06dc734ddae5e3a0eda756fca221e2e7 -- GuitarProConversor/DummyTabs GuitarProConversor/tabs
-          python - <<'PY'
-          from hashlib import sha1, sha256
-          import json
-          from pathlib import Path
-          import guitarpro
-
-          ROOT = Path('/tmp/robust-guitar-tabs')
-          SEAL = json.loads(Path('evidence/stage7e_final_test_seal.json').read_text(encoding='utf-8'))
-          EXTENSIONS = {'.gp', '.gp2', '.gp3', '.gp4', '.gp5'}
-
-          def git_blob_sha1(data: bytes) -> str:
-              return sha1(f"blob {len(data)}\0".encode('ascii') + data).hexdigest()
-
-          def track_fingerprint(track) -> str:
-              payload = {
-                  'name': str(getattr(track, 'name', '') or ''),
-                  'instrument': int(getattr(getattr(track, 'channel', None), 'instrument', -1)),
-                  'strings': [(int(s.number), int(s.value)) for s in track.strings],
-                  'measures': [],
-              }
-              for measure in track.measures:
-                  header = measure.header
-                  measure_row = {
-                      'number': int(getattr(header, 'number', 0)),
-                      'start': int(getattr(header, 'start', 0)),
-                      'time': (
-                          int(getattr(getattr(header, 'timeSignature', None), 'numerator', 0)),
-                          int(getattr(getattr(getattr(header, 'timeSignature', None), 'denominator', None), 'value', 0)),
-                      ),
-                      'voices': [],
-                  }
-                  for voice in measure.voices:
-                      voice_row = []
-                      for beat in voice.beats:
-                          notes = []
-                          for note in beat.notes:
-                              notes.append((
-                                  int(getattr(note, 'string', 0)),
-                                  int(getattr(note, 'value', 0)),
-                                  str(getattr(note, 'type', '')),
-                                  int(getattr(note, 'velocity', 0)),
-                              ))
-                          voice_row.append({
-                              'start': int(getattr(beat, 'start', 0)),
-                              'duration': int(getattr(getattr(beat, 'duration', None), 'value', 0)),
-                              'status': str(getattr(beat, 'status', '')),
-                              'notes': notes,
-                          })
-                      measure_row['voices'].append(voice_row)
-                  payload['measures'].append(measure_row)
-              raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')
-              return sha256(raw).hexdigest()
-
-          sealed = []
-          for item in SEAL['external_corpus']['paths']:
-              local = ROOT / item['path']
-              data = local.read_bytes()
-              assert len(data) == int(item['bytes'])
-              assert git_blob_sha1(data) == item['git_blob_sha1']
-              song = guitarpro.parse(str(local))
-              assert len(song.tracks) == 1
-              sealed.append({
-                  'path': item['path'],
-                  'track_name': str(getattr(song.tracks[0], 'name', '') or ''),
-                  'fingerprint': track_fingerprint(song.tracks[0]),
-                  'metadata': {
-                      'title': str(getattr(song, 'title', '') or ''),
-                      'subtitle': str(getattr(song, 'subtitle', '') or ''),
-                      'artist': str(getattr(song, 'artist', '') or ''),
-                      'album': str(getattr(song, 'album', '') or ''),
-                      'music': str(getattr(song, 'music', '') or ''),
-                      'words': str(getattr(song, 'words', '') or ''),
-                  },
-              })
-
-          source_tracks = []
-          dummy = ROOT / 'GuitarProConversor' / 'DummyTabs'
-          for path in sorted(p for p in dummy.rglob('*') if p.is_file() and p.suffix.lower() in EXTENSIONS):
-              try:
-                  song = guitarpro.parse(str(path))
-              except Exception as exc:
-                  print('STAGE7E_SOURCE_PARSE_SKIP ' + json.dumps({'path': str(path.relative_to(ROOT)), 'error': type(exc).__name__}, sort_keys=True))
-                  continue
-              for track_index, track in enumerate(song.tracks):
-                  instrument = int(getattr(getattr(track, 'channel', None), 'instrument', -1))
-                  if not 24 <= instrument <= 31:
-                      continue
-                  source_tracks.append({
-                      'path': str(path.relative_to(ROOT)),
-                      'track_index': track_index,
-                      'track_name': str(getattr(track, 'name', '') or ''),
-                      'fingerprint': track_fingerprint(track),
-                      'song_title': str(getattr(song, 'title', '') or ''),
-                      'song_artist': str(getattr(song, 'artist', '') or ''),
-                  })
-
-          for item in sealed:
-              matches = [
-                  {key: row[key] for key in ('path', 'track_index', 'track_name', 'song_title', 'song_artist')}
-                  for row in source_tracks
-                  if row['fingerprint'] == item['fingerprint']
-              ]
-              print('STAGE7E_PROVENANCE_MATCH ' + json.dumps({
-                  'sealed_path': item['path'],
-                  'sealed_track_name': item['track_name'],
-                  'sealed_metadata': item['metadata'],
-                  'match_count': len(matches),
-                  'matches': matches,
-              }, ensure_ascii=False, sort_keys=True))
-          PY
-      - name: Build provisional isolated fresh-source reservation
+          python -m unittest tests.test_s2a_prior_final_semantics -v
+      - name: Build semantically guarded fresh-source reservation
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           mkdir -p /tmp/st-guitar-s2a-fresh-source
-          python scripts/build_s2a_fresh_source_reservation.py \
+          python scripts/build_s2a_fresh_source_reservation_guarded.py \
             --old-teacher-manifest evidence/stage7g_c_r1_animetab_batch01_manifest.json \
             --origin-alias-manifest evidence/stage7g_e3_s2a_historical_origin_aliases_v1.json \
             --quarantine-manifest evidence/stage7e_final_test_seal.json \
             --quarantine-manifest evidence/stage7g_e3_e_a1_source_manifest.json \
+            --prior-final-semantic-quarantine evidence/stage7g_e3_s2a_prior_final_semantic_quarantine_v1.json \
             --min-chord-events 8 \
             --output /tmp/st-guitar-s2a-fresh-source/reservation_census.json
       - name: Fail closed on isolation and reservation shape
@@ -168,7 +57,7 @@ jobs:
           from pathlib import Path
           path = Path('/tmp/st-guitar-s2a-fresh-source/reservation_census.json')
           data = json.loads(path.read_text(encoding='utf-8'))
-          assert data['schema'] == 'st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v2'
+          assert data['schema'] == 'st-guitar-stage7g-e3-s2a-fresh-source-reservation-census-v3'
           assert data['status'] == 'PROVISIONAL_ISOLATED_RESERVATION_PENDING_HC_CAPACITY_AUDIT'
           assert data['selection']['label_blind'] is True
           assert data['selection']['teacher_responses_loaded'] is False
@@ -178,6 +67,10 @@ jobs:
           assert data['selection']['same_primary_origin_multiple_sources_policy'] == 'ALLOWED_ONLY_AS_ONE_SHARED_FAMILY'
           assert data['selection']['alias_groups_resolve_all_source_family_identities'] is True
           assert data['selection']['family_id_semantics'] == 'canonical alias-resolved origin/franchise group'
+          assert data['selection']['prior_final_semantic_quarantine_enabled'] is True
+          assert data['selection']['prior_final_semantic_overlap_policy'] == 'REJECT_BEFORE_SCIENTIFIC_GATE'
+          assert data['census']['prior_final_semantic_family_quarantine_count'] == 40
+          assert data['census']['prior_final_semantic_key_quarantine_count'] == 69
           reservation = data['reservation']
           assert reservation['total_source_count'] == 120
           assert reservation['source_role_counts'] == {
@@ -191,6 +84,7 @@ jobs:
           assert reservation['unique_origin_family_count'] >= 80
           assert reservation['historical_origin_overlap_count'] == 0
           assert reservation['cross_role_origin_overlap_count'] == 0
+          assert reservation['prior_final_semantic_overlap_count'] == 0
           sources = reservation['sources']
           assert len({row['canonical_work_key'] for row in sources}) == 120
           assert len({row['path'] for row in sources}) == 120
@@ -200,8 +94,14 @@ jobs:
               prior = by_origin.setdefault(row['origin_group_key'], row['role'])
               assert prior == row['role']
           assert data['scientific_boundary']['source_identity_isolation_gate_passed'] is True
+          assert data['scientific_boundary']['prior_final_semantic_isolation_gate_passed'] is True
           assert data['scientific_boundary']['h_c_capacity_audit_executed'] is False
           assert data['scientific_boundary']['teacher_task_identities_frozen'] is False
+          assert data['scientific_boundary']['new_teacher_labels_collected'] is False
+          assert data['scientific_boundary']['real_model_fit_executed'] is False
+          assert data['scientific_boundary']['untouched_final_opened'] is False
+          assert data['scientific_boundary']['checkpoint_retained'] is False
+          assert data['scientific_boundary']['shadow_or_production_integration'] is False
           PY
       - name: Upload internal reservation census
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
