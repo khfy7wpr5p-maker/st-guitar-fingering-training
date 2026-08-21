@@ -1,0 +1,84 @@
+name: guitarset-voicing-validation-v1
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  one-shot-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+
+      - name: Decide whether validation may open
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          request='evidence/stage7g_e3_guitarset_observed_voicing_validation_request_v1.json'
+          evidence='evidence/stage7g_e3_guitarset_observed_voicing_validation_v1.json'
+          test -f "$request"
+          if test -f "$evidence"; then
+            echo 'run_validation=false' >> "$GITHUB_OUTPUT"
+            echo 'Validation evidence already sealed; performer 03 will not be reopened.'
+          else
+            echo 'run_validation=true' >> "$GITHUB_OUTPUT"
+            echo 'Opening preregistered performer 03 exactly for this evidence-producing run.'
+          fi
+
+      - name: Install frozen evaluation environment
+        if: steps.gate.outputs.run_validation == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'numpy==2.3.5' 'scikit-learn==1.8.0'
+          python -m pip install -e .
+
+      - name: Download hash-pinned GuitarSet 1.0.1 annotations
+        if: steps.gate.outputs.run_validation == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+            --fail --location --retry 3 --retry-all-errors \
+            --connect-timeout 30 --max-time 600 \
+            'https://zenodo.org/records/1422265/files/GuitarSet_annotation_only.zip?download=1' \
+            --output /tmp/GuitarSet_annotation_only.zip
+          echo '06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe  /tmp/GuitarSet_annotation_only.zip' | sha256sum -c -
+
+      - name: Execute one-shot performer-03 validation
+        if: steps.gate.outputs.run_validation == 'true'
+        id: validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/guitarset-validation-v1
+          set +e
+          python scripts/run_guitarset_voicing_validation_v1.py \
+            /tmp/GuitarSet_annotation_only.zip \
+            --model evidence/stage7g_e3_guitarset_observed_voicing_development_model_v1.json \
+            --report /tmp/guitarset-validation-v1/stage7g_e3_guitarset_observed_voicing_validation_v1.json
+          rc=$?
+          set -e
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          test -f /tmp/guitarset-validation-v1/stage7g_e3_guitarset_observed_voicing_validation_v1.json
+
+      - name: Upload sealed validation evidence
+        if: steps.gate.outputs.run_validation == 'true' && always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: guitarset-observed-voicing-validation-v1
+          path: /tmp/guitarset-validation-v1/stage7g_e3_guitarset_observed_voicing_validation_v1.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce validation gate result
+        if: steps.gate.outputs.run_validation == 'true'
+        shell: bash
+        run: |
+          test "${{ steps.validation.outputs.exit_code }}" -eq 0
