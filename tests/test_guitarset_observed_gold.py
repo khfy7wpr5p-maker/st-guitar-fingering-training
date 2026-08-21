@@ -4,9 +4,11 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import warnings
 import zipfile
 
 from st_guitar_fingering_training.guitarset_observed_gold import (
+    GS001_UNSAFE_ARCHIVE,
     GS102_BAD_DATA_SOURCE,
     GS106_NEGATIVE_FRET,
     STRUM_CLUSTER_WINDOW_SECONDS,
@@ -85,6 +87,28 @@ class GuitarSetObservedGoldTests(unittest.TestCase):
         rows[1] = [{"time": 1.010, "duration": 0.1, "value": 47.0}]
         notes, _ = extract_comp_jams("annotation/00_Test-100-E_comp.jams", _jams(rows))
         self.assertEqual(derive_strum_voicings(notes), ())
+
+    def test_archive_rejects_duplicate_member_names(self):
+        rows = _empty_six_sources()
+        payload = _jams(rows)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "duplicate.zip"
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", UserWarning)
+                with zipfile.ZipFile(path, "w") as archive:
+                    archive.writestr("annotation/00_Test-100-E_comp.jams", payload)
+                    archive.writestr("annotation/00_Test-100-E_comp.jams", payload)
+            with self.assertRaisesRegex(ValueError, GS001_UNSAFE_ARCHIVE):
+                import_guitarset_comp_archive(path)
+
+    def test_archive_rejects_path_traversal_comp_member(self):
+        rows = _empty_six_sources()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "traversal.zip"
+            with zipfile.ZipFile(path, "w") as archive:
+                archive.writestr("annotation/../evil_comp.jams", _jams(rows))
+            with self.assertRaisesRegex(ValueError, GS001_UNSAFE_ARCHIVE):
+                import_guitarset_comp_archive(path)
 
     def test_archive_uses_comp_only_and_is_deterministic(self):
         rows = _empty_six_sources()
