@@ -1,0 +1,23 @@
+{
+  "accepted_checkpoint_retention_evidence_sha256": "81ee73897a2e401696137f4ae950354b8c8fdde24b6a6fe2d16b612ae027d722",
+  "authoritative_decision_effect_authorized": false,
+  "base_main_sha": "6674f3aad9e64d65e8e29565c4798c64e88a4c36",
+  "checkpoint_mutation_authorized": false,
+  "complete_authoritative_candidate_set_required": true,
+  "engine_max_fret": 24,
+  "evidence_sha256": "84e38b30cf8abd8a61f1234f6b244ce17a749dbd9ee50282c27526fc2d9984a0",
+  "model_max_fret": 19,
+  "next_gate": "SHADOW_EXECUTION_REVIEW",
+  "out_of_model_domain_policy": "NO_SCORE_NO_TRUNCATION",
+  "physical_candidate_authority": "valid_chord_voicings",
+  "production_authorized": false,
+  "refit_authorized": false,
+  "retained_model_artifact_sha256": "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-shadow-integration-review-v1",
+  "shadow_execution_authorized": false,
+  "shadow_integration_authorized": true,
+  "standard_tuning_midi_by_string": [64, 59, 55, 50, 45, 40],
+  "status": "SHADOW_INTEGRATION_REVIEW_PASS_OFFLINE_NON_AUTHORITATIVE_SEAM_ONLY",
+  "tuning_authorized": false
+}
