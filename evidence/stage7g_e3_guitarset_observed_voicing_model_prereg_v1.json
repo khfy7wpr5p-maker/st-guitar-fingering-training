@@ -1,0 +1,127 @@
+{
+  "checkpoint_authorized": false,
+  "feature_schema_sha256": "05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38",
+  "final_access_authorized": false,
+  "protocol": {
+    "baseline": {
+      "ascending": true,
+      "name": "LOW_TOTAL_FRET.v1",
+      "rank_key": "(sum_fret,max_fret,positive_fret_span,-open_count,string_span,canonical_candidate)"
+    },
+    "benchmark_target": "UNSEEN_PERFORMER_SEEN_REPERTOIRE",
+    "candidate_set": {
+      "candidate_enumeration": "ALL_EXACT_PHYSICAL_ASSIGNMENTS_WITHIN_0_19",
+      "distinct_strings_required": true,
+      "max_fret": 19,
+      "min_fret": 0,
+      "same_pitch_multiset_required": true,
+      "single_candidate_events": "EXCLUDE_FROM_FIT_AND_RANKING_METRICS_REPORT_SEPARATELY",
+      "tuning_midi_by_string": {"1": 64, "2": 59, "3": 55, "4": 50, "5": 45, "6": 40}
+    },
+    "checkpoint_authorized": false,
+    "development": {
+      "cv": "LEAVE_ONE_DEVELOPMENT_PERFORMER_OUT_4_FOLDS",
+      "metrics": ["event_top1", "event_mrr", "event_recall_at_3", "recording_macro_top1", "recording_macro_mrr"],
+      "pass": {
+        "deterministic_reproduction_runs": 10,
+        "macro_event_mrr_delta_vs_baseline_gte": 0.05,
+        "macro_event_top1_delta_vs_baseline_gte": 0.03,
+        "minimum_ambiguous_events": 1000,
+        "mrr_fold_wins_gte": 3,
+        "top1_fold_wins_gte": 3
+      },
+      "roles": ["DEVELOPMENT"]
+    },
+    "event_source": "DERIVED_DISTINCT_STRING_ONSET_CLUSTER_FROM_ACCEPTED_NOTE_GOLD",
+    "features": {
+      "count": 28,
+      "sha256": "05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38",
+      "specs": [
+        {"definition": "open_note_count/note_count", "name": "open_ratio"},
+        {"definition": "mean(fret)/19", "name": "mean_fret"},
+        {"definition": "max(fret)/19", "name": "max_fret"},
+        {"definition": "min(fret>0)/19 else 0", "name": "min_positive_fret"},
+        {"definition": "max(fret>0)/19 else 0", "name": "max_positive_fret"},
+        {"definition": "(max(fret>0)-min(fret>0))/19 else 0", "name": "positive_fret_span"},
+        {"definition": "(max(string)-min(string))/5", "name": "string_span"},
+        {"definition": "adjacent_occupied_pairs/max(1,note_count-1)", "name": "adjacent_string_ratio"},
+        {"definition": "missing_strings_between_minmax/5", "name": "internal_string_gap_ratio"},
+        {"definition": "mean(string-1)/5", "name": "mean_string"},
+        {"definition": "1 if string 1 occupied else 0", "name": "string_1_occupied"},
+        {"definition": "1 if string 2 occupied else 0", "name": "string_2_occupied"},
+        {"definition": "1 if string 3 occupied else 0", "name": "string_3_occupied"},
+        {"definition": "1 if string 4 occupied else 0", "name": "string_4_occupied"},
+        {"definition": "1 if string 5 occupied else 0", "name": "string_5_occupied"},
+        {"definition": "1 if string 6 occupied else 0", "name": "string_6_occupied"},
+        {"definition": "fret/19 if string 1 occupied else 0", "name": "string_1_fret"},
+        {"definition": "fret/19 if string 2 occupied else 0", "name": "string_2_fret"},
+        {"definition": "fret/19 if string 3 occupied else 0", "name": "string_3_fret"},
+        {"definition": "fret/19 if string 4 occupied else 0", "name": "string_4_fret"},
+        {"definition": "fret/19 if string 5 occupied else 0", "name": "string_5_fret"},
+        {"definition": "fret/19 if string 6 occupied else 0", "name": "string_6_fret"},
+        {"definition": "midi/127 if string 1 occupied else 0", "name": "string_1_pitch"},
+        {"definition": "midi/127 if string 2 occupied else 0", "name": "string_2_pitch"},
+        {"definition": "midi/127 if string 3 occupied else 0", "name": "string_3_pitch"},
+        {"definition": "midi/127 if string 4 occupied else 0", "name": "string_4_pitch"},
+        {"definition": "midi/127 if string 5 occupied else 0", "name": "string_5_pitch"},
+        {"definition": "midi/127 if string 6 occupied else 0", "name": "string_6_pitch"}
+      ],
+      "version": "GUITARSET-VOICING-FEATURES.v1"
+    },
+    "final": {
+      "no_refit_after_validation": true,
+      "no_tuning_after_open": true,
+      "open_only_if": "DEVELOPMENT_PASS_AND_VALIDATION_PASS_AND_MODEL_ARTIFACT_SEALED",
+      "pass": {
+        "event_mrr_delta_vs_baseline_gt": 0.0,
+        "event_top1_delta_vs_baseline_gt": 0.0,
+        "recording_block_bootstrap": {"confidence": 0.95, "lower_bound_gt": 0.0, "metric": "event_mrr_delta_vs_baseline", "repetitions": 2000, "seed": 0},
+        "recording_macro_mrr_delta_gt": 0.0,
+        "recording_macro_top1_delta_gt": 0.0
+      },
+      "pass_semantics": "ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY",
+      "performer": "02"
+    },
+    "final_access_authorized": false,
+    "forbidden_inputs": ["Teacher Correction labels", "S2-A preference labels", "historical Teacher labels", "model scores during split/candidate selection", "left-hand finger numbers", "barre labels"],
+    "next_gate": "OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT",
+    "prediction_target": "OBSERVED_STRING_FRET_VOICING_FOR_FIXED_PITCH_MULTISET",
+    "runtime_connection_authorized": false,
+    "schema": "st-guitar-guitarset-observed-voicing-model-prereg-v1",
+    "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+    "split_version": "GUITARSET-SPLIT.v1",
+    "training": {
+      "model_pipeline": {
+        "estimator": "LogisticRegression",
+        "hyperparameter_tuning": false,
+        "params": {"C": 1.0, "class_weight": null, "fit_intercept": false, "max_iter": 2000, "random_state": 0, "solver": "lbfgs"},
+        "scaler": "StandardScaler()"
+      },
+      "negative_sampling": "UP_TO_32_ALTERNATIVES_BY_ASCENDING_SHA256(GUITARSET-NEGSEL.v1|voicing_id|canonical_candidate)",
+      "objective": "PAIRWISE_OBSERVED_VS_ALTERNATIVE",
+      "symmetric_pairs": true
+    },
+    "training_authorized": false,
+    "validation": {
+      "minimum_ambiguous_events": 500,
+      "pass": {
+        "event_mrr_delta_vs_baseline_gte": 0.05,
+        "event_top1_delta_vs_baseline_gte": 0.02,
+        "recording_block_bootstrap": {"confidence": 0.95, "lower_bound_gt": 0.0, "metric": "event_mrr_delta_vs_baseline", "repetitions": 2000, "seed": 0},
+        "recording_macro_mrr_delta_gt": 0.0,
+        "recording_macro_top1_delta_gt": 0.0
+      },
+      "performer": "03",
+      "use": "ONE_SHOT_GATE_NO_TUNING"
+    },
+    "version": "GUITARSET-OBSERVED-VOICING-MODEL.v1"
+  },
+  "protocol_sha256": "1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-model-prereg-evidence-v1",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "source_main_sha": "56e4f14d34269de7e140595b3791f6c555ac6e57",
+  "split_evidence": "evidence/stage7g_e3_guitarset_split_leakage_v1.json",
+  "status": "PREREGISTERED_TRAINING_CLOSED",
+  "training_authorized": false
+}
