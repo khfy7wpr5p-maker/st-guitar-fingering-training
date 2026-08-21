@@ -94,10 +94,14 @@ class GuitarSetSplitLeakageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             assert_role_use(ROLE_UNTOUCHED_FINAL, PURPOSE_VALIDATION_EVAL)
 
-    def test_repository_evidence_freezes_current_roles_and_keeps_training_closed(self):
-        path = Path(__file__).parents[1] / "evidence" / "stage7g_e3_guitarset_split_leakage_v1.json"
-        evidence = json.loads(path.read_text(encoding="utf-8"))
+    def test_repository_evidence_freezes_current_roles_and_matches_upstream_totals(self):
+        root = Path(__file__).parents[1]
+        split_path = root / "evidence" / "stage7g_e3_guitarset_split_leakage_v1.json"
+        observed_path = root / "evidence" / "stage7g_e3_guitarset_comp_observed_gold_v1.json"
+        evidence = json.loads(split_path.read_text(encoding="utf-8"))
+        observed = json.loads(observed_path.read_text(encoding="utf-8"))
         self.assertEqual(evidence["source_archive_sha256"], ARCHIVE_SHA256)
+        self.assertEqual(evidence["source_archive_sha256"], observed["source_archive_sha256"])
         self.assertEqual(evidence["performer_roles"][ROLE_UNTOUCHED_FINAL], ["02"])
         self.assertEqual(evidence["performer_roles"][ROLE_VALIDATION], ["03"])
         self.assertEqual(evidence["performer_roles"][ROLE_DEVELOPMENT], ["00", "01", "04", "05"])
@@ -106,6 +110,11 @@ class GuitarSetSplitLeakageTests(unittest.TestCase):
             ROLE_VALIDATION: 30,
             ROLE_UNTOUCHED_FINAL: 30,
         })
+        self.assertEqual(sum(evidence["recording_counts"].values()), observed["comp_recording_count"])
+        self.assertEqual(sum(evidence["raw_note_counts"].values()), observed["raw_note_count"])
+        self.assertEqual(sum(evidence["accepted_note_counts"].values()), observed["accepted_note_count"])
+        self.assertEqual(sum(evidence["quarantined_note_counts"].values()), observed["quarantined_note_count"])
+        self.assertEqual(sum(evidence["derived_strum_voicing_counts"].values()), observed["derived_strum_voicing_count"])
         self.assertFalse(evidence["training_authorized"])
         self.assertFalse(evidence["final_access_authorized"])
         self.assertEqual(evidence["next_gate"], "OBSERVED_VOICING_MODEL_PREREGISTRATION")
