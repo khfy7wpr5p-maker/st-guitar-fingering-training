@@ -1,0 +1,39 @@
+{
+  "schema": "st-guitar-guitarset-observed-gold-evidence-v1",
+  "status": "SANITIZED_CORPUS_READY_FOR_SPLIT_DESIGN",
+  "version": "GUITARSET-OBSERVED-GOLD.v1",
+  "source_archive_name": "GuitarSet_annotation_only.zip",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "source_archive_size_bytes": 36978998,
+  "scope": "COMP_ONLY",
+  "comp_recording_count": 180,
+  "performer_count": 6,
+  "style_count": 15,
+  "raw_note_count": 45686,
+  "accepted_note_count": 45615,
+  "quarantined_note_count": 71,
+  "quarantine_affected_recording_count": 41,
+  "quarantine_reason_counts": {
+    "GS106_NEGATIVE_FRET": 71
+  },
+  "accepted_fret_range": [0, 19],
+  "observed_comp_duration_seconds": 5468.795890249433,
+  "strum_cluster_window_seconds": 0.05,
+  "derived_strum_voicing_count": 12557,
+  "generated_artifact_sha256": {
+    "guitarset_comp_note_gold_v1.jsonl": "c75b724e0a524761d74d83690e2e902010cfa41dd47b6d600dede7370922048b",
+    "guitarset_comp_quarantine_v1.jsonl": "7c466fee5b067375d0e40b00fbc4c3957698f6e12f34da4a8446b78cf41ae7e0",
+    "guitarset_comp_voicing_gold_v1.jsonl": "2739ca79415ea5c3e4cf80a9f653aff9aa6d079d5318bac75565272f4490ac8f",
+    "guitarset_comp_observed_gold_manifest_v1.json": "4b7f6168aecdc6dd7bf2ea4e29097eaebf8b81aebc6d08ec00b7f763840bbe19"
+  },
+  "note_gold_semantics": "DIRECT_STRING_SPECIFIC_NOTE_OBSERVATION_AFTER_DETERMINISTIC_SANITIZATION",
+  "voicing_gold_semantics": "DERIVED_DISTINCT_STRING_ONSET_CLUSTER_FROM_ACCEPTED_NOTE_GOLD",
+  "left_hand_finger_labels_present": false,
+  "barre_labels_present": false,
+  "historical_teacher_labels_used": false,
+  "model_scores_used": false,
+  "training_authorized": false,
+  "checkpoint_authorized": false,
+  "runtime_connection_authorized": false,
+  "next_gate": "SPLIT_AND_LEAKAGE_CONTRACT"
+}
