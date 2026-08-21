@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from hashlib import sha256
 import json
 import math
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import stat
 from typing import Iterable
 import zipfile
 
@@ -13,7 +14,13 @@ from .intake import MAX_FRET
 GUITARSET_OBSERVED_GOLD_VERSION = "GUITARSET-OBSERVED-GOLD.v1"
 GUITARSET_STANDARD_TUNING_LOW_TO_HIGH = (40, 45, 50, 55, 59, 64)
 STRUM_CLUSTER_WINDOW_SECONDS = 0.050
+MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
+MAX_ARCHIVE_MEMBERS = 2000
+MAX_JAMS_MEMBER_BYTES = 8 * 1024 * 1024
+MAX_TOTAL_COMP_JAMS_BYTES = 512 * 1024 * 1024
+MAX_ZIP_COMPRESSION_RATIO = 100.0
 
+GS001_UNSAFE_ARCHIVE = "GS001_UNSAFE_ARCHIVE"
 GS101_BAD_JAMS_SCHEMA = "GS101_BAD_JAMS_SCHEMA"
 GS102_BAD_DATA_SOURCE = "GS102_BAD_DATA_SOURCE"
 GS103_NONFINITE_NOTE = "GS103_NONFINITE_NOTE"
@@ -282,19 +289,48 @@ def archive_sha256(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def _validated_comp_members(path: Path, archive: zipfile.ZipFile) -> tuple[str, ...]:
+    if path.stat().st_size <= 0 or path.stat().st_size > MAX_ARCHIVE_BYTES:
+        raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: archive size")
+    infos = archive.infolist()
+    if not infos or len(infos) > MAX_ARCHIVE_MEMBERS:
+        raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: member count")
+    names = [info.filename for info in infos]
+    if len(names) != len(set(names)):
+        raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: duplicate member names")
+
+    selected: list[str] = []
+    total_uncompressed = 0
+    for info in infos:
+        name = info.filename
+        if not (name.startswith("annotation/") and name.endswith("_comp.jams") and "/._" not in name):
+            continue
+        posix = PurePosixPath(name)
+        if len(posix.parts) != 2 or posix.parts[0] != "annotation" or ".." in posix.parts or "\\" in name:
+            raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: unsafe comp member path")
+        mode = (info.external_attr >> 16) & 0xFFFF
+        if mode and stat.S_ISLNK(mode):
+            raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: symlink comp member")
+        if info.file_size <= 0 or info.file_size > MAX_JAMS_MEMBER_BYTES:
+            raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: comp member size")
+        ratio = info.file_size / max(1, info.compress_size)
+        if ratio > MAX_ZIP_COMPRESSION_RATIO:
+            raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: compression ratio")
+        total_uncompressed += info.file_size
+        if total_uncompressed > MAX_TOTAL_COMP_JAMS_BYTES:
+            raise ValueError(f"{GS001_UNSAFE_ARCHIVE}: total comp size")
+        selected.append(name)
+    if not selected:
+        raise ValueError("archive contains no annotation/*_comp.jams members")
+    return tuple(sorted(selected))
+
+
 def import_guitarset_comp_archive(path: str | Path):
     path = Path(path)
     accepted: list[ObservedNoteGold] = []
     quarantined: list[QuarantinedNote] = []
     with zipfile.ZipFile(path) as archive:
-        members = sorted(
-            name for name in archive.namelist()
-            if name.startswith("annotation/") and name.endswith("_comp.jams") and "/._" not in name
-        )
-        if not members:
-            raise ValueError("archive contains no annotation/*_comp.jams members")
-        if len(members) != len(set(members)):
-            raise ValueError("duplicate comp member names")
+        members = _validated_comp_members(path, archive)
         for member in members:
             notes, rejects = extract_comp_jams(member, archive.read(member))
             accepted.extend(notes)
