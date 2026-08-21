@@ -1,0 +1,118 @@
+name: guitarset-teacher-voicing-pilot
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/guitarset_teacher_voicing_pilot.yml'
+      - 'scripts/build_guitarset_teacher_voicing_pilot_v1.py'
+      - 'src/st_guitar_fingering_training/guitarset_teacher_voicing.py'
+      - 'src/st_guitar_fingering_training/guitarset_teacher_voicing_blind.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install project
+        run: python -m pip install --upgrade pip && python -m pip install -e .
+      - name: Download and verify sealed GuitarSet annotations
+        env:
+          GUITARSET_URL: https://zenodo.org/records/1422265/files/GuitarSet_annotation_only.zip?download=1
+          GUITARSET_SHA256: 06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe
+        run: |
+          set -euo pipefail
+          rm -f /tmp/GuitarSet_annotation_only.zip
+          curl --fail --location --retry 3 --retry-all-errors --connect-timeout 20 --max-time 300 \
+            "$GUITARSET_URL" -o /tmp/GuitarSet_annotation_only.zip
+          python - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          path = Path('/tmp/GuitarSet_annotation_only.zip')
+          digest = hashlib.sha256(path.read_bytes()).hexdigest()
+          expected = os.environ['GUITARSET_SHA256']
+          if digest != expected:
+              raise SystemExit(f'STOP: GuitarSet SHA mismatch: expected {expected}, got {digest}')
+          print(f'GuitarSet SHA verified: {digest}')
+          PY
+      - name: Build blinded Teacher Voicing Pilot01
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/st-guitar-teacher-voicing-pilot
+          python scripts/build_guitarset_teacher_voicing_pilot_v1.py \
+            /tmp/GuitarSet_annotation_only.zip \
+            --output-dir /tmp/st-guitar-teacher-voicing-pilot \
+            --task-count 24 \
+            --option-cap 6
+      - name: Validate scientific and blinding boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/st-guitar-teacher-voicing-pilot')
+          manifest = json.loads((root/'teacher'/'ST_Guitar_GuitarSet_TeacherVoicing_Pilot01_manifest.json').read_text(encoding='utf-8'))
+          audit = json.loads((root/'internal'/'ST_Guitar_GuitarSet_TeacherVoicing_Pilot01_audit.json').read_text(encoding='utf-8'))
+          page = (root/'teacher'/'ST_Guitar_GuitarSet_TeacherVoicing_Pilot01.html').read_text(encoding='utf-8')
+
+          assert manifest['schema'] == 'st-guitar-guitarset-teacher-voicing-manifest-v1'
+          assert manifest['protocol_version'] == 'GUITARSET-TEACHER-VOICING-PILOT.v1'
+          assert manifest['task_count'] == 24
+          assert manifest['diagnostic_only_never_training'] is True
+          assert manifest['training_authorized'] is False
+          assert manifest['validation_access_authorized'] is False
+          assert manifest['final_access_authorized'] is False
+          assert manifest['checkpoint_authorized'] is False
+          assert manifest['runtime_connection_authorized'] is False
+          assert all(2 <= task['full_candidate_count'] <= 6 for task in manifest['tasks'])
+          assert all(task['option_count'] == task['full_candidate_count'] for task in manifest['tasks'])
+          assert len({task['task_id'] for task in manifest['tasks']}) == 24
+          assert len({task['semantic_fingerprint'] for task in manifest['tasks']}) == 24
+
+          assert audit['source_archive_sha256'] == '06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe'
+          assert audit['source_role'] == 'DEVELOPMENT_ONLY'
+          assert audit['development_recording_count'] == 120
+          assert audit['selected_performer_counts'] == {'00': 6, '01': 6, '04': 6, '05': 6}
+          assert audit['validation_performer_opened'] is False
+          assert audit['untouched_final_performer_opened'] is False
+          assert audit['training_authorized'] is False
+          assert audit['checkpoint_authorized'] is False
+          assert audit['runtime_connection_authorized'] is False
+          assert all(row['candidate_selection_used_model_scores'] is False for row in audit['rows'])
+          assert all(row['candidate_selection_used_baseline_scores'] is False for row in audit['rows'])
+          assert all(row['candidate_selection_used_teacher_labels'] is False for row in audit['rows'])
+
+          teacher_blob = json.dumps(manifest, sort_keys=True) + page
+          for forbidden in ('observed_candidate_id', 'observed_placements', 'source_member', 'recording_id', 'performer', 'track_key', 'style_key'):
+              assert forbidden not in teacher_blob
+          assert 'localStorage' in page
+          assert "JSON'u kopyala" in page
+          assert 'JSON dosyası indir' in page
+          print(json.dumps({
+              'task_count': manifest['task_count'],
+              'performer_counts': audit['selected_performer_counts'],
+              'eligible_ambiguous_development_voicings': audit['eligible_ambiguous_development_voicing_count'],
+              'manifest_sha256': manifest['manifest_sha256'],
+          }, indent=2, sort_keys=True))
+          PY
+      - name: Upload blinded Teacher package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: st-guitar-guitarset-teacher-voicing-pilot01
+          path: /tmp/st-guitar-teacher-voicing-pilot/teacher
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload internal audit package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: st-guitar-guitarset-teacher-voicing-pilot01-internal
+          path: /tmp/st-guitar-teacher-voicing-pilot/internal
+          if-no-files-found: error
+          retention-days: 14
