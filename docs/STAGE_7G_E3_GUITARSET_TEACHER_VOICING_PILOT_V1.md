@@ -12,7 +12,7 @@ For one fixed simultaneous MIDI pitch multiset, the UI asks:
 
 > Bu sesleri gitarda sen hangi tel-perde düzeniyle çalardın?
 
-The Teacher sees up to six exact physical string/fret alternatives. The exact GuitarSet observed placement is guaranteed to be among the displayed alternatives but is never identified as such. Display order is deterministic and blinded.
+The pilot accepts only events with **2..6 exact physical candidates** and displays the **complete candidate set**. The GuitarSet observed placement is therefore naturally present, but it is never identified and no candidate is specially inserted because it is the observed answer. Display order is deterministic and blinded.
 
 Allowed responses:
 
@@ -45,13 +45,15 @@ Default pilot size: **24 tasks**.
 Selection is deterministic and label-blind:
 
 1. derive conservative GuitarSet voicing events from DEVELOPMENT only;
-2. require at least two exact physical candidates;
-3. deduplicate equivalent semantic pitch/candidate sets;
-4. balance across the four DEVELOPMENT performers;
-5. prefer lower full-candidate-count tasks for pilot usability, then deterministic hash order;
-6. display at most six candidates per task;
-7. always include the observed GuitarSet placement but hide its identity;
+2. require **2..6** exact physical candidates;
+3. show **all** exact physical candidates for each selected task;
+4. deduplicate equivalent semantic pitch/candidate sets;
+5. balance across the four DEVELOPMENT performers;
+6. prefer lower full-candidate-count tasks for pilot usability, then deterministic hash order;
+7. blind the complete candidate-set display order;
 8. never use learned-model scores, baseline scores, historical Teacher labels, validation labels, or final labels for task selection.
+
+Showing the complete candidate set prevents the hidden observed answer from being inferable through a special “observed + sampled alternatives” inclusion rule.
 
 Because this pilot is drawn from DEVELOPMENT data, any agreement statistics are **diagnostic only** and must not be reported as independent model validation.
 
