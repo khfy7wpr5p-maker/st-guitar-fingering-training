@@ -95,7 +95,7 @@ The pilot freezes:
 - `checkpoint_authorized = false`
 - `runtime_connection_authorized = false`
 
-Teacher answers from this pilot may later be compared descriptively with GuitarSet observed choices, the baseline, and a sealed development model, but they may not retroactively tune the preregistered GuitarSet model or alter frozen validation/final gates.
+Teacher answers from this pilot may later be compared descriptively with GuitarSet observed choices, the baseline, and the sealed DEVELOPMENT model, but they may not retroactively tune the preregistered GuitarSet model or alter frozen validation/final gates.
 
 ## Build command
 
@@ -113,6 +113,6 @@ Expected internal output:
 
 - `internal/ST_Guitar_GuitarSet_TeacherVoicing_Pilot01_audit.json`
 
-## Relationship to open PR #95
+## Relationship to merged PR #95
 
-This pilot is architecturally independent of the open GuitarSet DEVELOPMENT-fit PR. It does not merge, validate, promote, or consume the model artifact from PR #95. It can be reviewed as a separate diagnostic data-collection layer.
+PR #95 has now sealed a DEVELOPMENT-only observed-voicing model and left validation closed. This Teacher pilot remains architecturally independent: it does not validate, promote, modify, refit, or consume that model artifact during task construction. Validation performer `03`, untouched-final performer `02`, checkpoint retention, runtime connection, and production remain outside this pilot.
