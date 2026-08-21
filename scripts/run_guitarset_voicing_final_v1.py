@@ -47,13 +47,12 @@ def main() -> int:
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
 
-    open_request = _verify_open_request(args.open_request)
+    _verify_open_request(args.open_request)
     report = run_final_once(
         args.archive,
         sealed_model_path=args.model,
         validation_evidence_path=args.validation_evidence,
     )
-    report["final_open_request_sha256"] = open_request["request_sha256"]
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
