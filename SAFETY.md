@@ -40,8 +40,11 @@ Authoritative S1-H-C.v1 enumerates standard assignments but does not choose a pr
 
 - only H-B-retained voicings receive assignments;
 - open strings use finger `0`;
-- fretted groups use fingers `1..4` under the frozen v1 hand model;
+- fretted groups use distinct fingers `1..4` under the frozen v1 hand model;
+- notes in one H-B group share a finger;
+- strictly increasing frets require strictly increasing finger numbers;
 - exact pitch/string/fret placement is preserved;
+- barre metadata must match the upstream group span;
 - assignment identities are stable and deterministic;
 - a retained voicing with zero assignments is a fail-closed invariant error;
 - upstream-pruned voicings receive zero assignments.
@@ -192,7 +195,7 @@ No model-development result automatically authorizes:
 
 ## Verification baseline
 
-Latest `main` after PR #93 has successful CI run #274 with unit tests and compile validation passing. The S2-A Batch01 regression workflow run #61 also passed. The Stage 7B-C2 comparison step was skipped by branch condition and is not counted as PASS evidence.
+PR #93 merge-state verification recorded successful CI run #274 with unit tests and compile validation passing. The S2-A Batch01 regression workflow run #61 also passed. The Stage 7B-C2 comparison step was skipped by branch condition and is not counted as PASS evidence.
 
 External Codex review was unavailable for recent PRs because review-usage limits were exhausted; no external-review PASS is claimed where it did not occur.
 
