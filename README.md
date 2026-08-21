@@ -1,89 +1,120 @@
 # st-guitar-fingering-training
 
-Training, evaluation, and deterministic guitar-fingering research for polyphony, voicing, string/fret selection, and learned guitaristic fingering ranking.
+Training, evaluation, and deterministic guitar-fingering research for polyphony, voicing, string/fret selection, and learned guitaristic ranking.
 
 ## Core rule
 
-Physical validity and ordinary-technique candidate feasibility are deterministic and authoritative. A learned system may only rank assignments already emitted by the active S1-H pipeline; it may never create, repair, legalize, or silently reintroduce an invalid/pruned placement.
+Physical validity remains deterministic and authoritative. Learned systems may rank only candidates already emitted by the active deterministic authority boundary; they may never create, repair, legalize, or silently reintroduce an invalid/pruned placement.
 
-## Current architecture
+## Live repository position
+
+Current `main` baseline after merged PR #93:
+
+`a46f93861927342ea551e96b2a53859536e18a6f`
+
+The repository now has two deliberately separated learned-research paths:
+
+1. **S2-A static fingering naturalness** over exact S1-H-C assignment IDs, using blind Teacher supervision. The executable ranker/CV/final-evaluation machinery is implemented, but no fit-eligible fresh Teacher corpus has passed the frozen evidence gate. Batch01 is diagnostic-only and contributes zero fit rows.
+2. **GuitarSet observed voicing v1** over physically exact string/fret realizations for a fixed MIDI pitch multiset. Real GuitarSet observations, performer-isolated split/leakage policy, feature schema, comparator, model family, and development/validation/final gates are now preregistered through PR #93. No real model fit has been executed.
+
+PR #90 remains open and provisional. It explores S1-H-C.v2 same-fret splitting/manual Teacher correction and must not replace authoritative S1-H-C.v1 until its downstream H-C/S2-A consequences are explicitly re-audited.
+
+## Authoritative architecture
 
 ```text
 Guitar Pro / MusicXML
   → safe normalization
   → deterministic pitch/string/fret validation
   → valid_chord_voicings()                         [authoritative physical set]
-  → S1-H-A deterministic plausibility              [merged]
-  → S1-H-B four-finger/barre resource feasibility [merged]
-  → S1-H-C standard finger assignments            [merged]
-  → S2-A 30D deterministic assignment features    [merged PR #78]
-  → S2-A blind pair/repeat reliability machinery  [merged PR #78]
-  → S2-A fail-closed learned ranker/CV harness     [merged PR #79]
-  → S2-A untouched-final evaluation gate          [merged PR #80]
-  → NEW S2-A TEACHER CORPUS + RELIABILITY         [required next]
-  → real model fit                                [closed until evidence PASS]
-  → checkpoint retention                          [separate closed gate]
-  → GuitarTab Engine shadow / production          [separate closed gate]
+  → S1-H-A deterministic plausibility              ✅
+  → S1-H-B four-finger/barre feasibility           ✅
+  → S1-H-C v1 standard finger assignments          ✅ authoritative assignment set
+       │
+       ├─ S2-A static fingering naturalness
+       │    → 30D deterministic assignment features            ✅ PR #78
+       │    → blind pair/repeat machinery                      ✅ PR #78
+       │    → fail-closed ranker + development CV             ✅ PR #79
+       │    → untouched-final evaluator                       ✅ PR #80
+       │    → Batch01 human evidence                          ✅ diagnostic-only
+       │    → Teacher Correction v1 pilot                     ✅ PR #89
+       │    → fit-eligible fresh Teacher supervision          🔒 not yet available
+       │    → real S2-A fit / untouched final / checkpoint    🔒
+       │
+       └─ PR #90 S1-H-C.v2 experiment                         ⏳ OPEN / PROVISIONAL
+
+valid_chord_voicings()
+  └─ GuitarSet observed voicing v1
+       → fail-closed real GuitarSet ingestion                 ✅ PR #91
+       → performer-isolated split + leakage contract          ✅ PR #92
+       → 28D static pitch/string/fret feature contract        ✅ PR #93
+       → frozen pairwise logistic model preregistration       ✅ PR #93
+       → development implementation + fit                     ⏳ NEXT GATE
+       → one-shot validation performer 03                     🔒
+       → sealed development model                             🔒
+       → untouched-final performer 02                         🔒
+       → checkpoint retention review                          🔒 separate gate
+       → GuitarTab Engine shadow / production                 🔒 separate gate
 ```
 
-## Current repository position
+## GuitarSet observed-gold path
 
-The deterministic S1-H-C runtime baseline is `154d8d4c514849535a523ca79ea22b6fae7e77de`.
+PR #91 added a fail-closed importer/sanitizer for the approved GuitarSet `*_comp.jams` archive. The audited archive contains 180 recordings, 45,686 raw notes, 45,615 accepted notes, 71 quarantined negative-fret rows, and 12,556 conservative derived strum-voicing events. This path provides observed string/fret placement only; it does not claim left-hand finger-number or barre gold.
 
-The executable S2-A implementation through PR #80 is based on merge commit `7b05c18bcde3b8ff84f77dffc25a5ced307c47a4`. Later documentation-only merges may advance `main`; use GitHub history for the live branch head.
+PR #92 froze `GUITARSET-SPLIT.v1` as an `UNSEEN_PERFORMER_SEEN_REPERTOIRE` benchmark:
 
-Completed S2-A implementation:
+- DEVELOPMENT performers: `00, 01, 04, 05`;
+- VALIDATION performer: `03`;
+- UNTOUCHED_FINAL performer: `02`;
+- performer/recording/note/voicing overlap across roles must be zero;
+- shared backing-track/style identities mean unseen-repertoire or unseen-style claims are forbidden.
 
-- ✅ frozen 30D target-blind assignment feature extractor;
-- ✅ blind label-free pair sampling over exact S1-H-C `assignment_id` values;
-- ✅ deterministic FIRST_PASS / REPEAT / UNTOUCHED_FINAL provenance validation;
-- ✅ repeat-reliability evaluator with 24–72h interval and exact 50% A/B reversal;
-- ✅ exact mirrored pairwise training matrix;
-- ✅ frozen no-intercept L2 logistic ranker constructor;
-- ✅ fail-closed real-fit evidence gate;
-- ✅ family-isolated 5-fold development CV and fixed baseline comparison;
-- ✅ inference restricted to the exact H-C assignment authority set;
-- ✅ untouched-final preflight and deterministic family-block bootstrap gate.
+PR #93 preregistered target `OBSERVED_STRING_FRET_VOICING_FOR_FIXED_PITCH_MULTISET` with a frozen 28D static geometry feature schema, `StandardScaler()` + no-intercept logistic regression, fixed `LOW_TOTAL_FRET.v1` comparator, deterministic alternative sampling, explicit development/validation/final gates, and no hyperparameter tuning.
 
-The frozen S2-A feature-list SHA-256 is:
+Frozen GuitarSet feature SHA-256:
+
+`05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38`
+
+Frozen GuitarSet protocol SHA-256:
+
+`1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d`
+
+Current authorization remains fail-closed:
+
+- `training_authorized = false`
+- `checkpoint_authorized = false`
+- `runtime_connection_authorized = false`
+- `final_access_authorized = false`
+
+The next gate is `OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT`.
+
+## S2-A static fingering path
+
+S2-A v1 targets `STATIC_STANDARD_FINGERING_NATURALNESS` for one isolated chord under ordinary four-finger left-hand technique. It ranks only exact S1-H-C assignment IDs and cannot change physical validity or candidate construction.
+
+Frozen S2-A feature-list SHA-256:
 
 `d2c6028891fe62f341463e13d946a71ecf2f506abc99789d0f963ddc1d5c87cf`
 
+Batch01 collected 720/720 valid blind responses but is permanently `DIAGNOSTIC_ONLY_NEVER_TRAINING` because its source-family identities had already participated in earlier Teacher-preference development. Effective fit-row contribution is therefore zero.
+
+PR #89 superseded the uncollected Batch02 pairwise path with a Teacher Correction v1 pilot. PR #90 then introduced a provisional S1-H-C.v2 correction for same-fret grouping; it remains intentionally unmerged pending downstream audit.
+
 ## Verification
 
-- PR #78 / CI #203: **252 tests PASS**, compile validation PASS.
-- PR #79 / CI #205: **256 tests PASS**, compile validation PASS.
-- PR #80 / CI #207: **260 tests PASS**, compile validation PASS.
-- Stage 7B-C2 comparison step was skipped by branch condition in these PR workflows and is not counted as PASS evidence.
+Latest `main` CI after PR #93 merge:
 
-## What has not happened
+- workflow `ci` run #274: **PASS**;
+- unit-test step: **PASS**;
+- compile validation: **PASS**;
+- `s2a-teacher-batch01` run #61: **PASS**;
+- Stage 7B-C2 comparison step remains branch-skipped and is not counted as PASS evidence.
 
-No real S2-A project model has been fitted yet because no eligible new corpus with provenance `S2A_STATIC_NATURALNESS_FIRST_PASS` currently satisfies the frozen evidence gate.
-
-Real fit requires at minimum:
-
-- 40 development families;
-- 200 eligible events;
-- 600 decisive FIRST_PASS pairs;
-- 150 `FINGER_ONLY` and 150 `MIXED` decisive pairs;
-- 100 decisive pairs in each `NEAR/MID/FAR` stratum;
-- repeat reliability over at least `max(120, 20%)` tasks;
-- exact repeat agreement >= 0.85;
-- decisive Cohen kappa >= 0.75;
-- 24–72h repeat interval and exactly 50% A/B presentation reversal.
-
-Old S1-E/S1-G/repeat/consumed evaluation evidence cannot be renamed or recycled into this corpus.
-
-## Model boundary
-
-S2-A v1 learns only `STATIC_STANDARD_FINGERING_NATURALNESS` for an isolated chord under ordinary left-hand technique. Previous/next chord transitions, tempo, style, tone, right-hand behavior, extended techniques, and player-specific anatomy remain outside this v1 target.
-
-Even a successful development and untouched-final result cannot automatically retain or deploy a checkpoint. Final PASS yields only `ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW`.
+PR #93 additionally records E-minor physical-candidate regression, frozen protocol/evidence identity regression, pinned S2-A Batch01 regression, and no unresolved inline review threads. External Codex review was unavailable because the review-usage limit was exhausted; no external-review PASS is claimed.
 
 ## Current continuation point
 
-**The code path for S2-A model development is ready. The next unavailable input is fresh blind Teacher data, not more model code.**
+The most advanced autonomous engineering path is now the GuitarSet observed-voicing model implementation. Development code, deterministic generation, evaluation harnesses, negative tests, regression tests, and CI can progress without changing the frozen preregistration.
 
-The safe next operational step is to create/collect the new S2-A FIRST_PASS corpus, perform the frozen repeat-reliability check, and only then allow `fit_s2a_ranker()` to execute if every gate passes.
+Real training, checkpoint retention, untouched-final opening, GuitarTab Engine shadow connection, and production activation remain separate fail-closed gates and are not authorized by documentation synchronization.
 
-See `ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`, `SAFETY.md`, `DATASET_CONTRACT.md`, and `docs/STAGE_7G_E3_S2A_LEARNED_FINGERING_RANKER_PREREGISTRATION.md`.
+See `ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`, `SAFETY.md`, `DATASET_CONTRACT.md`, `docs/STAGE_7G_E3_GUITARSET_SPLIT_LEAKAGE_V1.md`, and `docs/STAGE_7G_E3_GUITARSET_OBSERVED_VOICING_MODEL_PREREG_V1.md`.
