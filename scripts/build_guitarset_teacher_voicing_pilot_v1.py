@@ -18,10 +18,12 @@ from st_guitar_fingering_training.guitarset_teacher_voicing import (
     TEACHER_VOICING_AUDIT_SCHEMA,
     TEACHER_VOICING_PILOT_VERSION,
     build_teacher_voicing_manifest,
-    build_teacher_voicing_task,
     development_members_from_archive_metadata,
     exact_candidates,
     render_teacher_voicing_html,
+)
+from st_guitar_fingering_training.guitarset_teacher_voicing_blind import (
+    build_complete_blinded_teacher_voicing_task,
 )
 from st_guitar_fingering_training.guitarset_voicing_prereg import GUITARSET_SOURCE_ARCHIVE_SHA256
 
@@ -131,14 +133,12 @@ def build(archive_path: Path, output_dir: Path, *, task_count: int, option_cap: 
         physical = exact_candidates(pitches)
         if len(physical) < 2 or len(physical) > option_cap:
             continue
-        task, audit = build_teacher_voicing_task(
+        task, audit = build_complete_blinded_teacher_voicing_task(
             event_id=voicing.voicing_id,
             pitches_midi=pitches,
             observed_placements=voicing.placements,
             option_cap=option_cap,
         )
-        if task["option_count"] != task["full_candidate_count"]:
-            raise AssertionError("Teacher Voicing pilot must show every exact physical candidate")
         performer, track_key, style_key = parse_comp_member_identity(voicing.source_member)
         audit.update(
             {
