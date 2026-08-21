@@ -7,8 +7,10 @@ import unittest
 
 from st_guitar_fingering_training.dataset import valid_chord_voicings
 from st_guitar_fingering_training.guitarset_shadow_integration import (
+    EXPECTED_SHADOW_REVIEW_EVIDENCE_SHA256,
     STANDARD_TUNING,
     build_shadow_observation,
+    validate_shadow_integration_review,
 )
 
 
@@ -16,9 +18,18 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL = ROOT / "evidence/stage7g_e3_guitarset_observed_voicing_development_model_v1.json"
 FINAL = ROOT / "evidence/stage7g_e3_guitarset_observed_voicing_final_v1.json"
 RETENTION = ROOT / "evidence/stage7g_e3_guitarset_observed_voicing_checkpoint_retention_v1.json"
+SHADOW_REVIEW = ROOT / "evidence/stage7g_e3_guitarset_observed_voicing_shadow_integration_review_v1.json"
 
 
-def run_shadow(pitches, candidates, selected=None, *, tuning=STANDARD_TUNING, retention=RETENTION):
+def run_shadow(
+    pitches,
+    candidates,
+    selected=None,
+    *,
+    tuning=STANDARD_TUNING,
+    retention=RETENTION,
+    shadow_review=SHADOW_REVIEW,
+):
     return build_shadow_observation(
         pitches_midi=pitches,
         tuning=tuning,
@@ -27,10 +38,21 @@ def run_shadow(pitches, candidates, selected=None, *, tuning=STANDARD_TUNING, re
         model_path=MODEL,
         final_evidence_path=FINAL,
         retention_decision_path=retention,
+        shadow_review_decision_path=shadow_review,
     )
 
 
 class GuitarSetShadowIntegrationTests(unittest.TestCase):
+    def test_shadow_review_evidence_is_sealed_and_keeps_execution_runtime_production_closed(self):
+        review = validate_shadow_integration_review(SHADOW_REVIEW)
+        self.assertEqual(review["evidence_sha256"], EXPECTED_SHADOW_REVIEW_EVIDENCE_SHA256)
+        self.assertTrue(review["shadow_integration_authorized"])
+        self.assertFalse(review["shadow_execution_authorized"])
+        self.assertFalse(review["authoritative_decision_effect_authorized"])
+        self.assertFalse(review["runtime_connection_authorized"])
+        self.assertFalse(review["production_authorized"])
+        self.assertEqual(review["next_gate"], "SHADOW_EXECUTION_REVIEW")
+
     def test_complete_in_domain_authority_set_can_be_scored_without_changing_authoritative_choice(self):
         pitches = (44, 51)
         candidates = valid_chord_voicings(pitches, STANDARD_TUNING)
@@ -105,6 +127,17 @@ class GuitarSetShadowIntegrationTests(unittest.TestCase):
             candidates = valid_chord_voicings(pitches, STANDARD_TUNING)
             with self.assertRaises(ValueError):
                 run_shadow(pitches, candidates, retention=path)
+
+    def test_tampered_shadow_review_decision_fails_closed(self):
+        payload = json.loads(SHADOW_REVIEW.read_text(encoding="utf-8"))
+        payload["runtime_connection_authorized"] = True
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "shadow-review.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            pitches = (44, 51)
+            candidates = valid_chord_voicings(pitches, STANDARD_TUNING)
+            with self.assertRaises(ValueError):
+                run_shadow(pitches, candidates, shadow_review=path)
 
     def test_duplicate_authoritative_candidates_fail_closed(self):
         pitches = (44, 51)
