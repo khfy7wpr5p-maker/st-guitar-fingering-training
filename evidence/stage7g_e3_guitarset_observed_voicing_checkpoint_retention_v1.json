@@ -1,0 +1,23 @@
+{
+  "accepted_final_evidence_path": "evidence/stage7g_e3_guitarset_observed_voicing_final_v1.json",
+  "accepted_final_evidence_sha256": "c883fbbe076ea1bc098357cd70aca592a3a95a7fedf0174cab2bdf95dcb4e57e",
+  "base_main_sha": "1b1ff2d5a8036fc70e4465850a030cf822ed6355",
+  "checkpoint_mutation_authorized": false,
+  "checkpoint_retained": true,
+  "checkpoint_retention_authorized": true,
+  "evidence_sha256": "81ee73897a2e401696137f4ae950354b8c8fdde24b6a6fe2d16b612ae027d722",
+  "final_reuse_for_training_authorized": false,
+  "model_version": "GUITARSET-OBSERVED-VOICING-MODEL.v1",
+  "next_gate": "SHADOW_INTEGRATION_REVIEW",
+  "production_authorized": false,
+  "refit_authorized": false,
+  "retained_model_artifact_path": "evidence/stage7g_e3_guitarset_observed_voicing_development_model_v1.json",
+  "retained_model_artifact_sha256": "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869",
+  "retention_semantics": "IMMUTABLE_EXACT_DEVELOPMENT_MODEL_REFERENCE_NO_REFIT_NO_TUNING",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-checkpoint-retention-v1",
+  "shadow_integration_authorized": false,
+  "status": "CHECKPOINT_RETAINED_RESEARCH_ONLY_SHADOW_REVIEW_ELIGIBLE",
+  "tuning_authorized": false,
+  "validation_reuse_for_training_authorized": false
+}
