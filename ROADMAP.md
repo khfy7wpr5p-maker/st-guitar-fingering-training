@@ -2,7 +2,7 @@
 
 ## Live roadmap
 
-Current `main` after merged PR #93: `a46f93861927342ea551e96b2a53859536e18a6f`.
+Architecture synchronization base (PR #93 merge): `a46f93861927342ea551e96b2a53859536e18a6f`.
 
 | Stage / path | Package | State / gate |
 |---|---|---|
@@ -177,7 +177,7 @@ None of the following is implied by model implementation or even a successful fi
 
 ## Verification baseline
 
-Latest `main` after PR #93:
+PR #93 merge-state verification:
 
 - CI run #274: PASS;
 - unit tests: PASS;
