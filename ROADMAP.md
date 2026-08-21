@@ -1,137 +1,188 @@
 # Roadmap
 
-| Stage | Package | State / gate |
+## Live roadmap
+
+Current `main` after merged PR #93: `a46f93861927342ea551e96b2a53859536e18a6f`.
+
+| Stage / path | Package | State / gate |
 |---|---|---|
 | 0–4 | safety, dataset, intake, normalization, deterministic physical engine | ✅ complete |
 | 5–7E | bounded placement/routing research + untouched evaluation | ✅ research complete; untouched evidence consumed |
 | 7G-E1/E2/E3 | Teacher-GOLD ergonomics research | ✅ historical research complete |
-| 7G-E3-S0/S1 | diagnostics, reliability redesign, preparation history | ✅ historical evidence path |
 | 7G-E3-S1-H-A | deterministic guitaristic plausibility | ✅ merged PR #71 |
 | 7G-E3-S1-H-B | four-finger/barre resource feasibility | ✅ merged PR #73 |
-| 7G-E3-S1-H-C | standard finger-assignment enumeration | ✅ merged PR #74 |
-| 7G-E3-S2-A protocol | static learned fingering-ranker preregistration | ✅ merged PR #77 |
+| 7G-E3-S1-H-C.v1 | standard finger-assignment enumeration | ✅ authoritative baseline, merged PR #74 |
+| S2-A protocol | static learned fingering-ranker preregistration | ✅ merged PR #77 |
 | S2-A data/features/reliability | 30D features + blind pair/repeat machinery | ✅ merged PR #78 |
 | S2-A ranker/development harness | fail-closed fit + family-isolated CV | ✅ merged PR #79 |
 | S2-A untouched-final harness | fixed final comparator + family-block bootstrap | ✅ merged PR #80 |
-| S2-A FIRST_PASS collection | new blind Teacher corpus | ⏳ NEXT REQUIRED INPUT |
-| S2-A repeat reliability | fresh 24–72h reblind check | 🔒 requires FIRST_PASS responses |
-| S2-A real development fit | frozen linear pairwise ranker | 🔒 requires corpus + reliability PASS |
-| S2-A untouched final | disjoint final Teacher corpus | 🔒 requires development PASS |
+| S2-A Batch01 | 720 blind Teacher responses | ✅ diagnostic-only, zero fit rows |
+| S2-A fresh-source pairwise Batch02 | frozen/generated | ⛔ superseded before collection by PR #89 |
+| Teacher Correction v1 | correction/reject pilot | ✅ merged PR #89 |
+| S1-H-C.v2 | same-fret split + manual correction regression | ⏳ PR #90 open; provisional only |
+| GuitarSet observed gold | safe `*_comp.jams` ingestion | ✅ merged PR #91 |
+| GuitarSet split/leakage | performer-isolated `GUITARSET-SPLIT.v1` | ✅ merged PR #92 |
+| GuitarSet observed-voicing prereg | 28D features + frozen model/eval protocol | ✅ merged PR #93 |
+| GuitarSet development implementation | executable fit/CV/evaluation path | ⏳ NEXT ENGINEERING MILESTONE |
+| GuitarSet real development fit | frozen preregistered model on DEVELOPMENT performers | 🔒 training authorization required |
+| GuitarSet validation | one-shot performer 03 | 🔒 requires development PASS |
+| GuitarSet untouched final | performer 02 | 🔒 requires development + validation PASS + sealed model |
 | Checkpoint retention | retention/promotion review | 🔒 separate gate |
 | Sequence/transition ranker | contextual fingering specialist | 🔒 later stage |
 | GuitarTab Engine integration | shadow / production | 🔒 separate gate |
 
 ## Current position
 
-The **S2-A executable model-development machinery is complete** through PR #80. The repository is no longer waiting for model code; it is waiting for new human supervision collected under the frozen S2-A contract.
+The repository has moved beyond the earlier state where fresh S2-A Teacher data was the only next step. S2-A remains scientifically blocked from real fitting, but a separate real-guitar supervision path is now prepared through GuitarSet.
 
 ```text
+AUTHORITATIVE PHYSICAL PATH
 valid_chord_voicings()
-  → S1-H-A plausibility
-  → S1-H-B four-finger/barre feasibility
-  → S1-H-C standard assignments
-  → S2-A 30D features                         ✅
-  → blind pair/repeat machinery               ✅
-  → fail-closed ranker + development CV       ✅
-  → untouched-final evaluation harness        ✅
-  → NEW FIRST_PASS TEACHER DATA               ⏳
-  → REPEAT RELIABILITY                        🔒
-  → REAL FIT + DEVELOPMENT CV                 🔒
-  → UNTOUCHED FINAL                           🔒
-  → CHECKPOINT RETENTION REVIEW               🔒
+        ↓
+GuitarSet observed-gold intake             ✅ PR #91
+        ↓
+performer-isolated split/leakage            ✅ PR #92
+        ↓
+28D features + model preregistration        ✅ PR #93
+        ↓
+DEVELOPMENT IMPLEMENTATION                  ⏳ CURRENT ENGINEERING MILESTONE
+        ↓
+REAL DEVELOPMENT FIT                         🔒 training gate
+        ↓
+DEVELOPMENT PASS                             🔒
+        ↓
+VALIDATION performer 03                      🔒
+        ↓
+SEALED DEVELOPMENT MODEL                     🔒
+        ↓
+UNTOUCHED_FINAL performer 02                 🔒
+        ↓
+CHECKPOINT REVIEW                            🔒
+        ↓
+GuitarTab Engine SHADOW / PRODUCTION         🔒
 ```
 
-Executable S2-A implementation baseline through PR #80: `7b05c18bcde3b8ff84f77dffc25a5ced307c47a4`.
+In parallel:
 
-## Completed S2-A technical milestones
+```text
+S1-H-C.v1 authoritative assignments
+        ↓
+S2-A static naturalness machinery            ✅ implemented
+        ↓
+Batch01                                      ✅ diagnostic-only
+        ↓
+Teacher Correction v1                       ✅ PR #89
+        ↓
+fit-eligible fresh Teacher corpus            🔒 not available
 
-### PR #78
+S1-H-C.v2 correction                         ⏳ PR #90 open
+        ↓
+mandatory downstream H-C/S2-A re-audit       🔒 before authority replacement
+```
 
-- exact 30D deterministic assignment feature vector;
-- frozen feature SHA-256 `d2c6028891fe62f341463e13d946a71ecf2f506abc99789d0f963ddc1d5c87cf`;
-- label-blind FINGER_ONLY/MIXED, NEAR/MID/FAR pair sampling;
-- deterministic A/B blinding;
-- exact provenance response validation;
-- repeat package with 50% reversal;
-- exact agreement + Cohen-kappa reliability evaluator;
-- CI #203: 252 tests PASS + compile PASS.
+## GuitarSet milestone details
 
-### PR #79
+### PR #91 — observed-gold intake
 
-- fresh H-C recomputation before supervised row admission;
-- exact mirrored pair matrix;
-- frozen no-intercept L2 logistic ranker;
-- fail-closed minimum corpus/reliability gate;
-- 5-fold family-isolated development CV;
-- fixed LOW_FRET/COMPACT baseline comparison;
-- threshold-free/calibration metrics plus family/slice metrics;
-- exact H-C assignment-set restriction at inference;
-- CI #205: 256 tests PASS + compile PASS.
+Completed:
 
-### PR #80
+- exact approved archive identity sealing;
+- fail-closed ZIP/member/path/compression limits;
+- deterministic string mapping and physical fret recomputation;
+- malformed/non-physical rows quarantined rather than repaired;
+- audited 180 recordings / 45,686 raw notes / 45,615 accepted notes / 71 quarantined rows;
+- 12,556 conservative derived strum-voicing events;
+- no finger-number or barre-gold claim.
 
-- untouched-final accepts FINAL provenance only;
-- development PASS required before final;
-- comparator cannot be reselected on final data;
-- >=20 final families / >=200 decisive pairs;
-- development/final family overlap rejected before inference;
-- deterministic 2000-resample family-block bootstrap;
-- final PASS requires 95% CI lower bound >0;
-- PASS gives only checkpoint-review eligibility;
-- CI #207: 260 tests PASS + compile PASS.
+### PR #92 — split/leakage freeze
 
-The Stage 7B-C2 workflow step was skipped by branch condition in these PRs and is not counted as PASS evidence.
+Completed:
 
-## Data gate before real fit
+- DEVELOPMENT performers `00,01,04,05`;
+- VALIDATION performer `03`;
+- UNTOUCHED_FINAL performer `02`;
+- zero performer/recording/note/voicing overlap across roles;
+- explicit benchmark label `UNSEEN_PERFORMER_SEEN_REPERTOIRE`;
+- validation excluded from fit;
+- final excluded from fit/CV/model selection/validation.
 
-The following minimums remain binding:
+### PR #93 — model preregistration
 
-- >=40 development families;
-- >=200 eligible events;
-- >=600 decisive FIRST_PASS pairs;
-- >=150 FINGER_ONLY and >=150 MIXED decisive pairs;
-- >=100 decisive pairs in each NEAR/MID/FAR stratum;
-- repeat sample >=max(120, 20% of annotated tasks);
-- exact repeat agreement >=0.85;
-- decisive Cohen kappa >=0.75;
-- 24–72h repeat interval;
-- exact 50% A/B reversal;
-- development/final family disjointness.
+Frozen before fit:
 
-No current repository corpus satisfies this new S2-A requirement. Therefore real project coefficients have not been fitted.
+- target `OBSERVED_STRING_FRET_VOICING_FOR_FIXED_PITCH_MULTISET`;
+- physical exact candidate set, standard tuning, frets `0..19`;
+- 28D static pitch/string/fret feature schema;
+- pairwise observed-vs-alternative objective;
+- deterministic cap of 32 alternatives/event for fit;
+- `StandardScaler()` + no-intercept logistic regression;
+- no hyperparameter search;
+- fixed `LOW_TOTAL_FRET.v1` comparator;
+- development, validation and untouched-final thresholds;
+- 10/10 determinism requirement;
+- checkpoint/shadow/production kept outside model-development authorization.
 
-## Development and final gates
+Feature SHA-256:
 
-When eligible data exists, the already-implemented code will enforce:
+`05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38`
 
-- deterministic five-fold family-isolated development CV;
-- pairwise accuracy >=0.65;
-- macro-family accuracy >=0.65;
-- ROC-AUC >=0.70;
-- macro-family delta >=+0.05 against the frozen development comparator;
-- family wins > losses;
-- supported FINGER_ONLY/MIXED slice floors;
-- 10/10 development-CV reproduction.
+Protocol SHA-256:
 
-Only a development PASS may open the untouched-final evaluator. Final additionally requires a positive family-block bootstrap 95% CI lower bound.
+`1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d`
 
-## Next controlled milestone
+## Next engineering milestone
 
-**Collect fresh S2-A supervision.**
+Implement the preregistered GuitarSet development path without changing the frozen scientific contract:
 
-1. choose new development families/events without protected evidence reuse;
-2. generate sealed blind FIRST_PASS packages through the merged S2-A builder;
-3. collect A/B/EQUAL_OR_UNSURE responses;
-4. generate and collect the repeat subset 24–72h later;
-5. evaluate reliability and corpus coverage;
-6. execute real fit only if all gates pass.
+1. regenerate/validate physical candidate sets from DEVELOPMENT events;
+2. compute the exact 28D feature representation;
+3. produce deterministic observed-vs-alternative mirrored pair rows;
+4. implement the fixed scaler + logistic model constructor;
+5. implement leave-one-development-performer-out four-fold evaluation;
+6. implement the fixed `LOW_TOTAL_FRET.v1` comparison and Top-1/MRR/Recall@3 reporting;
+7. implement 10/10 deterministic reproduction checks;
+8. add negative security/provenance/leakage tests and full regression coverage;
+9. keep real project `.fit()` fail-closed until training authorization is explicit.
 
-The software must not manufacture Teacher labels to satisfy this milestone.
+## Development gate after training authorization
+
+The frozen GuitarSet development gate requires:
+
+- >=1000 ambiguous development events;
+- macro Top-1 delta vs comparator >= `+0.03`;
+- macro MRR delta >= `+0.05`;
+- Top-1 wins in >=3/4 held-out performers;
+- MRR wins in >=3/4 held-out performers;
+- 10/10 deterministic reproduction.
+
+Failure stops the path and validation remains closed.
+
+## Validation/final sequence
+
+Only a development PASS may open one-shot validation on performer `03`. Validation cannot tune the model and must satisfy the frozen event/recording/bootstrap thresholds.
+
+Only `DEVELOPMENT_PASS AND VALIDATION_PASS AND MODEL_ARTIFACT_SEALED` may open untouched-final performer `02`. There is no refit after validation and no tuning after final opening.
+
+Final PASS means only `ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY`.
 
 ## Promotion gates remain separate
 
-Even a successful S2-A untouched-final result does not automatically authorize checkpoint retention, sequence-level modeling, GuitarTab Engine shadow integration, or production integration.
+None of the following is implied by model implementation or even a successful final evaluation:
 
-## Evidence semantics
+- retained/promoted checkpoint;
+- authoritative replacement of S1-H-C.v1 by PR #90/v2;
+- sequence-level modeling;
+- GuitarTab Engine shadow integration;
+- production integration.
 
-Frozen preregistration/evidence files remain immutable historical snapshots. Live repository status is maintained in the top-level documents.
+## Verification baseline
+
+Latest `main` after PR #93:
+
+- CI run #274: PASS;
+- unit tests: PASS;
+- compile validation: PASS;
+- S2-A Batch01 regression workflow run #61: PASS;
+- Stage 7B-C2 comparison remains branch-skipped and is not counted as PASS evidence.
+
+Frozen preregistration/evidence files remain immutable historical snapshots. This roadmap and the other top-level live documents describe current repository truth.
