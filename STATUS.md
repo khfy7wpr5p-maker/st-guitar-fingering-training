@@ -3,7 +3,7 @@
 ## Current repository truth
 
 - Default branch: `main`
-- Live `main` head after PR #93: `a46f93861927342ea551e96b2a53859536e18a6f`
+- Architecture synchronization base (PR #93 merge): `a46f93861927342ea551e96b2a53859536e18a6f`
 - Deterministic runtime baseline through authoritative S1-H-C.v1: `154d8d4c514849535a523ca79ea22b6fae7e77de`
 - S1-H-C.v2 same-fret correction: ⏳ **OPEN / PROVISIONAL PR #90 — not authoritative**
 - S2-A static fingering ranker machinery through untouched-final evaluation: ✅ implemented
@@ -192,7 +192,7 @@ Therefore documentation changes or model-implementation code must not silently s
 
 ## Verification
 
-Latest merge-state evidence after PR #93:
+PR #93 merge-state evidence:
 
 - `ci` run #274: **success**;
 - unit tests: **success**;
