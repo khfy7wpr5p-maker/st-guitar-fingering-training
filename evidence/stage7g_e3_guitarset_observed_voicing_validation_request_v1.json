@@ -1,0 +1,27 @@
+{
+  "schema": "st-guitar-guitarset-observed-voicing-validation-request-v1",
+  "status": "SEALED_BEFORE_VALIDATION_OUTCOME",
+  "source_record": "ZENODO_GUITARSET_1.0.1_RECORD_1422265",
+  "source_file": "GuitarSet_annotation_only.zip",
+  "source_url": "https://zenodo.org/records/1422265/files/GuitarSet_annotation_only.zip?download=1",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "prereg_protocol_sha256": "1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d",
+  "feature_schema_sha256": "05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38",
+  "sealed_development_model_artifact_sha256": "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869",
+  "validation_performer": "03",
+  "validation_policy": "ONE_SHOT_GATE_NO_TUNING",
+  "bootstrap": {
+    "method": "RECORDING_BLOCK_RESAMPLE_WITH_REPLACEMENT_POOL_EVENT_MRR_DELTA",
+    "repetitions": 2000,
+    "seed": 0,
+    "confidence": 0.95,
+    "lower_order_statistic_index_zero_based": 49,
+    "upper_order_statistic_index_zero_based": 1949
+  },
+  "model_refit_authorized": false,
+  "hyperparameter_tuning_authorized": false,
+  "untouched_final_performer": "02",
+  "untouched_final_access_authorized": false,
+  "checkpoint_authorized": false,
+  "runtime_connection_authorized": false
+}

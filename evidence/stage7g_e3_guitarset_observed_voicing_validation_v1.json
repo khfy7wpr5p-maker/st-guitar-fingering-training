@@ -1,0 +1,99 @@
+{
+  "checkpoint_authorized": false,
+  "environment": {
+    "numpy": "2.3.5",
+    "python": "3.13.15"
+  },
+  "evidence_sha256": "13b706076205abea42a436d10cf019a36445035e08172054989191121ff59e51",
+  "feature_schema_sha256": "05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38",
+  "final_access_authorized": false,
+  "gate": {
+    "event_mrr_delta": {
+      "observed": 0.16884571859325948,
+      "pass": true,
+      "required_gte": 0.05
+    },
+    "event_top1_delta": {
+      "observed": 0.14867724867724863,
+      "pass": true,
+      "required_gte": 0.02
+    },
+    "minimum_ambiguous_events": {
+      "observed": 1890,
+      "pass": true,
+      "required": 500
+    },
+    "recording_block_bootstrap_mrr_delta_lower_bound": {
+      "observed": 0.07505422203438902,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_mrr_delta": {
+      "observed": 0.1998704393091726,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_top1_delta": {
+      "observed": 0.16890057412072945,
+      "pass": true,
+      "required_gt": 0.0
+    }
+  },
+  "hyperparameter_tuning_performed": false,
+  "metrics": {
+    "ambiguous_events": 1890,
+    "baseline_event_mrr": 0.7132089551280809,
+    "baseline_event_top1": 0.6216931216931217,
+    "baseline_recording_macro_mrr": 0.6685642926057085,
+    "baseline_recording_macro_top1": 0.5757516822929695,
+    "event_mrr_delta": 0.16884571859325948,
+    "event_top1_delta": 0.14867724867724863,
+    "learned_event_mrr": 0.8820546737213404,
+    "learned_event_recall_at_3": 0.9968253968253968,
+    "learned_event_top1": 0.7703703703703704,
+    "learned_recording_macro_mrr": 0.8684347319148811,
+    "learned_recording_macro_top1": 0.7446522564136989,
+    "recording_macro_mrr_delta": 0.1998704393091726,
+    "recording_macro_top1_delta": 0.16890057412072945,
+    "recordings_with_ambiguous_events": 30
+  },
+  "model_refit_performed": false,
+  "next_gate": "OBSERVED_VOICING_MODEL_UNTOUCHED_FINAL_OPEN_REVIEW",
+  "prereg_protocol_sha256": "1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d",
+  "recording_block_bootstrap": {
+    "bootstrap_mean": 0.1686459147667668,
+    "confidence": 0.95,
+    "lower_bound": 0.07505422203438902,
+    "lower_order_statistic_index_zero_based": 49,
+    "method": "RECORDING_BLOCK_RESAMPLE_WITH_REPLACEMENT_POOL_EVENT_MRR_DELTA",
+    "recording_block_count": 30,
+    "repetitions": 2000,
+    "sample_identity_sha256": "9ba5de61a24f9d6d53bb06e7034c8e791cfcc45f970dc9e54e6cf663b0b0f7b8",
+    "seed": 0,
+    "upper_bound": 0.2655305264004872,
+    "upper_order_statistic_index_zero_based": 1949
+  },
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-validation-evidence-v1",
+  "sealed_development_model_artifact_sha256": "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "split_version": "GUITARSET-SPLIT.v1",
+  "status": "VALIDATION_PASS_FINAL_STILL_CLOSED",
+  "untouched_final_performer": "02",
+  "untouched_final_performer_opened": false,
+  "validation_event_identity_sha256": "a68c6aaa223119e8176ebca3a00e167d58a2565aa26a6eec07ce6269a1a6d73b",
+  "validation_pass": true,
+  "validation_performer": "03",
+  "validation_performer_opened": true,
+  "validation_policy": "ONE_SHOT_GATE_NO_TUNING",
+  "validation_source_counts": {
+    "accepted_notes": 6722,
+    "ambiguous_voicings": 1890,
+    "derived_voicings": 2016,
+    "full_candidate_count_across_all_voicings": 51716,
+    "performer": "03",
+    "quarantined_notes": 3,
+    "recordings": 30,
+    "single_candidate_voicings": 126
+  }
+}
