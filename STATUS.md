@@ -3,19 +3,20 @@
 ## Current repository truth
 
 - Default branch: `main`
-- Deterministic runtime baseline through S1-H-C: `154d8d4c514849535a523ca79ea22b6fae7e77de`
-- S2-A protocol preregistration: ✅ merged PR #77
-- S2-A data/features/reliability implementation: ✅ merged PR #78
-- S2-A fail-closed ranker + development-CV harness: ✅ merged PR #79
-- S2-A untouched-final evaluation gate: ✅ merged PR #80
-- S2-A fresh assignment-level Teacher Batch01 tooling: ✅ merged PR #82
-- S2-A Batch01 FIRST_PASS response seal: ✅ merged PR #83
-- S2-A Batch01 scientific role: **DIAGNOSTIC_ONLY_NEVER_TRAINING**
-- Real S2-A project fit: ⛔ **NOT EXECUTED — no fit-eligible fresh Teacher-naive corpus/reliability evidence yet**
+- Live `main` head after PR #93: `a46f93861927342ea551e96b2a53859536e18a6f`
+- Deterministic runtime baseline through authoritative S1-H-C.v1: `154d8d4c514849535a523ca79ea22b6fae7e77de`
+- S1-H-C.v2 same-fret correction: ⏳ **OPEN / PROVISIONAL PR #90 — not authoritative**
+- S2-A static fingering ranker machinery through untouched-final evaluation: ✅ implemented
+- S2-A Batch01: ✅ 720/720 valid responses, permanently `DIAGNOSTIC_ONLY_NEVER_TRAINING`
+- S2-A real fit: ⛔ not executed
+- GuitarSet observed-gold ingestion: ✅ merged PR #91
+- GuitarSet performer-isolated split/leakage contract: ✅ merged PR #92
+- GuitarSet observed-voicing model preregistration: ✅ merged PR #93
+- GuitarSet real model fit: ⛔ not executed
 - Checkpoint retention: 🔒 closed
-- Shadow / production integration: 🔒 closed
+- GuitarTab Engine shadow / production integration: 🔒 closed
 
-## Implemented pipeline and current gate
+## Authoritative pipeline and current gates
 
 ```text
 Guitar Pro / MusicXML
@@ -28,146 +29,187 @@ S1-H-A deterministic plausibility             ✅
         ↓
 S1-H-B four-finger/barre feasibility          ✅
         ↓
-S1-H-C standard finger assignments            ✅
+S1-H-C.v1 standard finger assignments         ✅ AUTHORITATIVE ASSIGNMENT SET
+        │
+        ├─ S2-A static fingering naturalness
+        │     30D features + blind pair/repeat machinery      ✅
+        │     fail-closed ranker / 5-fold CV harness          ✅
+        │     untouched-final evaluator                       ✅
+        │     Batch01                                         ✅ diagnostic-only
+        │     Teacher Correction v1 pilot                     ✅ PR #89
+        │     fit-eligible fresh Teacher corpus               🔒
+        │     real fit / final / checkpoint                   🔒
+        │
+        └─ S1-H-C.v2 same-fret correction                     ⏳ PR #90 OPEN
+
+valid_chord_voicings()
         ↓
-S2-A 30D assignment features                  ✅
+GuitarSet `*_comp.jams` observed string/fret gold             ✅ PR #91
         ↓
-S2-A blind pair + repeat reliability tooling  ✅
+GUITARSET-SPLIT.v1 performer isolation                        ✅ PR #92
         ↓
-S2-A fail-closed ranker / 5-fold CV harness   ✅
+GUITARSET-VOICING-FEATURES.v1 + model preregistration         ✅ PR #93
         ↓
-S2-A untouched-final evaluator                ✅
+OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT     ⏳ CURRENT GATE
         ↓
-Batch01: 720 human responses                  ✅ DIAGNOSTIC ONLY
+DEVELOPMENT PASS                                              🔒
         ↓
-FRESH SOURCE RESERVATION                      ⏳ CURRENT GATE
+VALIDATION performer 03                                       🔒
         ↓
-FIT-ELIGIBLE FIRST_PASS CORPUS                 🔒
+SEALED DEVELOPMENT MODEL                                      🔒
         ↓
-REPEAT RELIABILITY PASS                       🔒
+UNTOUCHED_FINAL performer 02                                  🔒
         ↓
-REAL S2-A MODEL FIT                           🔒
+CHECKPOINT RETENTION REVIEW                                   🔒 SEPARATE
         ↓
-DEVELOPMENT PASS                              🔒
-        ↓
-UNTOUCHED FINAL                               🔒
-        ↓
-CHECKPOINT RETENTION REVIEW                   🔒 SEPARATE GATE
+GuitarTab Engine SHADOW / PRODUCTION                          🔒 SEPARATE
 ```
 
-## S2-A target and frozen model contract
+## S1-H-C.v2 provisional correction
 
-Target: `STATIC_STANDARD_FINGERING_NATURALNESS` for one isolated chord under ordinary four-finger left-hand technique.
+PR #90 exists because Teacher Correction exposed a same-fret grouping defect in authoritative S1-H-C.v1: an H-B same-fret passable group must not automatically imply one mandatory barre/finger in every valid assignment.
 
-Exact provenance roles remain:
+The provisional v2 branch:
 
-- `S2A_STATIC_NATURALNESS_FIRST_PASS` — decisive A/B rows may be fit-eligible only after source, corpus and reliability gates pass;
-- `S2A_STATIC_NATURALNESS_REPEAT` — reliability-only, never training/tuning/model selection;
-- `S2A_STATIC_NATURALNESS_UNTOUCHED_FINAL` — final-only, never training/tuning/model selection.
+- retains barre assignments;
+- additionally enumerates separate-finger partitions subject to at most four active fretting fingers;
+- validates manual Teacher corrections fail-closed against exact pitch/string/fret/finger constraints;
+- includes an E-minor regression requiring `6:0/0, 5:2/2, 4:2/3, 3:0/0` with zero barres.
 
-`EQUAL_OR_UNSURE` is retained as ambiguity evidence and excluded from decisive fit rows. It is never coerced into A/B.
+PR #90 is intentionally not merged because authoritative H-C replacement requires explicit downstream H-C-capacity/S2-A evidence re-audit. Existing v1 evidence must not be silently reclassified.
 
-Frozen v1 learned model remains unchanged: 30 target-blind deterministic features, no scaler, no hyperparameter search, no-intercept L2 `LogisticRegression(C=1.0, solver="lbfgs")`, family-isolated 5-fold development CV, and stable H-C assignment-ID authority at inference.
+## S2-A Teacher naturalness path
 
-## Batch01 completed human evidence
+S2-A v1 targets `STATIC_STANDARD_FINGERING_NATURALNESS` over exact S1-H-C assignment IDs.
 
-All six FIRST_PASS sessions were completed and validation-clean:
+Implemented and frozen:
+
+- 30 target-blind deterministic features;
+- blind pairwise A/B/`EQUAL_OR_UNSURE` machinery;
+- separate repeat-reliability provenance;
+- fail-closed real-fit gate;
+- family-isolated five-fold development CV;
+- fixed development comparator policy;
+- untouched-final preflight and deterministic family-block bootstrap.
+
+Frozen S2-A feature-list SHA-256:
+
+`d2c6028891fe62f341463e13d946a71ecf2f506abc99789d0f963ddc1d5c87cf`
+
+### Batch01 closeout
+
+Batch01 is permanently `DIAGNOSTIC_ONLY_NEVER_TRAINING` because the same 40 AnimeTAB source-family identities had already participated in an earlier Teacher-preference development experiment.
+
+Validated diagnostic result:
 
 - total tasks: 720/720;
 - A: 164;
 - B: 167;
 - `EQUAL_OR_UNSURE`: 389;
-- decisive A/B: 331 (45.97%);
-- unique task IDs: 720;
+- decisive: 331;
+- invalid responses: 0;
 - duplicate task IDs: 0;
-- invalid responses: 0.
+- effective fit rows: **0**.
 
-Diagnostic slice counts:
+PR #88 generated a fresh-source Batch02 pairwise package, but PR #89 superseded the uncollected Batch02 pairwise path with Teacher Correction v1. No real S2-A project coefficients have been fitted.
 
-- `FINGER_ONLY`: 139 / 360 decisive (38.61%);
-- `MIXED`: 192 / 360 decisive (53.33%);
-- `NEAR`: 128 / 240 decisive (53.33%);
-- `MID`: 105 / 240 decisive (43.75%);
-- `FAR`: 98 / 240 decisive (40.83%).
+## GuitarSet observed-gold path
 
-Among decisive responses, A/B presentation is nearly balanced: A=164 (49.55%), B=167 (50.45%). The high abstention rate therefore must not be repaired by relabeling or side assumptions.
+### PR #91 — observed data intake
 
-## Batch01 source-policy closeout
+The approved GuitarSet archive is handled fail-closed. The audited dataset contains:
 
-Batch01 reused the same 40 AnimeTAB source-family identities that had already participated in an earlier Teacher-preference development experiment. Historical answers themselves were not reused, but the S2-A.v1 preregistration states that historical development sources do not establish new S2-A evaluation evidence.
+- 180 comp recordings;
+- 45,686 raw notes;
+- 45,615 accepted notes;
+- 71 quarantined notes, all negative-fret rows;
+- accepted fret range `0..19`;
+- 12,556 conservative derived strum-voicing events using 50 ms distinct-string onset clustering.
 
-Therefore Batch01 is permanently classified:
+The importer rejects unsafe ZIP/archive behavior and malformed musical rows instead of repairing them. Direct note observations and derived voicing clusters are distinct. No finger-number or barre gold is claimed.
 
-`DIAGNOSTIC_ONLY_NEVER_TRAINING`
+### PR #92 — split and leakage contract
 
-Consequences:
+`GUITARSET-SPLIT.v1` freezes:
 
-- effective S2-A fit rows from Batch01: **0**;
-- Batch01 repeat reliability: **DO NOT RUN**;
-- Batch01 model fit: **DO NOT RUN**;
-- Batch01 may not become tuning, model-selection or untouched-final evidence;
-- the 720 responses remain preserved as diagnostic evidence only.
+- DEVELOPMENT performers: `00, 01, 04, 05` — 120 recordings / 31,699 accepted notes / 8,330 derived voicings;
+- VALIDATION performer: `03` — 30 / 6,722 / 2,016;
+- UNTOUCHED_FINAL performer: `02` — 30 / 7,194 / 2,210.
 
-The Batch01 pilot also shows that feature L1 distance is not a monotonic proxy for Teacher decisiveness: NEAR was more decisive than MID and FAR. `NEAR/MID/FAR` therefore remain label-blind sampling strata only and must not become post-hoc confidence thresholds.
+Performer and recording overlap across roles must be zero. Note-id and voicing-id overlap must be zero. The same repertoire/style identities appear across performer roles, so the benchmark is explicitly `UNSEEN_PERFORMER_SEEN_REPERTOIRE`; unseen-repertoire and unseen-style claims are forbidden.
 
-## Fresh S2-A.v1 collection plan
+### PR #93 — observed voicing preregistration
 
-The conservative continuation keeps the frozen v1 model, features, thresholds and response semantics unchanged. Before any new human annotation, source and task identities must be sealed label-blind.
+Target:
 
-Pre-reserve three mutually disjoint, Teacher-naive source groups from a pinned full-track corpus:
+`OBSERVED_STRING_FRET_VOICING_FOR_FIXED_PITCH_MULTISET`
 
-1. **Primary development:** 80 fresh families, 1,440 tasks, 18 tasks/family, exactly 240 tasks in each `FINGER_ONLY/MIXED × NEAR/MID/FAR` cell.
-2. **Contingency development:** 20 additional fresh families, 360 tasks, reserved before primary labels. Open only if frozen corpus-count gates remain short after the primary batch; never because of model performance or label direction.
-3. **Untouched final:** 20 additional fresh families reserved before development annotation and kept closed until development PASS.
+Candidate authority:
 
-No family previously exposed in a Teacher preference experiment may enter these reservations. Protected Stage 7E/E3-E final evidence remains excluded.
+- preserve exact simultaneous MIDI pitch multiset;
+- standard tuning only;
+- one note per string;
+- frets `0..19`;
+- observed placement must exist in the enumerated physical candidate set;
+- single-candidate events are excluded from ranking fit/metrics and reported separately.
 
-## Frozen real-fit gate
+Frozen model:
 
-`fit_s2a_ranker()` remains closed until a fit-eligible fresh FIRST_PASS corpus satisfies at least:
+- 28 static pitch/string/fret geometry features;
+- `StandardScaler()`;
+- pairwise observed-vs-alternative objective;
+- max 32 deterministically SHA-selected alternatives/event for fit;
+- `LogisticRegression(C=1.0, fit_intercept=False, class_weight=None, solver="lbfgs", max_iter=2000, random_state=0)`;
+- no hyperparameter tuning;
+- comparator `LOW_TOTAL_FRET.v1`.
 
-- development families >= 40;
-- eligible events >= 200;
-- decisive pairs >= 600;
-- `FINGER_ONLY` decisive >= 150;
-- `MIXED` decisive >= 150;
-- `NEAR`, `MID`, `FAR` decisive >= 100 each;
-- repeat sample >= `max(120, 20% of annotated development tasks)`;
-- three-class repeat agreement >= 0.85;
-- decisive Cohen kappa >= 0.75;
-- repeat interval 24–72h;
-- exactly 50% A/B reversal;
-- zero development/final family overlap.
+Feature SHA-256:
 
-Reliability is run only after the fresh development FIRST_PASS corpus passes its count gates. Repeat rows remain reliability-only.
+`05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38`
 
-## Development and final gates
+Protocol SHA-256:
 
-Development PASS still requires all preregistered pairwise, macro-family, ROC-AUC, baseline-delta, family win/loss, slice and 10/10 determinism gates. Failure does not open untouched final.
+`1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d`
 
-Untouched final remains a separate >=20-family / >=200-decisive-pair gate with inherited comparator, family-block bootstrap and zero development-family overlap. A final PASS yields only `ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW`; it does not retain a checkpoint or activate GuitarTab Engine integration.
+## Frozen GuitarSet evaluation gates
 
-## Protected historical evidence
+Development uses leave-one-development-performer-out four-fold CV and requires at least 1000 ambiguous events, macro Top-1 delta >= `+0.03`, macro MRR delta >= `+0.05`, wins in at least 3/4 held-out performers for both metrics, and 10/10 deterministic reproduction.
 
-The S2-A model path may not recycle:
+Validation performer `03` is one-shot and cannot tune the model. It requires at least 500 ambiguous events, event Top-1 delta >= `+0.02`, event MRR delta >= `+0.05`, positive recording-macro Top-1/MRR deltas, and a 2000-repetition recording-block bootstrap whose 95% MRR-delta lower bound is > 0.
 
-- S1-E pilot/repeat labels;
-- S1-G v2 first-pass/repeat evidence;
-- historical repeat/reliability rows;
-- Stage 7E consumed final evidence;
-- E3-E Teacher-GOLD consumed final evidence;
-- Batch01 diagnostic rows after this closeout.
+Untouched-final performer `02` stays closed until `DEVELOPMENT_PASS AND VALIDATION_PASS AND MODEL_ARTIFACT_SEALED`. There is no refit after validation and no tuning after final opening. Final PASS yields only `ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY`.
 
-S1-F historical project-label fit remains a separate hard-closed historical path.
+## Current authorization boundary
+
+PR #93 is preregistration evidence, not training permission:
+
+- `training_authorized = false`
+- `checkpoint_authorized = false`
+- `runtime_connection_authorized = false`
+- `final_access_authorized = false`
+
+Therefore documentation changes or model-implementation code must not silently start real fitting, open validation/final labels, retain a checkpoint, or connect runtime/production.
+
+## Verification
+
+Latest merge-state evidence after PR #93:
+
+- `ci` run #274: **success**;
+- unit tests: **success**;
+- compile validation: **success**;
+- `s2a-teacher-batch01` run #61: **success**;
+- Stage 7B-C2 comparison step: skipped by branch condition and not counted as PASS.
+
+PR #93 also records E-minor physical candidate regression, frozen protocol/evidence identity regression, pinned S2-A Batch01 regression, and zero inline review threads. External Codex review was unavailable due review-usage limits; no external-review PASS is claimed.
 
 ## Current controlled continuation point
 
-Next gate:
+`OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT`
 
-`FREEZE_FRESH_SOURCE_RESERVATION_AND_BATCH02_TASK_IDENTITIES_BEFORE_COLLECTION`
+Engineering may implement the frozen GuitarSet model-development path and its deterministic evaluation/test harnesses without changing the preregistered target, feature schema, split, comparator, or gates. Real `.fit()` on project data remains closed until an explicit training authorization opens it.
 
-The immediate engineering work is to census the pinned AnimeTAB full-track pool, exclude every Teacher-exposed/protected family, pre-reserve primary/contingency/final families, validate their source structure, and seal all identities before asking for any new answers.
+Checkpoint retention, untouched-final opening, S1-H-C.v2 authority replacement, GuitarTab Engine shadow integration, and production remain separate consequential gates.
 
-## Frozen evidence semantics
+## Evidence semantics
 
-Frozen preregistration and historical evidence JSON files are not retroactively rewritten. Live status is maintained here; new decisions are added as new evidence records.
+Frozen preregistration/evidence JSON files are immutable historical snapshots. Live status is maintained here; new decisions must be recorded as new evidence rather than rewriting historical records.
