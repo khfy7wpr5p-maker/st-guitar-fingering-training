@@ -51,6 +51,11 @@ EXPECTED_DEVELOPMENT_MODEL_ARTIFACT_SHA256 = (
 VALIDATION_BOOTSTRAP_REPETITIONS = 2000
 VALIDATION_BOOTSTRAP_SEED = 0
 VALIDATION_CONFIDENCE = 0.95
+# These exact zero-based order statistics were sealed before the first
+# validation outcome. Keep them literal so binary floating-point cannot
+# shift the lower index from 49 to 50.
+VALIDATION_BOOTSTRAP_LOWER_INDEX = 49
+VALIDATION_BOOTSTRAP_UPPER_INDEX = 1949
 
 
 @dataclass(frozen=True)
@@ -265,9 +270,10 @@ def recording_block_bootstrap_mrr(
         samples.append(total / count)
 
     ordered = sorted(samples)
-    alpha = 1.0 - VALIDATION_CONFIDENCE
-    lower_index = max(0, math.ceil((alpha / 2.0) * repetitions) - 1)
-    upper_index = min(repetitions - 1, math.ceil((1.0 - alpha / 2.0) * repetitions) - 1)
+    lower_index = VALIDATION_BOOTSTRAP_LOWER_INDEX
+    upper_index = VALIDATION_BOOTSTRAP_UPPER_INDEX
+    if not (0 <= lower_index < upper_index < repetitions):
+        raise AssertionError("frozen bootstrap order-statistic indices are invalid")
     return {
         "method": "RECORDING_BLOCK_RESAMPLE_WITH_REPLACEMENT_POOL_EVENT_MRR_DELTA",
         "repetitions": repetitions,
