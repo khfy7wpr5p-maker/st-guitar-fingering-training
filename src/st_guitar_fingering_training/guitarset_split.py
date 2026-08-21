@@ -14,7 +14,7 @@ PURPOSE_DEV_CV = "DEV_CV"
 PURPOSE_VALIDATION_EVAL = "VALIDATION_EVAL"
 PURPOSE_FINAL_EVAL = "FINAL_EVAL"
 
-_EXPECTED_PERFORMER_COUNT = 6
+_EXPECTED_PERFORMERS = ("00", "01", "02", "03", "04", "05")
 _EXPECTED_RECORDINGS_PER_PERFORMER = 30
 _EXPECTED_TRACK_COUNT = 30
 _EXPECTED_STYLE_COUNT = 15
@@ -48,8 +48,8 @@ def frozen_performer_roles(
     performers: Iterable[str], *, source_archive_sha256: str
 ) -> dict[str, tuple[str, ...]]:
     performers = tuple(sorted(set(performers)))
-    if len(performers) != _EXPECTED_PERFORMER_COUNT:
-        raise ValueError(f"expected exactly {_EXPECTED_PERFORMER_COUNT} performers")
+    if performers != _EXPECTED_PERFORMERS:
+        raise ValueError(f"performer identity drift: expected {_EXPECTED_PERFORMERS}, got {performers}")
     if not _SHA256_RE.fullmatch(source_archive_sha256):
         raise ValueError("source archive SHA-256 must be lowercase hexadecimal")
     ranked = tuple(sorted(performers, key=lambda p: (_performer_rank(p, source_archive_sha256), p)))
@@ -70,8 +70,8 @@ def build_split_contract(
     by_performer: dict[str, list[tuple[str, str]]] = {}
     for performer, track_key, style_key in identities:
         by_performer.setdefault(performer, []).append((track_key, style_key))
-    if len(by_performer) != _EXPECTED_PERFORMER_COUNT:
-        raise ValueError(f"expected exactly {_EXPECTED_PERFORMER_COUNT} performers")
+    if tuple(sorted(by_performer)) != _EXPECTED_PERFORMERS:
+        raise ValueError("performer identity drift")
     for performer, rows in by_performer.items():
         if len(rows) != _EXPECTED_RECORDINGS_PER_PERFORMER:
             raise ValueError(f"performer {performer} does not have exactly 30 recordings")
@@ -80,7 +80,7 @@ def build_split_contract(
 
     track_sets = {p: {track for track, _ in rows} for p, rows in by_performer.items()}
     style_sets = {p: {style for _, style in rows} for p, rows in by_performer.items()}
-    first_performer = sorted(by_performer)[0]
+    first_performer = _EXPECTED_PERFORMERS[0]
     canonical_tracks = track_sets[first_performer]
     canonical_styles = style_sets[first_performer]
     if len(canonical_tracks) != _EXPECTED_TRACK_COUNT:
