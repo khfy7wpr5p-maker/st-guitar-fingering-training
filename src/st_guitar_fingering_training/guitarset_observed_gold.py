@@ -222,11 +222,13 @@ def derive_strum_voicings(
             if i in used:
                 continue
             candidates: list[tuple[int, ObservedNoteGold]] = []
+            window_indices: list[int] = []
             seen_strings: set[int] = set()
             duplicate_string = False
             j = i
             while j < len(source_notes) and source_notes[j].onset_seconds - anchor.onset_seconds <= window_seconds + 1e-12:
                 if j not in used:
+                    window_indices.append(j)
                     note = source_notes[j]
                     if note.string in seen_strings:
                         duplicate_string = True
@@ -234,7 +236,10 @@ def derive_strum_voicings(
                         seen_strings.add(note.string)
                         candidates.append((j, note))
                 j += 1
-            if duplicate_string or len(candidates) < 2:
+            if duplicate_string:
+                used.update(window_indices)
+                continue
+            if len(candidates) < 2:
                 used.add(i)
                 continue
             for index, _ in candidates:
