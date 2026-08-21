@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Iterable
 
@@ -9,9 +10,9 @@ from .dataset import Voicing, valid_chord_voicings
 from .guitarset_checkpoint_retention import validate_checkpoint_retention_decision
 from .guitarset_voicing_development import (
     Candidate,
-    canonical_candidate,
     enumerate_voicing_candidates,
     feature_vector,
+    verify_sealed_json,
 )
 from .guitarset_voicing_prereg import GUITARSET_VOICING_MAX_FRET
 from .guitarset_voicing_validation import load_sealed_development_scorer
@@ -20,6 +21,9 @@ from .intake import MAX_FRET
 
 EXPECTED_CHECKPOINT_RETENTION_EVIDENCE_SHA256 = (
     "81ee73897a2e401696137f4ae950354b8c8fdde24b6a6fe2d16b612ae027d722"
+)
+EXPECTED_SHADOW_REVIEW_EVIDENCE_SHA256 = (
+    "84e38b30cf8abd8a61f1234f6b244ce17a749dbd9ee50282c27526fc2d9984a0"
 )
 EXPECTED_MODEL_ARTIFACT_SHA256 = (
     "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869"
@@ -49,6 +53,40 @@ def _json_candidate(candidate: Candidate | None):
     return [[int(pitch), int(string), int(fret)] for pitch, string, fret in candidate]
 
 
+def validate_shadow_integration_review(path: str | Path) -> dict:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("shadow integration review must be one JSON object")
+    verify_sealed_json(payload, "evidence_sha256")
+    required = {
+        "evidence_sha256": EXPECTED_SHADOW_REVIEW_EVIDENCE_SHA256,
+        "schema": "st-guitar-guitarset-observed-voicing-shadow-integration-review-v1",
+        "status": "SHADOW_INTEGRATION_REVIEW_PASS_OFFLINE_NON_AUTHORITATIVE_SEAM_ONLY",
+        "accepted_checkpoint_retention_evidence_sha256": EXPECTED_CHECKPOINT_RETENTION_EVIDENCE_SHA256,
+        "retained_model_artifact_sha256": EXPECTED_MODEL_ARTIFACT_SHA256,
+        "physical_candidate_authority": "valid_chord_voicings",
+        "engine_max_fret": 24,
+        "model_max_fret": 19,
+        "complete_authoritative_candidate_set_required": True,
+        "out_of_model_domain_policy": "NO_SCORE_NO_TRUNCATION",
+        "shadow_integration_authorized": True,
+        "shadow_execution_authorized": False,
+        "authoritative_decision_effect_authorized": False,
+        "checkpoint_mutation_authorized": False,
+        "refit_authorized": False,
+        "tuning_authorized": False,
+        "runtime_connection_authorized": False,
+        "production_authorized": False,
+        "next_gate": "SHADOW_EXECUTION_REVIEW",
+    }
+    for key, expected in required.items():
+        if payload.get(key) != expected:
+            raise ValueError(f"shadow integration review field {key!r} drift")
+    if payload.get("standard_tuning_midi_by_string") != list(STANDARD_TUNING):
+        raise ValueError("shadow integration review tuning drift")
+    return payload
+
+
 def build_shadow_observation(
     *,
     pitches_midi: Iterable[int],
@@ -58,6 +96,7 @@ def build_shadow_observation(
     model_path: str | Path,
     final_evidence_path: str | Path,
     retention_decision_path: str | Path,
+    shadow_review_decision_path: str | Path,
 ) -> dict:
     """Build a non-authoritative shadow observation without changing engine output.
 
@@ -70,6 +109,10 @@ def build_shadow_observation(
 
     if MAX_FRET != 24 or GUITARSET_VOICING_MAX_FRET != 19:
         raise RuntimeError("engine/model fret boundary drift")
+
+    review = validate_shadow_integration_review(shadow_review_decision_path)
+    if review["shadow_execution_authorized"] is not False:
+        raise ValueError("live/project shadow execution must remain closed at integration review")
 
     tuning_tuple = tuple(int(value) for value in tuning)
     if tuning_tuple != STANDARD_TUNING:
@@ -128,6 +171,7 @@ def build_shadow_observation(
         "physical_candidate_authority": "valid_chord_voicings",
         "retained_model_artifact_sha256": EXPECTED_MODEL_ARTIFACT_SHA256,
         "checkpoint_retention_evidence_sha256": EXPECTED_CHECKPOINT_RETENTION_EVIDENCE_SHA256,
+        "shadow_review_evidence_sha256": EXPECTED_SHADOW_REVIEW_EVIDENCE_SHA256,
         "pitches_midi": list(pitches),
         "tuning_midi_by_string": list(tuning_tuple),
         "authoritative_candidate_count": len(expected_authority),
