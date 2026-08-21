@@ -1,0 +1,69 @@
+{
+  "schema": "st-guitar-guitarset-split-leakage-evidence-v1",
+  "status": "SPLIT_FROZEN_TRAINING_CLOSED",
+  "version": "GUITARSET-SPLIT.v1",
+  "source_archive_name": "GuitarSet_annotation_only.zip",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "source_observed_gold_main_commit": "844948d805cff5869f4cdfe5f7216bfd1da00fda",
+  "benchmark_target": "UNSEEN_PERFORMER_SEEN_REPERTOIRE",
+  "selection_rule": "SORT_PERFORMERS_BY_SHA256(GUITARSET-SPLIT.v1|SOURCE_ARCHIVE_SHA256|PERFORMER); RANK0=UNTOUCHED_FINAL; RANK1=VALIDATION; REMAINDER=DEVELOPMENT",
+  "selection_rank": ["02", "03", "05", "04", "00", "01"],
+  "performer_roles": {
+    "DEVELOPMENT": ["00", "01", "04", "05"],
+    "VALIDATION": ["03"],
+    "UNTOUCHED_FINAL": ["02"]
+  },
+  "recording_counts": {
+    "DEVELOPMENT": 120,
+    "VALIDATION": 30,
+    "UNTOUCHED_FINAL": 30
+  },
+  "raw_note_counts": {
+    "DEVELOPMENT": 31734,
+    "VALIDATION": 6725,
+    "UNTOUCHED_FINAL": 7227
+  },
+  "accepted_note_counts": {
+    "DEVELOPMENT": 31699,
+    "VALIDATION": 6722,
+    "UNTOUCHED_FINAL": 7194
+  },
+  "quarantined_note_counts": {
+    "DEVELOPMENT": 35,
+    "VALIDATION": 3,
+    "UNTOUCHED_FINAL": 33
+  },
+  "derived_strum_voicing_counts": {
+    "DEVELOPMENT": 8330,
+    "VALIDATION": 2016,
+    "UNTOUCHED_FINAL": 2210
+  },
+  "performer_overlap_across_roles": 0,
+  "recording_overlap_across_roles": 0,
+  "note_id_overlap_across_roles_required": 0,
+  "voicing_id_overlap_across_roles_required": 0,
+  "shared_track_identity_count_across_roles": 30,
+  "shared_style_identity_count_across_roles": 15,
+  "track_overlap_policy": "INTENTIONAL_COVARIATE_MATCHING_NOT_UNSEEN_REPERTOIRE",
+  "style_overlap_policy": "INTENTIONAL_COVARIATE_MATCHING_NOT_UNSEEN_STYLE",
+  "repertoire_generalization_claim_authorized": false,
+  "unseen_style_generalization_claim_authorized": false,
+  "development_cv": {
+    "scheme": "LEAVE_ONE_DEVELOPMENT_PERFORMER_OUT_4_FOLDS",
+    "performers": ["00", "01", "04", "05"],
+    "target_use": "DEVELOPMENT_DIAGNOSTIC_ONLY"
+  },
+  "role_use": {
+    "FIT": ["DEVELOPMENT"],
+    "DEV_CV": ["DEVELOPMENT"],
+    "VALIDATION_EVAL": ["VALIDATION"],
+    "FINAL_EVAL": ["UNTOUCHED_FINAL"]
+  },
+  "historical_teacher_labels_used": false,
+  "model_scores_used_for_split": false,
+  "training_authorized": false,
+  "checkpoint_authorized": false,
+  "runtime_connection_authorized": false,
+  "final_access_authorized": false,
+  "next_gate": "OBSERVED_VOICING_MODEL_PREREGISTRATION"
+}
