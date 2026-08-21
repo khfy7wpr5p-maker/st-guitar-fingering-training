@@ -116,10 +116,10 @@ def build(archive_path: Path, output_dir: Path, *, task_count: int, option_cap: 
             all_members,
             source_archive_sha256=source_sha,
         )
-        development_set = set(development_members)
-        if any(member not in development_set for member in development_members):
-            raise AssertionError("DEVELOPMENT member isolation failure")
         for member in development_members:
+            performer, _, _ = parse_comp_member_identity(member)
+            if performer not in {"00", "01", "04", "05"}:
+                raise AssertionError("DEVELOPMENT member isolation failure")
             notes, rejects = extract_comp_jams(member, archive.read(member))
             accepted.extend(notes)
             quarantined.extend(rejects)
@@ -129,7 +129,7 @@ def build(archive_path: Path, output_dir: Path, *, task_count: int, option_cap: 
     for voicing in voicings:
         pitches = tuple(sorted(pitch for pitch, _, _ in voicing.placements))
         physical = exact_candidates(pitches)
-        if len(physical) < 2:
+        if len(physical) < 2 or len(physical) > option_cap:
             continue
         task, audit = build_teacher_voicing_task(
             event_id=voicing.voicing_id,
@@ -137,6 +137,8 @@ def build(archive_path: Path, output_dir: Path, *, task_count: int, option_cap: 
             observed_placements=voicing.placements,
             option_cap=option_cap,
         )
+        if task["option_count"] != task["full_candidate_count"]:
+            raise AssertionError("Teacher Voicing pilot must show every exact physical candidate")
         performer, track_key, style_key = parse_comp_member_identity(voicing.source_member)
         audit.update(
             {
@@ -192,15 +194,15 @@ def build(archive_path: Path, output_dir: Path, *, task_count: int, option_cap: 
         "development_accepted_note_count": len(accepted),
         "development_quarantined_note_count": len(quarantined),
         "development_derived_voicing_count": len(voicings),
-        "ambiguous_development_voicing_count": len(candidates),
+        "eligible_ambiguous_development_voicing_count": len(candidates),
         "task_count": len(tasks),
         "option_cap": option_cap,
         "selected_performer_counts": dict(sorted(performer_counts.items())),
         "selection_policy": (
-            "DEVELOPMENT-only, label-blind diagnostic pilot; require ambiguous exact physical voicing; "
-            "deduplicate semantic pitch/candidate sets; balance across four DEVELOPMENT performers; "
-            "prefer lower candidate-count tasks then deterministic hash; blind option order; "
-            "always include the observed GuitarSet placement but never identify it to the annotator"
+            "DEVELOPMENT-only, label-blind diagnostic pilot; require 2..option_cap exact physical voicings; "
+            "show the complete physical candidate set for every task; deduplicate semantic pitch/candidate sets; "
+            "balance across four DEVELOPMENT performers; prefer lower candidate-count tasks then deterministic hash; "
+            "blind option order; never identify the observed GuitarSet placement to the annotator"
         ),
         "teacher_manifest_sha256": manifest["manifest_sha256"],
         "rows": audits,
@@ -218,7 +220,7 @@ def build(archive_path: Path, output_dir: Path, *, task_count: int, option_cap: 
         "status": audit["status"],
         "task_count": audit["task_count"],
         "selected_performer_counts": audit["selected_performer_counts"],
-        "ambiguous_development_voicing_count": audit["ambiguous_development_voicing_count"],
+        "eligible_ambiguous_development_voicing_count": audit["eligible_ambiguous_development_voicing_count"],
         "teacher_manifest_sha256": manifest["manifest_sha256"],
         "html": str(html_path),
         "manifest": str(manifest_path),
