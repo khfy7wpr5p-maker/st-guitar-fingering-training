@@ -22,15 +22,15 @@ from st_guitar_fingering_training.guitarset_teacher_voicing import (
 from st_guitar_fingering_training.guitarset_voicing_prereg import GUITARSET_SOURCE_ARCHIVE_SHA256
 
 
-E_MINOR_PITCHES = (40, 47, 52, 55)
-E_MINOR_OBSERVED = ((40, 6, 0), (47, 5, 2), (52, 4, 2), (55, 3, 0))
+TEST_PITCHES = (40, 47, 55)
+TEST_OBSERVED = ((40, 6, 0), (47, 5, 2), (55, 3, 0))
 
 
 def _task(event_id: str = "event-1"):
     return build_teacher_voicing_task(
         event_id=event_id,
-        pitches_midi=E_MINOR_PITCHES,
-        observed_placements=E_MINOR_OBSERVED,
+        pitches_midi=TEST_PITCHES,
+        observed_placements=TEST_OBSERVED,
         option_cap=6,
     )
 
@@ -53,11 +53,13 @@ class GuitarSetTeacherVoicingTests(unittest.TestCase):
         self.assertTrue(task1["observed_answer_withheld"])
         self.assertTrue(task1["source_identity_withheld"])
         self.assertTrue(task1["model_scores_withheld"])
+        self.assertEqual(task1["option_count"], task1["full_candidate_count"])
+        self.assertEqual(task1["full_candidate_count"], 2)
         self.assertNotIn("observed_candidate_id", task1)
         self.assertNotIn("observed_placements", task1)
         shown = {row["candidate_id"] for row in task1["options"]}
         self.assertIn(audit1["observed_candidate_id"], shown)
-        self.assertEqual(audit1["observed_candidate_id"], candidate_id(E_MINOR_OBSERVED))
+        self.assertEqual(audit1["observed_candidate_id"], candidate_id(TEST_OBSERVED))
 
     def test_manifest_is_diagnostic_only_and_closes_all_consequential_gates(self):
         manifest = _manifest()
@@ -74,19 +76,19 @@ class GuitarSetTeacherVoicingTests(unittest.TestCase):
 
     def test_manual_voicing_accepts_exact_geometry_and_rejects_wrong_pitch_multiset(self):
         parsed = parse_manual_voicing(
-            "6:0,5:2,4:2,3:0",
-            pitches_midi=E_MINOR_PITCHES,
+            "6:0,5:2,3:0",
+            pitches_midi=TEST_PITCHES,
         )
-        self.assertEqual(parsed, E_MINOR_OBSERVED)
+        self.assertEqual(parsed, TEST_OBSERVED)
         with self.assertRaisesRegex(ValueError, "pitch multiset"):
             parse_manual_voicing(
-                "6:0,5:3,4:2,3:0",
-                pitches_midi=E_MINOR_PITCHES,
+                "6:0,5:3,3:0",
+                pitches_midi=TEST_PITCHES,
             )
         with self.assertRaisesRegex(ValueError, "reuses a string"):
             parse_manual_voicing(
-                "6:0,6:7,4:2,3:0",
-                pitches_midi=E_MINOR_PITCHES,
+                "6:0,6:7,3:0",
+                pitches_midi=TEST_PITCHES,
             )
 
     def test_export_accepts_shown_choice_manual_and_equal_but_rejects_unknown_candidate(self):
@@ -117,7 +119,7 @@ class GuitarSetTeacherVoicingTests(unittest.TestCase):
             "semantic_fingerprint": task["semantic_fingerprint"],
             "decision": DECISION_MANUAL_VOICING,
             "selected_candidate_id": None,
-            "manual_voicing": "6:0,5:2,4:2,3:0",
+            "manual_voicing": "6:0,5:2,3:0",
         }]
         manual_summary = validate_teacher_voicing_export(manual, manifest)
         self.assertEqual(len(manual_summary["manual_candidates"]), 1)
