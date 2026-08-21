@@ -1,0 +1,35 @@
+{
+  "accepted_validation_evidence_sha256": "13b706076205abea42a436d10cf019a36445035e08172054989191121ff59e51",
+  "authorized_scope": "UNTOUCHED_FINAL_PERFORMER_02_ONE_SHOT_EVALUATION_ONLY",
+  "base_main_sha": "a0a39188e8957e9b5c40958197af5f7ee5e7f5db",
+  "bootstrap": {
+    "confidence": 0.95,
+    "lower_order_statistic_index_zero_based": 49,
+    "metric": "event_mrr_delta_vs_baseline",
+    "repetitions": 2000,
+    "seed": 0,
+    "upper_order_statistic_index_zero_based": 1949
+  },
+  "checkpoint_authorized": false,
+  "feature_schema_sha256": "05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38",
+  "hyperparameter_tuning_allowed": false,
+  "model_refit_allowed": false,
+  "pass_requires": {
+    "bootstrap_mrr_delta_lower_bound_gt": 0.0,
+    "event_mrr_delta_gt": 0.0,
+    "event_top1_delta_gt": 0.0,
+    "recording_macro_mrr_delta_gt": 0.0,
+    "recording_macro_top1_delta_gt": 0.0
+  },
+  "pass_semantics": "ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY",
+  "preconditions": "DEVELOPMENT_PASS_AND_VALIDATION_PASS_AND_MODEL_ARTIFACT_SEALED",
+  "prereg_protocol_sha256": "1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d",
+  "production_authorized": false,
+  "request_sha256": "6201314404578ba2c1d1c3dc1e43704b2cd401914583f025700319152edf5338",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-final-open-request-v1",
+  "sealed_development_model_artifact_sha256": "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "status": "AUTHORIZED_TO_OPEN_UNTOUCHED_FINAL_ONCE",
+  "untouched_final_performer": "02"
+}

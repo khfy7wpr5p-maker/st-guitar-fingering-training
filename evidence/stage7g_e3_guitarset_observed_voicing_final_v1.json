@@ -1,0 +1,90 @@
+{
+  "accepted_validation_evidence_sha256": "13b706076205abea42a436d10cf019a36445035e08172054989191121ff59e51",
+  "checkpoint_authorized": false,
+  "checkpoint_retention_review_eligible": true,
+  "evidence_sha256": "c883fbbe076ea1bc098357cd70aca592a3a95a7fedf0174cab2bdf95dcb4e57e",
+  "feature_schema_sha256": "05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38",
+  "final_event_identity_sha256": "cd9eef90ae4d5e5ea45185aa81ad76ee2e341d85d2dd7624acd74fc7f94478a1",
+  "final_pass": true,
+  "final_policy": "ONE_SHOT_GATE_NO_REFIT_NO_TUNING",
+  "final_source_counts": {
+    "accepted_notes": 7194,
+    "ambiguous_voicings": 1816,
+    "derived_voicings": 2210,
+    "full_candidate_count_across_all_voicings": 27718,
+    "performer": "02",
+    "quarantined_notes": 33,
+    "recordings": 30,
+    "single_candidate_voicings": 394
+  },
+  "gate": {
+    "event_mrr_delta": {
+      "observed": 0.23597096661400307,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "event_top1_delta": {
+      "observed": 0.2626651982378854,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_block_bootstrap_mrr_delta_lower_bound": {
+      "observed": 0.1036506366023133,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_mrr_delta": {
+      "observed": 0.2130775547021494,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_top1_delta": {
+      "observed": 0.23293921870332673,
+      "pass": true,
+      "required_gt": 0.0
+    }
+  },
+  "hyperparameter_tuning_performed": false,
+  "metrics": {
+    "ambiguous_events": 1816,
+    "baseline_event_mrr": 0.6003372460983947,
+    "baseline_event_top1": 0.42566079295154186,
+    "baseline_recording_macro_mrr": 0.6092882659950755,
+    "baseline_recording_macro_top1": 0.4293359062285645,
+    "event_mrr_delta": 0.23597096661400307,
+    "event_top1_delta": 0.2626651982378854,
+    "learned_event_mrr": 0.8363082127123977,
+    "learned_event_recall_at_3": 0.9950440528634361,
+    "learned_event_top1": 0.6883259911894273,
+    "learned_recording_macro_mrr": 0.8223658206972249,
+    "learned_recording_macro_top1": 0.6622751249318912,
+    "recording_macro_mrr_delta": 0.2130775547021494,
+    "recording_macro_top1_delta": 0.23293921870332673,
+    "recordings_with_ambiguous_events": 30
+  },
+  "model_refit_performed": false,
+  "next_gate": "CHECKPOINT_RETENTION_REVIEW",
+  "prereg_protocol_sha256": "1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d",
+  "production_authorized": false,
+  "recording_block_bootstrap": {
+    "bootstrap_mean": 0.2354086714268711,
+    "confidence": 0.95,
+    "lower_bound": 0.1036506366023133,
+    "lower_order_statistic_index_zero_based": 49,
+    "method": "RECORDING_BLOCK_RESAMPLE_WITH_REPLACEMENT_POOL_EVENT_MRR_DELTA",
+    "recording_block_count": 30,
+    "repetitions": 2000,
+    "sample_identity_sha256": "3f65024aaae8ff1becc348be8848a13916f66f4a2bda61972e6d654ab52b2dcc",
+    "seed": 0,
+    "upper_bound": 0.35892659280807027,
+    "upper_order_statistic_index_zero_based": 1949
+  },
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-final-evidence-v1",
+  "sealed_development_model_artifact_sha256": "5d109e3b46ef286439f00ad6fa5885fc7bdf13e070974c49040c27b007461869",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "split_version": "GUITARSET-SPLIT.v1",
+  "status": "FINAL_PASS_ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY",
+  "untouched_final_performer": "02",
+  "untouched_final_performer_opened": true
+}
