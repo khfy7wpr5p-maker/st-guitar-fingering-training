@@ -45,6 +45,8 @@ A second layer groups accepted note onsets using a frozen 50 ms window. A cluste
 - no same-string ambiguity occurs inside the window;
 - every `(MIDI, string, fret)` placement remains physically exact.
 
+If any same-string ambiguity occurs in the 50 ms window, that whole local window is excluded from derived voicing gold rather than being repaired or re-anchored.
+
 This layer is explicitly **derived**, not raw human fingering annotation. The 50 ms window is frozen in v1 and must not be tuned from future model outcomes.
 
 ## What this corpus does not contain
@@ -72,7 +74,7 @@ Observed audit result for that exact archive:
 - 45,615 accepted note observations
 - 71 quarantined observations
 - all 71 quarantines are negative-fret violations
-- 12,557 conservative derived strum-voicing events
+- 12,556 conservative derived strum-voicing events
 - accepted fret range: 0..19
 
 ## Safety boundary
