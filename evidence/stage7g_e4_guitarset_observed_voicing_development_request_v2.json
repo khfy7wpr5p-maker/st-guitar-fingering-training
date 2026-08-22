@@ -1,0 +1,12 @@
+{
+  "feature_schema_sha256": "617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285",
+  "model_version": "GUITARSET-OBSERVED-VOICING-MODEL.v2",
+  "production_authorized": false,
+  "protocol_sha256": "db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-development-request-v2",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "training_authorized": true,
+  "validation_access_authorized": false,
+  "final_access_authorized": false
+}
