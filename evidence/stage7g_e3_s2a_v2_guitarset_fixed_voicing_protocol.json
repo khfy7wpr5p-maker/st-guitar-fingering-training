@@ -1,0 +1,119 @@
+{
+  "schema": "st-guitar-s2a-v2-guitarset-fixed-voicing-protocol-v1",
+  "protocol_version": "S2-A.v2-GUITARSET-FIXED-VOICING.v1",
+  "status": "PREREGISTERED_BEFORE_TEACHER_COLLECTION",
+  "target": "STATIC_STANDARD_FINGERING_NATURALNESS_GIVEN_FIXED_STRING_FRET_VOICING",
+  "scientific_change_from_s2a_v1": "replace pairwise mixed-voicing Teacher questions with one multiway fixed-voicing fingering choice",
+  "source_geometry": {
+    "dataset": "GuitarSet annotation-only v1.0.1",
+    "archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+    "use": "OBSERVED_STRING_FRET_GEOMETRY_ONLY",
+    "teacher_label_role": false,
+    "finger_number_gold_claimed": false,
+    "barre_gold_claimed": false
+  },
+  "candidate_authority": {
+    "hc_rule_version": "S1-H-C.v2",
+    "hc_v2_authority_scope": "S2A_V2_FIXED_VOICING_RESEARCH_ONLY",
+    "global_s1_h_c_v1_replaced": false,
+    "same_fret_barre_mandatory": false,
+    "same_fret_separate_fingers_enumerated": true,
+    "fixed_pitch_string_fret_may_change": false,
+    "out_of_set_teacher_assignment_allowed": false
+  },
+  "teacher_session": {
+    "development_original_tasks": 200,
+    "hidden_same_session_repeat_tasks": 30,
+    "untouched_final_tasks": 60,
+    "total_presentations": 290,
+    "max_assignments_per_task": 8,
+    "allowed_decisions": ["SELECT_ASSIGNMENT", "EQUAL_OR_UNSURE", "REJECT_TASK"],
+    "manual_numeric_entry": false,
+    "one_selection_generates_selected_vs_all_other_constraints": true,
+    "repeat_rows_trainable": false,
+    "final_rows_trainable": false
+  },
+  "family_isolation": {
+    "family_unit": "GuitarSet backing-track identity",
+    "total_track_families": 30,
+    "development_track_families": 24,
+    "untouched_final_track_families": 6,
+    "split_method": "SHA256(protocol|TRACK_SPLIT|archive_sha|track_key)",
+    "development_final_track_overlap_required": 0,
+    "development_final_semantic_overlap_required": 0,
+    "benchmark_claim": "UNSEEN_REPERTOIRE_TEACHER_FINAL_FOR_FIXED_VOICING_FINGERING"
+  },
+  "features": {
+    "count": 30,
+    "reuse": "exact deterministic S2-A 30D assignment feature formulas",
+    "target_blind": true
+  },
+  "model": {
+    "estimator": "LogisticRegression",
+    "penalty": "l2",
+    "C": 1.0,
+    "fit_intercept": false,
+    "class_weight": null,
+    "solver": "lbfgs",
+    "max_iter": 2000,
+    "random_state": 0,
+    "scaler": null,
+    "hyperparameter_tuning": false,
+    "pair_representation": "phi(selected)-phi(unselected) plus exact mirrored negative row"
+  },
+  "comparator": {
+    "version": "MIN_MECHANICAL_COMPLEXITY.v1",
+    "ascending_key": [
+      "barre_count",
+      "total_barre_span",
+      "distinct_positive_finger_count",
+      "sum_positive_finger_ids",
+      "max_positive_finger_id",
+      "assignment_id"
+    ]
+  },
+  "reliability_gate": {
+    "hidden_repeat_pairs_min": 30,
+    "same_session": true,
+    "old_answer_visible": false,
+    "exact_assignment_or_class_agreement_min": 0.85
+  },
+  "development_gate": {
+    "decisive_tasks_min": 160,
+    "track_families_min": 20,
+    "preference_constraints_min": 200,
+    "family_isolated_cv_folds": 5,
+    "top1_min": 0.60,
+    "mrr_min": 0.75,
+    "macro_family_top1_min": 0.60,
+    "macro_family_top1_delta_vs_comparator_min": 0.05,
+    "family_wins_gt_losses": true,
+    "deterministic_reproductions_required": 10
+  },
+  "final_gate": {
+    "decisive_tasks_min": 50,
+    "track_families_min": 6,
+    "top1_min": 0.60,
+    "mrr_min": 0.75,
+    "macro_family_top1_delta_vs_comparator_min": 0.05,
+    "family_wins_gt_losses": true,
+    "family_block_bootstrap_repetitions": 2000,
+    "bootstrap_seed": 0,
+    "mrr_delta_95pct_lower_bound_gt_zero": true
+  },
+  "historical_evidence": {
+    "s2a_v1_real_fit_path": "SUPERSEDED_FOR_NEW_REAL_TEACHER_COLLECTION_ONLY",
+    "s2a_v1_frozen_evidence_rewritten": false,
+    "batch01_trainable": false,
+    "teacher_correction_v1_pilot_trainable": false,
+    "guitarset_teacher_voicing_pilot_trainable": false
+  },
+  "authorization": {
+    "single_session_teacher_collection_authorized": true,
+    "real_fit_authorized_before_development_gate": false,
+    "final_open_authorized_before_development_model_seal": false,
+    "checkpoint_retention_authorized": false,
+    "runtime_connection_authorized": false,
+    "production_authorized": false
+  }
+}
