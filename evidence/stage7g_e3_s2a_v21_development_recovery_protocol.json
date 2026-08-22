@@ -1,0 +1,72 @@
+{
+  "schema": "st-guitar-s2a-v21-development-recovery-protocol-v1",
+  "protocol_version": "S2-A.v2.1-DEVELOPMENT-RECOVERY.v1",
+  "status": "FROZEN_BEFORE_FINAL_ACCESS",
+  "teacher_protocol_version": "S2-A.v2-GUITARSET-FIXED-VOICING.v1",
+  "manifest_sha256": "c2e48a800fe7e0ede651589c83c69212c6089a999fc2c97b236a830612259f82",
+  "development_export_sha256": "eecba0be0f16faf82d9587315bcca78659337f477ea7caf1e814344d5cd6b6ec",
+  "internal_audit_sha256": "53bc28ee2416af4d99e3bfaf17a71be542bc51e6dcf82d88d575e6822e1b2094",
+  "v2_result": {
+    "status": "FAIL_DO_NOT_RECLASSIFY",
+    "hidden_repeat_exact_agreement": 0.8333333333333334,
+    "minimum_required_agreement": 0.85,
+    "decisive_development_tasks": 197,
+    "development_families": 24,
+    "preference_constraints": 459,
+    "cv_top1": 0.5329949238578681,
+    "cv_mrr": 0.7195431472081218,
+    "cv_macro_family_top1": 0.5366236772486773,
+    "cv_macro_family_top1_delta": 0.09317129629629639,
+    "family_wins": 11,
+    "family_losses": 5
+  },
+  "recovery_rule": {
+    "development_informed_revision": true,
+    "final_labels_opened": false,
+    "repeat_filter": "exclude every DEVELOPMENT original semantic fingerprint whose hidden repeat decision token disagrees exactly",
+    "unstable_repeat_semantics_count_observed": 5,
+    "no_repeat_threshold_relaxation": true,
+    "stable_decisive_tasks_observed": 192,
+    "stable_development_families_observed": 24,
+    "stable_preference_constraints_observed": 446
+  },
+  "model": {
+    "base_features": 30,
+    "feature_map": "linear 30D plus every i<=j quadratic product",
+    "expanded_dimension": 495,
+    "expanded_feature_list_sha256": "4477bc8ea099570e30b10d15eed9453d49264bb2185a3089fd0cd800a78613dc",
+    "scaler": "StandardScaler(with_mean=false,with_std=true)",
+    "estimator": "LogisticRegression",
+    "penalty": "l2",
+    "C": 3.0,
+    "fit_intercept": false,
+    "class_weight": null,
+    "solver": "lbfgs",
+    "max_iter": 5000,
+    "random_state": 0
+  },
+  "development_diagnostic_after_recovery": {
+    "cv_top1": 0.6197916666666666,
+    "cv_mrr": 0.7786458333333334,
+    "cv_macro_family_top1": 0.6277281746031745,
+    "cv_macro_family_top1_delta": 0.18005952380952378,
+    "family_wins": 16,
+    "family_losses": 2,
+    "note": "development diagnostic informed model selection and is not an untouched claim"
+  },
+  "final_gate_frozen_before_open": {
+    "decisive_final_tasks_gte": 50,
+    "final_families_gte": 6,
+    "top1_gte": 0.60,
+    "mrr_gte": 0.75,
+    "macro_family_top1_delta_gte": 0.05,
+    "family_wins_gt_losses": true,
+    "family_block_bootstrap_repetitions": 2000,
+    "family_block_bootstrap_seed": 0,
+    "bootstrap_95pct_mrr_delta_lower_gt": 0.0,
+    "final_access_count": 1
+  },
+  "checkpoint_retention_authorized": false,
+  "runtime_connection_authorized": false,
+  "production_authorized": false
+}
