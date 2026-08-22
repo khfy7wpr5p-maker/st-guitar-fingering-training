@@ -1,0 +1,112 @@
+{
+  "accepted_validation_evidence_sha256": "2df8a41bf9c319c481984d116b473ebb78a4569faf36b2a5ec3a883f6b96d987",
+  "candidate_fret_domain": [
+    0,
+    20
+  ],
+  "checkpoint_authorized": false,
+  "checkpoint_retention_review_eligible": true,
+  "evidence_sha256": "8aab8f841cf2a5e5a6e6437a8f2207026465b1863fdc064629e2818eae6a67b2",
+  "feature_schema_sha256": "617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285",
+  "final_event_identity_sha256": "3a051596ed67160f59e1ebc91d51677c5b39764c75fe6ff2caa32ab0a1ff3526",
+  "final_pass": true,
+  "final_policy": "ONE_SHOT_GATE_NO_REFIT_NO_TUNING",
+  "final_source_counts": {
+    "accepted_notes": 7194,
+    "ambiguous_voicings": 1816,
+    "derived_voicings": 2210,
+    "fret20_candidate_count_across_all_voicings": 1789,
+    "fret20_candidate_event_count": 214,
+    "fret20_quality_authority": false,
+    "full_candidate_count_across_all_voicings": 29507,
+    "observed_fret20_positive_gold_count": 0,
+    "performer": "02",
+    "quarantined_notes": 33,
+    "recordings": 30,
+    "single_candidate_voicings": 394,
+    "source_observed_max_fret": 19,
+    "target_candidate_max_fret": 20
+  },
+  "fret20_quality_authority": false,
+  "gate": {
+    "event_mrr_delta": {
+      "observed": 0.2379905134281438,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "event_top1_delta": {
+      "observed": 0.2665198237885463,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "fret20_positive_gold_absent": {
+      "observed": 0,
+      "pass": true,
+      "required": 0
+    },
+    "recording_block_bootstrap_mrr_delta_lower_bound": {
+      "observed": 0.10769841668020474,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_mrr_delta": {
+      "observed": 0.21470502477950104,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_top1_delta": {
+      "observed": 0.23608386394415398,
+      "pass": true,
+      "required_gt": 0.0
+    }
+  },
+  "hyperparameter_tuning_performed": false,
+  "metrics": {
+    "ambiguous_events": 1816,
+    "baseline_event_mrr": 0.6002266566998192,
+    "baseline_event_top1": 0.42566079295154186,
+    "baseline_recording_macro_mrr": 0.6092151973911839,
+    "baseline_recording_macro_top1": 0.4293359062285645,
+    "event_mrr_delta": 0.2379905134281438,
+    "event_top1_delta": 0.2665198237885463,
+    "learned_event_mrr": 0.838217170127963,
+    "learned_event_recall_at_3": 0.9950440528634361,
+    "learned_event_top1": 0.6921806167400881,
+    "learned_recording_macro_mrr": 0.823920222170685,
+    "learned_recording_macro_top1": 0.6654197701727185,
+    "recording_macro_mrr_delta": 0.21470502477950104,
+    "recording_macro_top1_delta": 0.23608386394415398,
+    "recordings_with_ambiguous_events": 30
+  },
+  "model_refit_performed": false,
+  "next_gate": "CHECKPOINT_RETENTION_REVIEW",
+  "prereg_protocol_sha256": "db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02",
+  "production_authorized": false,
+  "recording_block_bootstrap": {
+    "bootstrap_mean": 0.23740681237548963,
+    "confidence": 0.95,
+    "lower_bound": 0.10769841668020474,
+    "lower_order_statistic_index_zero_based": 49,
+    "method": "RECORDING_BLOCK_RESAMPLE_WITH_REPLACEMENT_POOL_EVENT_MRR_DELTA",
+    "recording_block_count": 30,
+    "repetitions": 2000,
+    "sample_identity_sha256": "badef8cc1adb541589c6e04cd5fe36a832fd67b58680e0332689c2a862f7b7a8",
+    "seed": 0,
+    "upper_bound": 0.3604101643783546,
+    "upper_order_statistic_index_zero_based": 1949
+  },
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-final-evidence-v2",
+  "sealed_development_evidence_sha256": "177cc54ef38c619f475074f9e1c529865772d182a135faf4f4cdf50ee2c64351",
+  "sealed_development_model_artifact_sha256": "7a56436c27ee6d996a49e7f989d37d7ffff187232277095b176c3c395c432314",
+  "shadow_integration_authorized": false,
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "source_observed_fret_domain": [
+    0,
+    19
+  ],
+  "split_version": "GUITARSET-SPLIT.v1",
+  "status": "FINAL_PASS_ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY",
+  "untouched_final_performer": "02",
+  "untouched_final_performer_opened": true
+}
