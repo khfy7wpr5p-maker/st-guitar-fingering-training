@@ -1,0 +1,15 @@
+{
+  "development_evidence_sha256": "177cc54ef38c619f475074f9e1c529865772d182a135faf4f4cdf50ee2c64351",
+  "development_model_artifact_sha256": "7a56436c27ee6d996a49e7f989d37d7ffff187232277095b176c3c395c432314",
+  "feature_schema_sha256": "617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285",
+  "final_access_authorized": false,
+  "model_refit_authorized": false,
+  "model_version": "GUITARSET-OBSERVED-VOICING-MODEL.v2",
+  "production_authorized": false,
+  "protocol_sha256": "db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-validation-request-v2",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "validation_authorized": true,
+  "validation_performer": "03"
+}

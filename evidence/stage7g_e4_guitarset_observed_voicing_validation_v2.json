@@ -1,0 +1,121 @@
+{
+  "candidate_fret_domain": [
+    0,
+    20
+  ],
+  "checkpoint_authorized": false,
+  "environment": {
+    "numpy": "2.3.5",
+    "python": "3.13.15"
+  },
+  "evidence_sha256": "2df8a41bf9c319c481984d116b473ebb78a4569faf36b2a5ec3a883f6b96d987",
+  "feature_schema_sha256": "617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285",
+  "final_access_authorized": false,
+  "fret20_quality_authority": false,
+  "gate": {
+    "event_mrr_delta": {
+      "observed": 0.16889847633151145,
+      "pass": true,
+      "required_gte": 0.05
+    },
+    "event_top1_delta": {
+      "observed": 0.14867724867724863,
+      "pass": true,
+      "required_gte": 0.02
+    },
+    "fret20_positive_gold_absent": {
+      "observed": 0,
+      "pass": true,
+      "required": 0
+    },
+    "minimum_ambiguous_events": {
+      "observed": 1890,
+      "pass": true,
+      "required": 500
+    },
+    "recording_block_bootstrap_mrr_delta_lower_bound": {
+      "observed": 0.07463626003368347,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_mrr_delta": {
+      "observed": 0.19884206818404682,
+      "pass": true,
+      "required_gt": 0.0
+    },
+    "recording_macro_top1_delta": {
+      "observed": 0.16664239323351626,
+      "pass": true,
+      "required_gt": 0.0
+    }
+  },
+  "hyperparameter_tuning_performed": false,
+  "metrics": {
+    "ambiguous_events": 1890,
+    "baseline_event_mrr": 0.7131561973898289,
+    "baseline_event_top1": 0.6216931216931217,
+    "baseline_recording_macro_mrr": 0.6684635732872276,
+    "baseline_recording_macro_top1": 0.5757516822929695,
+    "event_mrr_delta": 0.16889847633151145,
+    "event_top1_delta": 0.14867724867724863,
+    "learned_event_mrr": 0.8820546737213404,
+    "learned_event_recall_at_3": 0.9968253968253968,
+    "learned_event_top1": 0.7703703703703704,
+    "learned_recording_macro_mrr": 0.8673056414712744,
+    "learned_recording_macro_top1": 0.7423940755264857,
+    "recording_macro_mrr_delta": 0.19884206818404682,
+    "recording_macro_top1_delta": 0.16664239323351626,
+    "recordings_with_ambiguous_events": 30
+  },
+  "model_refit_performed": false,
+  "next_gate": "OBSERVED_VOICING_MODEL_V2_UNTOUCHED_FINAL_OPEN",
+  "prereg_protocol_sha256": "db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02",
+  "production_authorized": false,
+  "recording_block_bootstrap": {
+    "bootstrap_mean": 0.1686571079859073,
+    "confidence": 0.95,
+    "lower_bound": 0.07463626003368347,
+    "lower_order_statistic_index_zero_based": 49,
+    "method": "RECORDING_BLOCK_RESAMPLE_WITH_REPLACEMENT_POOL_EVENT_MRR_DELTA",
+    "recording_block_count": 30,
+    "repetitions": 2000,
+    "sample_identity_sha256": "a7b4cf4a5a2ccc28bf4f9baef7b0e41998eef712587ba9bb3f09f7a644b55836",
+    "seed": 0,
+    "upper_bound": 0.2662329240576745,
+    "upper_order_statistic_index_zero_based": 1949
+  },
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-validation-evidence-v2",
+  "sealed_development_evidence_sha256": "177cc54ef38c619f475074f9e1c529865772d182a135faf4f4cdf50ee2c64351",
+  "sealed_development_model_artifact_sha256": "7a56436c27ee6d996a49e7f989d37d7ffff187232277095b176c3c395c432314",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "source_observed_fret_domain": [
+    0,
+    19
+  ],
+  "split_version": "GUITARSET-SPLIT.v1",
+  "status": "VALIDATION_PASS_FINAL_STILL_CLOSED",
+  "untouched_final_performer": "02",
+  "untouched_final_performer_opened": false,
+  "validation_event_identity_sha256": "56f94c99361e7adbfcf40ae48bdae2dfb9a0b1fc8fb1a8b41df72911bb9fbe4b",
+  "validation_pass": true,
+  "validation_performer": "03",
+  "validation_performer_opened": true,
+  "validation_policy": "ONE_SHOT_GATE_NO_TUNING",
+  "validation_source_counts": {
+    "accepted_notes": 6722,
+    "ambiguous_voicings": 1890,
+    "derived_voicings": 2016,
+    "fret20_candidate_count_across_all_voicings": 4962,
+    "fret20_candidate_event_count": 460,
+    "fret20_quality_authority": false,
+    "full_candidate_count_across_all_voicings": 56678,
+    "observed_fret20_positive_gold_count": 0,
+    "performer": "03",
+    "quarantined_notes": 3,
+    "recordings": 30,
+    "single_candidate_voicings": 126,
+    "source_observed_max_fret": 19,
+    "target_candidate_max_fret": 20
+  }
+}
