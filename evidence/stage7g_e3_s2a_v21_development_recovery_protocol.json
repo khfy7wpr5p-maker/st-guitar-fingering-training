@@ -43,16 +43,18 @@
     "class_weight": null,
     "solver": "lbfgs",
     "max_iter": 5000,
-    "random_state": 0
+    "random_state": 0,
+    "cv_fold_key": "S2-A.v2.1-DEVELOPMENT-RECOVERY.v1|FOLD|<family_id>"
   },
   "development_diagnostic_after_recovery": {
-    "cv_top1": 0.6197916666666666,
-    "cv_mrr": 0.7786458333333334,
-    "cv_macro_family_top1": 0.6277281746031745,
-    "cv_macro_family_top1_delta": 0.18005952380952378,
-    "family_wins": 16,
+    "cv_top1": 0.640625,
+    "cv_mrr": 0.7951388888888888,
+    "cv_macro_family_top1": 0.6488921957671958,
+    "cv_macro_family_top1_delta": 0.20122354497354505,
+    "family_wins": 18,
     "family_losses": 2,
-    "note": "development diagnostic informed model selection and is not an untouched claim"
+    "determinism_signature": "fa2b0f9d0e1c43fdeb759f7643fd84a7ca0fece1e40528c119490abb8752f8ea",
+    "note": "exact implementation fold key; development diagnostic informed model selection and is not an untouched claim"
   },
   "final_gate_frozen_before_open": {
     "decisive_final_tasks_gte": 50,
