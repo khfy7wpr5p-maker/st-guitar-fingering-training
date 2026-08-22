@@ -1,0 +1,21 @@
+{
+  "candidate_fret_domain": [
+    0,
+    20
+  ],
+  "checkpoint_retention_authorized": false,
+  "feature_schema_sha256": "617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285",
+  "fret20_quality_authority": false,
+  "model_version": "GUITARSET-OBSERVED-VOICING-MODEL.v2",
+  "next_gate": "OBSERVED_VOICING_MODEL_V2_DEVELOPMENT_IMPLEMENTATION_AND_FIT",
+  "observed_fret20_positive_gold_expected": 0,
+  "production_authorized": false,
+  "protocol_sha256": "db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-model-prereg-v2-evidence",
+  "source_observed_fret_domain": [
+    0,
+    19
+  ],
+  "training_authorized": true
+}
