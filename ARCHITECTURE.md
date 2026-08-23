@@ -1,308 +1,57 @@
 # Architecture
 
-## Authoritative current map
+## Live architecture view
 
-Current live baseline after merged PR #93:
+`LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE`
 
-`a46f93861927342ea551e96b2a53859536e18a6f`
+Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
 
-The architecture intentionally separates deterministic physical/fingering authority from learned ranking. It also keeps the two learned research targets separate: S2-A Teacher naturalness and GuitarSet observed string/fret voicing.
-
-```text
-Guitar Pro / MusicXML source
-        ↓
-Safe intake + stream/tuning/pitch normalization
-        ↓
-Event / chord extraction
-        ↓
-Independent deterministic pitch ↔ string/fret validation
-        ↓
-valid_chord_voicings()
-        │ AUTHORITATIVE PHYSICAL BOUNDARY
-        ├───────────────────────────────────────────────────────────────┐
-        │                                                               │
-        ↓                                                               ↓
-S1-H-A deterministic plausibility                              GuitarSet observed-gold intake
-        ✅ MERGED                                                       ✅ PR #91
-        ↓                                                               ↓
-S1-H-B four-finger/barre resource feasibility                  GUITARSET-SPLIT.v1
-        ✅ MERGED                                                       ✅ PR #92
-        ↓                                                               ↓
-S1-H-C.v1 standard finger-assignment enumeration               28D voicing feature contract
-        ✅ AUTHORITATIVE                                                + pairwise model prereg
-        │                                                               ✅ PR #93
-        │                                                               ↓
-        │                                                        DEVELOPMENT IMPLEMENTATION
-        │                                                        + REAL FIT
-        │                                                               ⏳ CURRENT GATE
-        │                                                               ↓
-        │                                                        DEVELOPMENT CV PASS 🔒
-        │                                                               ↓
-        │                                                        VALIDATION performer 03 🔒
-        │                                                               ↓
-        │                                                        SEALED DEVELOPMENT MODEL 🔒
-        │                                                               ↓
-        │                                                        UNTOUCHED_FINAL performer 02 🔒
-        │                                                               ↓
-        │                                                        CHECKPOINT REVIEW 🔒
-        │                                                               ↓
-        │                                                        GuitarTab Engine shadow/prod 🔒
-        │
-        ├─ S2-A static fingering naturalness
-        │     ↓
-        │   30D deterministic assignment features                    ✅ PR #78
-        │     ↓
-        │   blind pair + repeat reliability machinery                ✅ PR #78
-        │     ↓
-        │   fail-closed learned ranker + development CV               ✅ PR #79
-        │     ↓
-        │   untouched-final evaluation gate                           ✅ PR #80
-        │     ↓
-        │   Batch01 human evidence                                    ✅ diagnostic-only
-        │     ↓
-        │   Teacher Correction v1 pilot                               ✅ PR #89
-        │     ↓
-        │   fit-eligible fresh Teacher supervision                    🔒 unavailable
-        │     ↓
-        │   real S2-A fit / final / checkpoint                        🔒
-        │
-        └─ S1-H-C.v2 same-fret split experiment                       ⏳ PR #90 OPEN
-             not authoritative; downstream audit required
-```
-
-## Authority boundaries
-
-### Physical authority
-
-`valid_chord_voicings()` remains the sole authoritative generator for physically exact pitch/string/fret candidates. Learned code cannot create, repair, legalize, or reintroduce a placement outside this set.
-
-The GuitarSet observed-voicing path also starts from this physical authority. Its learned model ranks physical string/fret realizations only; it does not gain authority over physical validity.
-
-### Deterministic ordinary-technique authority
-
-S1-H-A/B/C.v1 transform physical candidates into auditable standard left-hand assignments:
-
-- H-A: deterministic plausibility and conservative hard prune;
-- H-B: ordinary four-finger/barre resource feasibility;
-- H-C.v1: standard assignment enumeration under the frozen v1 hand model.
-
-H-C.v1 `assignment_id` values remain the authoritative assignment objects consumed by S2-A.
-
-PR #90 is a provisional H-C.v2 experiment. It addresses the discovered same-fret grouping issue by treating an H-B passable same-fret group as a lower bound for possible barre sharing rather than a mandatory single-finger/barre assignment. It must not replace H-C.v1 until downstream H-C capacity and S2-A evidence are explicitly re-audited.
-
-### Learned authority: S2-A
-
-S2-A is a ranker only. Its learned scalar score may order exact H-C assignment IDs supplied for one event, but it cannot change physical validity, H-B feasibility, or H-C assignment construction.
-
-S2-A v1 target:
-
-`STATIC_STANDARD_FINGERING_NATURALNESS`
-
-This excludes previous/next chord transitions, tempo, style, tone color, right-hand pattern, extended techniques, and player-specific anatomy.
-
-### Learned authority: GuitarSet observed voicing
-
-GuitarSet v1 target:
-
-`OBSERVED_STRING_FRET_VOICING_FOR_FIXED_PITCH_MULTISET`
-
-Given the exact simultaneous MIDI pitch multiset of a derived GuitarSet event, the model ranks physically exact standard-tuning string/fret realizations so that the observed guitarist placement is preferred.
-
-This model does **not** learn:
-
-- left-hand finger numbers;
-- barre identity;
-- S2-A Teacher preference;
-- previous/next chord transitions;
-- performer identity or style as model features;
-- physical validity.
-
-## GuitarSet observed-gold data boundary
-
-PR #91 introduced fail-closed ingestion for the approved GuitarSet `*_comp.jams` archive.
-
-Safety and identity rules include:
-
-- exact archive SHA sealing;
-- archive/member size limits;
-- path-traversal and symlink rejection;
-- duplicate-member rejection;
-- excessive compression-ratio rejection;
-- only `annotation/*_comp.jams` accepted;
-- deterministic data-source-to-string mapping;
-- deterministic MIDI rounding followed by physical fret recomputation;
-- malformed, non-finite, negative-time, MIDI-range, negative-fret, and over-max-fret rows quarantined rather than repaired;
-- same-string ambiguity in a 50 ms local window excludes that whole window from derived voicing gold.
-
-Audited dataset:
-
-- 180 recordings;
-- 45,686 raw notes;
-- 45,615 accepted notes;
-- 71 quarantined negative-fret rows;
-- accepted frets `0..19`;
-- 12,556 conservative derived strum-voicing events.
-
-Direct note observations and derived voicing clusters are distinct evidence types.
-
-## GuitarSet split/leakage boundary
-
-`GUITARSET-SPLIT.v1` is frozen as an `UNSEEN_PERFORMER_SEEN_REPERTOIRE` benchmark.
-
-Roles:
-
-- DEVELOPMENT: performers `00, 01, 04, 05`;
-- VALIDATION: performer `03`;
-- UNTOUCHED_FINAL: performer `02`.
-
-Required isolation:
-
-- performer overlap across roles = 0;
-- recording overlap across roles = 0;
-- note-id overlap across roles = 0;
-- voicing-id overlap across roles = 0.
-
-The same 30 backing-track identities and 15 style identities intentionally occur across performer roles. Therefore unseen-repertoire and unseen-style claims are forbidden for this split.
-
-Development diagnostics may use leave-one-development-performer-out four-fold CV. Validation cannot enter fit. Final cannot enter fit, CV, model selection, or validation.
-
-## GuitarSet v1 candidate boundary
-
-For each accepted derived voicing event:
-
-1. preserve the exact MIDI pitch multiset;
-2. use standard tuning `1:E4=64, 2:B3=59, 3:G3=55, 4:D3=50, 5:A2=45, 6:E2=40`;
-3. enumerate all exact pitch→string/fret assignments with one note per string;
-4. require fret range `0..19`;
-5. require the observed GuitarSet realization to be present;
-6. exclude single-candidate events from ranking fit/metrics and report them separately.
-
-Candidate construction is independent of H-C fingering, Teacher labels, S2-A preference, historical labels, and model scores.
-
-## GuitarSet frozen feature/model contract
-
-Version:
-
-`GUITARSET-VOICING-FEATURES.v1`
-
-Feature count: `28`
-
-Feature SHA-256:
-
-`05f8fda622f3901869a149db3e2cca2baf1310f4834d39e278e36428ae48cd38`
-
-Features encode only static pitch/string/fret geometry, including open-string ratio, fret position/span, string span/adjacency/gaps, mean string, six string-occupancy values, six per-string fret values, and six per-string MIDI values.
-
-Frozen learning pipeline:
+The architecture separates deterministic candidate authority from two independent learned ranking paths.
 
 ```text
-observed candidate vs alternative
-        ↓
-phi(observed) - phi(alternative)
-        ↓
-mirrored pair rows
-        ↓
-StandardScaler()
-        ↓
-LogisticRegression(
-    C=1.0,
-    fit_intercept=False,
-    class_weight=None,
-    solver="lbfgs",
-    max_iter=2000,
-    random_state=0
-)
+source score / observed event
+  -> deterministic normalization and physical validation
+  -> valid_chord_voicings()                 [authoritative candidates]
+       -> S1-H-A/B/C.v1                     [authoritative assignments]
+            -> S2-A Teacher ranker          [no eligible real fit]
+       -> GuitarSet v2 28D ranker           [sealed offline research]
+            -> engine controlled-offline adapter evidence
+            -> runtime connection           [closed]
 ```
 
-No hyperparameter tuning is allowed. For fit, at most 32 alternatives/event are selected by immutable label-independent SHA ordering. Evaluation retains the full candidate set.
+## Deterministic authority
 
-Frozen comparator:
+`valid_chord_voicings()` is the sole authoritative generator of physically exact pitch/string/fret candidates. S1-H-A/B/C.v1 produces the standard left-hand assignment set used by S2-A. PR #90's S1-H-C.v2 experiment is closed without merge and is not part of the live authority chain.
 
-`LOW_TOTAL_FRET.v1`
+Learned code cannot create, repair, legalize, filter, truncate, or reintroduce a candidate. It cannot change physical validity, canonical output, TAB output, or writer behavior.
 
-Ascending rank key:
+## S2-A path
 
-`(sum_fret, max_fret, positive_fret_span, -open_count, string_span, canonical_candidate)`
+S2-A targets `STATIC_STANDARD_FINGERING_NATURALNESS` over exact S1-H-C.v1 assignment IDs. Its 30D target-blind feature contract and fail-closed pairwise ranking/evaluation code exist. Batch01 is diagnostic-only and contributes zero fit rows; a fit-eligible fresh Teacher corpus is unavailable. Consequently no real S2-A model fit, untouched-final opening, or checkpoint exists.
 
-Protocol SHA-256:
+## GuitarSet v2 path
 
-`1cbb3d219e8009c90c71075019a69a55c06a2893c12bd50264e66eda956dbc2d`
+`GUITARSET-OBSERVED-VOICING-MODEL.v2` targets `OBSERVED_STRING_FRET_VOICING_FOR_FIXED_PITCH_MULTISET` and ranks only exact physical candidates.
 
-## GuitarSet development gate
+- candidate domain: 0..20;
+- observed positive-gold domain: 0..19;
+- `fret20QualityAuthority=false`;
+- features: frozen 28D static pitch/string/fret geometry;
+- model artifact SHA-256: `7a56436c27ee6d996a49e7f989d37d7ffff187232277095b176c3c395c432314`;
+- feature schema SHA-256: `617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285`;
+- protocol SHA-256: `db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02`;
+- shadow-integration review SHA-256: `f42809c1ca9d5f6ff1c62dd072c91a9195bb46e1714e88bd84e8a5a57eef9140`.
 
-Development uses leave-one-development-performer-out four-fold CV.
+The v2 scientific sequence is complete: preregistration -> DEVELOPMENT -> one-shot VALIDATION -> sealed model -> one-shot UNTOUCHED_FINAL -> checkpoint-retention review -> cross-repository shadow-integration review. There was no post-final refit.
 
-Required:
+## Cross-repository boundary
 
-- >=1000 ambiguous development events;
-- macro event Top-1 delta vs comparator >= `+0.03`;
-- macro event MRR delta >= `+0.05`;
-- Top-1 wins in >=3/4 held-out performers;
-- MRR wins in >=3/4 held-out performers;
-- 10/10 deterministic reproduction of identities, rows, metrics, and fitted coefficients within the execution environment.
+The engine sealed `GUITARSET_V2_CONTROLLED_OFFLINE_SHADOW_EVIDENCE_COMPLETE` against exact engine commit `acdb66e2bb2ad809ab45fc7c2183d84280d61ad7` at:
 
-Failure stops the path and keeps validation closed.
+`evidence/offline-shadow/exact-main/acdb66e2bb2ad809ab45fc7c2183d84280d61ad7/controlled-offline-shadow-evidence.v2.json`
 
-## GuitarSet validation/final gates
+That artifact belongs to the engine repository. It demonstrates bounded fixture-only adapter execution and candidate preservation, not normal-runtime integration.
 
-Validation performer `03` is one-shot and cannot tune features, thresholds, candidate rules, or hyperparameters.
+Current gates remain fail-closed: `new_training_or_refit_authorized=false`, `runtime_connection_authorized=false`, and `production_authorized=false`.
 
-Validation requires:
-
-- >=500 ambiguous events;
-- event Top-1 delta >= `+0.02`;
-- event MRR delta >= `+0.05`;
-- recording-macro Top-1 delta > 0;
-- recording-macro MRR delta > 0;
-- 2000-repetition recording-block bootstrap, seed 0, with 95% MRR-delta lower bound > 0.
-
-Untouched-final performer `02` remains unopened until:
-
-`DEVELOPMENT_PASS AND VALIDATION_PASS AND MODEL_ARTIFACT_SEALED`
-
-After final opening there is no refit and no tuning. Final PASS yields only:
-
-`ELIGIBLE_FOR_CHECKPOINT_RETENTION_REVIEW_ONLY`
-
-It does not authorize runtime or production.
-
-## S2-A deterministic feature/model boundary
-
-S2-A representation remains exactly 30 target-blind deterministic assignment features. Frozen feature-list SHA-256:
-
-`d2c6028891fe62f341463e13d946a71ecf2f506abc99789d0f963ddc1d5c87cf`
-
-Frozen v1 model remains a no-scaler, no-intercept L2 logistic ranker over mirrored pairwise feature differences. Its executable fit/CV/final harness is implemented, but no current corpus is fit-eligible.
-
-Batch01 is permanently diagnostic-only. PR #89 superseded the uncollected Batch02 pairwise path with Teacher Correction v1. PR #90 remains provisional and does not retroactively change frozen S2-A evidence.
-
-## Current authorization boundary
-
-The GuitarSet preregistration freezes the model-development contract but explicitly leaves:
-
-- `training_authorized = false`;
-- `checkpoint_authorized = false`;
-- `runtime_connection_authorized = false`;
-- `final_access_authorized = false`.
-
-Therefore model implementation and deterministic test/evaluation machinery may be developed without altering the protocol, but real project fitting must not begin until the training gate is explicitly opened.
-
-Likewise, checkpoint retention, untouched-final opening, authoritative H-C.v2 replacement, GuitarTab Engine shadow integration, and production remain separate consequential gates.
-
-## Verification baseline
-
-Latest `main` after PR #93:
-
-- CI run #274: PASS;
-- unit tests: PASS;
-- compile validation: PASS;
-- S2-A Batch01 regression workflow run #61: PASS;
-- Stage 7B-C2 comparison step: branch-skipped, not counted as PASS.
-
-## Current continuation point
-
-`OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT`
-
-The architecture is ready for the implementation side of the frozen GuitarSet development path. The next model code must preserve the candidate authority, split, feature schema, comparator, model family, and evaluation thresholds exactly as preregistered.
-
-Frozen evidence files remain immutable historical snapshots. Live architecture truth is maintained in this document and `STATUS.md`.
+Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`. Numerical optimizer-convergence hardening is a separate evidence task; retained `n_iter=37` is not presented as a gradient-norm or termination-certificate substitute.
