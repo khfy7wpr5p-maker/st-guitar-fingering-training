@@ -1,0 +1,14 @@
+{
+  "schema": "scoremosaic-third-party-license-inventory-v1",
+  "project": "st-guitar-fingering-training",
+  "generated": "2026-08-23",
+  "exactTransitiveLockPresent": false,
+  "components": [
+    {"name":"defusedxml","versionConstraint":">=0.7,<1","role":"runtime","license":"PSF-2.0-style","commercialRedistribution":"allowed-with-notice"},
+    {"name":"numpy","versionConstraint":">=1.26","role":"runtime","license":"BSD-3-Clause","commercialRedistribution":"allowed-with-notice"},
+    {"name":"scikit-learn","versionConstraint":">=1.4","role":"runtime","license":"BSD-3-Clause","commercialRedistribution":"allowed-with-notice-and-transitive-audit"},
+    {"name":"setuptools","versionConstraint":">=70","role":"build","license":"MIT","commercialRedistribution":"allowed-with-notice"},
+    {"name":"PyGuitarPro","version":"0.10.2","role":"extraction-workflow-only","license":"LGPL-3.0-only","bundled":false,"commercialRedistribution":"allowed-subject-to-lgpl"}
+  ]
+}
+
