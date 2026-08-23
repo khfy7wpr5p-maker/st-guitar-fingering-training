@@ -1,0 +1,17 @@
+{
+  "allowed_data_role": "DEVELOPMENT_ONLY",
+  "base_training_main_sha": "959ed78df27ce49a44ff1c444d329fc871abb334",
+  "checkpoint_replacement_authorized": false,
+  "diagnostic_reconstruction_authorized": true,
+  "feature_schema_sha256": "617981e90cce46c941596d1bd50ffffff64e6816c59d8f0dbed1acd6d8938285",
+  "final_access_authorized": false,
+  "model_mutation_authorized": false,
+  "production_authorized": false,
+  "protocol_sha256": "db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02",
+  "request_sha256": "a6abe0817de956eb6f7bd09e075bddc820a661b603b8b57d8ec343e6d312a12f",
+  "retained_model_artifact_sha256": "7a56436c27ee6d996a49e7f989d37d7ffff187232277095b176c3c395c432314",
+  "runtime_connection_authorized": false,
+  "schema": "st-guitar-guitarset-observed-voicing-numerical-hardening-request-v2",
+  "source_archive_sha256": "06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe",
+  "validation_access_authorized": false
+}

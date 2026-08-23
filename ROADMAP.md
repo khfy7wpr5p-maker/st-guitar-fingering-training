@@ -12,6 +12,7 @@ Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
 - S2-A feature, blind-task, pairwise ranker, development-CV, and final-evaluation machinery;
 - GuitarSet ingestion, performer-isolated split, v1 research history, and separate v2 preregistration;
 - `GUITARSET-OBSERVED-VOICING-MODEL.v2` DEVELOPMENT, one-shot VALIDATION, model seal, one-shot UNTOUCHED_FINAL, checkpoint-retention review, and shadow-integration review;
+- `NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED`: DEVELOPMENT-only projected-gradient/termination evidence, `n_iter=37`, 39 function/gradient evaluations, and immutable artifact `evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json` (byte SHA-256 `30f31a2322d0bdb45422c9715eb4a720d8b14c87b2fb1015fb457cb199392670`, internal SHA-256 `0321a793bce30a9857720e9ec61c289e40ab2eef02f05c9fbe80e782152c491e`);
 - engine-side `GUITARSET_V2_CONTROLLED_OFFLINE_SHADOW_EVIDENCE_COMPLETE` for exact engine commit `acdb66e2bb2ad809ab45fc7c2183d84280d61ad7`.
 
 V2 identity remains fixed:
@@ -27,9 +28,8 @@ V2 identity remains fixed:
 ## Open gates
 
 1. `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`: human/safety review before any normal-runtime, user-file, or consequential shadow connection.
-2. Optional numerical-convergence hardening: controlled reconstruction producing a new supplemental artifact with explicit optimizer termination evidence; do not rewrite the historical v2 seal.
-3. A future S2-A fit only after a genuinely fresh, fit-eligible Teacher corpus passes the frozen evidence gate.
-4. Separate approval for any authoritative selector influence or production activation.
+2. A future S2-A fit only after a genuinely fresh, fit-eligible Teacher corpus passes the frozen evidence gate.
+3. Separate approval for any authoritative selector influence or production activation.
 
 PR #90 is closed without merge; S1-H-C.v1 remains authoritative. It is not a continuation gate.
 

@@ -27,6 +27,10 @@ COMMON_REQUIRED = (
     "new_training_or_refit_authorized=false",
     "runtime_connection_authorized=false",
     "production_authorized=false",
+    "NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED",
+    "evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json",
+    "30f31a2322d0bdb45422c9715eb4a720d8b14c87b2fb1015fb457cb199392670",
+    "0321a793bce30a9857720e9ec61c289e40ab2eef02f05c9fbe80e782152c491e",
 )
 
 STALE_LIVE_CLAIMS = (
@@ -39,6 +43,11 @@ STALE_LIVE_CLAIMS = (
     "GuitarSet real model fit: ⛔ not executed",
     "OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT",
     "development implementation + fit                     ⏳ NEXT GATE",
+    "A separate numerical-convergence hardening record may be produced",
+    "Numerical optimizer-convergence hardening is a separate evidence task",
+    "Residual evidence limitation",
+    "does not include a gradient norm",
+    "Any numerical-convergence hardening requires",
 )
 
 
@@ -67,8 +76,11 @@ def test_live_status_distinguishes_untrained_s2a_from_trained_guitarset_v2():
     assert "PR #90" in status and "Closed without merge" in status
 
 
-def test_live_documents_do_not_overclaim_numerical_convergence():
-    for relative_path in ("README.md", "ARCHITECTURE.md", "STATUS.md", "SAFETY.md"):
+def test_live_documents_bind_completed_numerical_hardening_without_runtime_authority():
+    for relative_path in LIVE_DOCS:
         text = read(relative_path)
-        assert "gradient" in text.lower() or "numerical-convergence" in text.lower()
+        assert "NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED" in text
+        assert "evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json" in text
         assert "n_iter=37" in text
+        assert "runtime_connection_authorized=false" in text
+        assert "production_authorized=false" in text

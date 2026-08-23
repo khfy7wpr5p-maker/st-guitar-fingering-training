@@ -13,6 +13,7 @@ Documentation synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd`
 | PR #90 S1-H-C.v2 experiment | Closed without merge; non-authoritative |
 | GuitarSet v1 | Historical 0..19-domain evidence, frozen |
 | `GUITARSET-OBSERVED-VOICING-MODEL.v2` | Development, validation, final, retention, and integration review complete |
+| GuitarSet v2 numerical hardening | `NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED` |
 | Engine controlled-offline v2 evidence | `GUITARSET_V2_CONTROLLED_OFFLINE_SHADOW_EVIDENCE_COMPLETE` |
 | Engine runtime connection | Closed pending human review |
 | Production learned selection | Closed |
@@ -53,6 +54,18 @@ Current authorization: `new_training_or_refit_authorized=false`, `runtime_connec
 
 Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`.
 
-## Residual evidence limitation
+## Numerical evidence closeout
 
-The retained model records `n_iter=37`, finite coefficients, deterministic reproduction, and successful preregistered metric gates. The sealed historical artifacts do not contain a gradient norm or an independent optimizer termination certificate. This status therefore does not upgrade iteration count into numerical-convergence proof. Closing that scientific hardening item requires a separately authorized controlled reconstruction and a new supplemental evidence version; historical artifacts must not be rewritten.
+The retained model's DEVELOPMENT-only numerical hardening is sealed at `evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json` (byte SHA-256 `30f31a2322d0bdb45422c9715eb4a720d8b14c87b2fb1015fb457cb199392670`, internal evidence SHA-256 `0321a793bce30a9857720e9ec61c289e40ab2eef02f05c9fbe80e782152c491e`).
+
+- L-BFGS status: `0`, success;
+- termination: projected gradient norm within `1e-4`;
+- `n_iter=37` of 2,000;
+- function/gradient evaluations: `39/39`;
+- sealed objective: `0.029548918364167603`;
+- sealed gradient L2 norm: `0.00012675530517663626`;
+- sealed gradient infinity norm: `0.00008273717518741651`;
+- accepted objective trace: non-increasing;
+- coefficient reconstruction maximum absolute delta: `5.4577231622943145e-11`.
+
+Status: `NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED`. Validation/final remained unread, and the historical model/checkpoint was not rewritten.
