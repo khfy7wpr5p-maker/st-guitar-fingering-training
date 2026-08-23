@@ -53,3 +53,13 @@ That engine evidence records repository-fixture-only diagnostic execution. It gr
 Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`. Numerical evidence is now supplemental and complete for the frozen DEVELOPMENT surface; it grants no runtime or production authority.
 
 See `ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`, `SAFETY.md`, and `DATASET_CONTRACT.md` for the synchronized live view. Historical stage records under `docs/` and `evidence/` remain immutable evidence.
+
+## Licensing
+
+First-party software and first-party model rights identified by this repository
+are available under the PolyForm Noncommercial License 1.0.0. Commercial use
+requires a separate signed agreement; see
+[`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md). Dataset provenance,
+commercial-training exclusions, model authority, third-party notices, and
+contributor terms are documented in [`DATASET-LICENSES.md`](DATASET-LICENSES.md),
+[`MODEL-LICENSE.md`](MODEL-LICENSE.md), and [`CONTRIBUTING.md`](CONTRIBUTING.md).
