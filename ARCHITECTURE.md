@@ -42,7 +42,9 @@ S2-A targets `STATIC_STANDARD_FINGERING_NATURALNESS` over exact S1-H-C.v1 assign
 - protocol SHA-256: `db67d88c4889a2b8c63411cd1e9bbd7481248dfbdd76da67f5df60b3871b4c02`;
 - shadow-integration review SHA-256: `f42809c1ca9d5f6ff1c62dd072c91a9195bb46e1714e88bd84e8a5a57eef9140`.
 
-The v2 scientific sequence is complete: preregistration -> DEVELOPMENT -> one-shot VALIDATION -> sealed model -> one-shot UNTOUCHED_FINAL -> checkpoint-retention review -> cross-repository shadow-integration review. There was no post-final refit.
+The v2 scientific sequence is complete: preregistration -> DEVELOPMENT -> one-shot VALIDATION -> sealed model -> one-shot UNTOUCHED_FINAL -> checkpoint-retention review -> cross-repository shadow-integration review -> DEVELOPMENT-only numerical evidence hardening. There was no post-final refit.
+
+Numerical evidence status: `NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED`. Artifact `evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json`, byte SHA-256 `30f31a2322d0bdb45422c9715eb4a720d8b14c87b2fb1015fb457cb199392670`, internal SHA-256 `0321a793bce30a9857720e9ec61c289e40ab2eef02f05c9fbe80e782152c491e`. The exact DEVELOPMENT reconstruction records L-BFGS success/status 0, `n_iter=37`, 39 function/gradient evaluations, projected-gradient termination, sealed gradient infinity norm `0.00008273717518741651 <= 0.0001`, and a non-increasing accepted objective trace. The historical checkpoint remains byte-identical.
 
 ## Cross-repository boundary
 
@@ -54,4 +56,4 @@ That artifact belongs to the engine repository. It demonstrates bounded fixture-
 
 Current gates remain fail-closed: `new_training_or_refit_authorized=false`, `runtime_connection_authorized=false`, and `production_authorized=false`.
 
-Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`. Numerical optimizer-convergence hardening is a separate evidence task; retained `n_iter=37` is not presented as a gradient-norm or termination-certificate substitute.
+Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`.

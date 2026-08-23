@@ -40,6 +40,8 @@ The engine's `GUITARSET_V2_CONTROLLED_OFFLINE_SHADOW_EVIDENCE_COMPLETE` artifact
 
 Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`.
 
-## Scientific honesty
+## Numerical evidence safety
 
-The sealed v2 evidence supports the preregistered predictive gates and 10/10 reproducibility. It records `n_iter=37`, but does not include a gradient norm or independent optimizer termination certificate. This documentation does not call that absent numerical evidence complete. Any hardening must create a new supplemental evidence version through controlled reconstruction; it must not alter the historical checkpoint or open runtime authority.
+`NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED` is sealed in `evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json` (byte SHA-256 `30f31a2322d0bdb45422c9715eb4a720d8b14c87b2fb1015fb457cb199392670`, internal SHA-256 `0321a793bce30a9857720e9ec61c289e40ab2eef02f05c9fbe80e782152c491e`). The DEVELOPMENT-only diagnostic records L-BFGS status 0, projected-gradient termination, `n_iter=37`, 39 function/gradient evaluations, sealed gradient infinity norm `0.00008273717518741651 <= 0.0001`, a non-increasing accepted objective trace, and coefficient delta `5.4577231622943145e-11`.
+
+Validation/final access remained false. The historical model was not rewritten; checkpoint replacement, model mutation/refit, runtime connection, production, and fret-20 quality authority remain false.

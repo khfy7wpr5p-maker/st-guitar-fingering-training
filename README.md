@@ -32,6 +32,8 @@ Current v2 facts:
 
 The retained checkpoint is research-only. `new_training_or_refit_authorized=false`, `runtime_connection_authorized=false`, and `production_authorized=false`.
 
+Numerical status: `NUMERICAL_HARDENING_PASS_MODEL_UNCHANGED_RUNTIME_CLOSED`. The DEVELOPMENT-only supplemental artifact is `evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json` (byte SHA-256 `30f31a2322d0bdb45422c9715eb4a720d8b14c87b2fb1015fb457cb199392670`, internal evidence SHA-256 `0321a793bce30a9857720e9ec61c289e40ab2eef02f05c9fbe80e782152c491e`). It records L-BFGS status 0, projected-gradient convergence, `n_iter=37`, 39 function/gradient evaluations, sealed gradient infinity norm `0.00008273717518741651 <= 0.0001`, a non-increasing accepted objective trace, and coefficient reconstruction delta `5.4577231622943145e-11` without rewriting the model.
+
 ## Sealed GuitarSet v2 results
 
 - DEVELOPMENT: 7,919 ambiguous events and 342,904 symmetric pair rows; learned Top-1 `0.733522626` vs baseline `0.498412364`; learned MRR `0.857954420` vs baseline `0.599848430`; 4/4 performer-fold wins; 10/10 deterministic reproduction.
@@ -48,6 +50,6 @@ The GuitarTab Engine has now sealed `GUITARSET_V2_CONTROLLED_OFFLINE_SHADOW_EVID
 
 That engine evidence records repository-fixture-only diagnostic execution. It grants no authority back to this training repository and does not authorize runtime selection.
 
-Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`. A separate numerical-convergence hardening record may be produced only through an explicitly controlled reconstruction; current documents do not mislabel `n_iter=37` as a gradient- or optimizer-certificate.
+Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`. Numerical evidence is now supplemental and complete for the frozen DEVELOPMENT surface; it grants no runtime or production authority.
 
 See `ARCHITECTURE.md`, `STATUS.md`, `ROADMAP.md`, `SAFETY.md`, and `DATASET_CONTRACT.md` for the synchronized live view. Historical stage records under `docs/` and `evidence/` remain immutable evidence.
