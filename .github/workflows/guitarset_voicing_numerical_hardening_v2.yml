@@ -1,0 +1,72 @@
+name: guitarset-voicing-numerical-hardening-v2
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  numerical-hardening:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+
+      - name: Validate bounded numerical-hardening request
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          request = json.loads(Path('evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_request_v2.json').read_text())
+          assert request['allowed_data_role'] == 'DEVELOPMENT_ONLY'
+          assert request['diagnostic_reconstruction_authorized'] is True
+          for field in (
+              'checkpoint_replacement_authorized',
+              'model_mutation_authorized',
+              'validation_access_authorized',
+              'final_access_authorized',
+              'runtime_connection_authorized',
+              'production_authorized',
+          ):
+              assert request[field] is False, field
+          PY
+
+      - name: Install exact numerical environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'numpy==2.3.5' 'scipy==1.17.0' 'scikit-learn==1.8.0'
+          python -m pip install -e .
+
+      - name: Run focused numerical guard tests
+        run: python -m unittest tests.test_guitarset_voicing_numerical_hardening_v2 -v
+
+      - name: Download hash-pinned GuitarSet DEVELOPMENT source
+        run: |
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+            --fail --location --retry 3 --retry-all-errors \
+            --connect-timeout 30 --max-time 600 \
+            'https://zenodo.org/records/1422265/files/GuitarSet_annotation_only.zip?download=1' \
+            --output /tmp/GuitarSet_annotation_only.zip
+          echo '06dc776d1de92021632e30795f0d4f38534fe01ca5342a164e80e8cd287980fe  /tmp/GuitarSet_annotation_only.zip' | sha256sum -c -
+
+      - name: Execute DEVELOPMENT-only numerical reconstruction
+        run: |
+          mkdir -p /tmp/guitarset-numerical-hardening-v2
+          python scripts/run_guitarset_voicing_numerical_hardening_v2.py \
+            /tmp/GuitarSet_annotation_only.zip \
+            --model evidence/stage7g_e4_guitarset_observed_voicing_development_model_v2.json \
+            --request evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_request_v2.json \
+            --source-code-sha "$GITHUB_SHA" \
+            --report /tmp/guitarset-numerical-hardening-v2/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json
+
+      - name: Upload bounded numerical evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: guitarset-observed-voicing-numerical-hardening-v2
+          path: /tmp/guitarset-numerical-hardening-v2/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json
+          if-no-files-found: error
+          retention-days: 14
