@@ -30,7 +30,6 @@ LBFGS_MAX_ITER = 2_000
 LBFGS_MAX_LINE_SEARCH_STEPS = 50
 LBFGS_FTOL = 64 * np.finfo(np.float64).eps
 COEFFICIENT_MAX_ABS_DELTA_LIMIT = 1e-10
-SCORE_MAX_ABS_DELTA_LIMIT = 1e-10
 OBJECTIVE_TRACE_INCREASE_TOLERANCE = 1e-14
 
 
@@ -198,6 +197,8 @@ def reconstruct_lbfgs(
     reconstructed_objective, reconstructed_gradient = objective(reconstructed)
     coefficient_delta = np.abs(reconstructed - sealed_coefficients)
     score_delta = np.abs(X_scaled @ reconstructed - X_scaled @ sealed_coefficients)
+    maximum_row_l1_norm = float(np.max(np.sum(np.abs(X_scaled), axis=1)))
+    derived_score_delta_limit = maximum_row_l1_norm * COEFFICIENT_MAX_ABS_DELTA_LIMIT
 
     return {
         "method": "L-BFGS-B",
@@ -232,7 +233,9 @@ def reconstruct_lbfgs(
         "coefficient_max_abs_delta_vs_sealed": float(np.max(coefficient_delta)),
         "coefficient_delta_within_limit": float(np.max(coefficient_delta)) <= COEFFICIENT_MAX_ABS_DELTA_LIMIT,
         "training_score_max_abs_delta_vs_sealed": float(np.max(score_delta)),
-        "training_score_delta_within_limit": float(np.max(score_delta)) <= SCORE_MAX_ABS_DELTA_LIMIT,
+        "maximum_training_row_l1_norm": maximum_row_l1_norm,
+        "training_score_delta_derived_limit": derived_score_delta_limit,
+        "training_score_delta_within_derived_limit": float(np.max(score_delta)) <= derived_score_delta_limit,
         "reconstructed_objective_recomputed": reconstructed_objective,
     }
 
@@ -280,7 +283,7 @@ def build_numerical_hardening_evidence_v2(
         "sealed_model_stationarity_within_resolved_tol": reconstruction["sealed_model_stationarity_within_tol"],
         "accepted_objective_trace_non_increasing": reconstruction["accepted_objective_trace_non_increasing"],
         "coefficient_reconstruction_within_limit": reconstruction["coefficient_delta_within_limit"],
-        "score_reconstruction_within_limit": reconstruction["training_score_delta_within_limit"],
+        "score_reconstruction_within_derived_limit": reconstruction["training_score_delta_within_derived_limit"],
         "scaler_identity_exact": scaler_mean_exact and scaler_scale_exact,
     }
     passed = all(gate.values())

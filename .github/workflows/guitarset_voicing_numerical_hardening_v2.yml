@@ -60,7 +60,7 @@ jobs:
             /tmp/GuitarSet_annotation_only.zip \
             --model evidence/stage7g_e4_guitarset_observed_voicing_development_model_v2.json \
             --request evidence/stage7g_e4_guitarset_observed_voicing_numerical_hardening_request_v2.json \
-            --source-code-sha "$GITHUB_SHA" \
+            --source-code-sha "${{ github.event.pull_request.head.sha }}" \
             --report /tmp/guitarset-numerical-hardening-v2/stage7g_e4_guitarset_observed_voicing_numerical_hardening_v2.json
 
       - name: Upload bounded numerical evidence

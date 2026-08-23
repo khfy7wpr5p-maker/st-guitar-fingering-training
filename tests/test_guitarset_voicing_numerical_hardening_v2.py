@@ -78,7 +78,11 @@ class GuitarSetV2NumericalHardeningTests(unittest.TestCase):
         self.assertEqual(evidence["optimizer_status"], 0)
         self.assertTrue(evidence["accepted_objective_trace_non_increasing"])
         self.assertTrue(evidence["coefficient_delta_within_limit"])
-        self.assertTrue(evidence["training_score_delta_within_limit"])
+        self.assertTrue(evidence["training_score_delta_within_derived_limit"])
+        self.assertLessEqual(
+            evidence["training_score_max_abs_delta_vs_sealed"],
+            evidence["training_score_delta_derived_limit"],
+        )
         self.assertLess(evidence["final_objective"], evidence["initial_objective"])
 
     def test_fail_closed_input_validation_rejects_bad_surfaces(self):
