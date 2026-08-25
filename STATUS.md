@@ -3,16 +3,21 @@
 ## Live status
 
 `LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE`
+`LIVE_DOCUMENTATION_COMPATIBILITY_GOVERNANCE_HARDENED`
 
-Documentation synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Scientific synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Compatibility/governance hardening baseline: `5b18e0c6ac44ab3fba575658dd6ac8814cc1f0f8` (PR #121).
+
+These SHA references are provenance anchors, not a claim that this document blob equals either historical commit.
 
 | Track | Current state |
 |---|---|
 | Deterministic physical and S1-H-C.v1 assignment authority | Active and authoritative |
 | MusicXML measure identifier propagation | Compatibility hardened: opaque string identity preserved through H-C and Teacher Correction audit evidence |
 | H-C failure evidence retention | Fail-closed upload guard present; audit artifact upload runs on `always()`, missing artifact remains an error |
+| Required CI safety gate | Branch-protected `test` aggregates unit/compile + real-source H-C audit + Teacher Correction pilot boundary validation |
 | S2-A Teacher naturalness | Machinery complete; no fit-eligible corpus; no real fit |
-| PR #67 S1-D legacy draft | Open draft, non-authoritative; requires fresh rebase/re-review/exact-head CI before any future use |
+| PR #67 S1-D legacy draft | Closed without merge; archived, non-authoritative |
 | PR #90 S1-H-C.v2 experiment | Closed without merge; non-authoritative |
 | GuitarSet v1 | Historical 0..19-domain evidence, frozen |
 | `GUITARSET-OBSERVED-VOICING-MODEL.v2` | Development, validation, final, retention, and integration review complete |
@@ -28,6 +33,17 @@ The target-free MusicXML parser already preserves the raw measure `number` attri
 The H-C audit command writes its JSON before returning exit status `2` on scientific failure. The workflow upload step therefore runs under `if: always()` so that a failed run remains auditable. The artifact is still mandatory: `if-no-files-found: error` remains enabled, so absence of evidence is fail-closed.
 
 These changes do not alter source reservation, H-C eligibility thresholds, deterministic assignment authority, Teacher-label access, model fitting, untouched-final access, checkpoint retention, or runtime/production authorization.
+
+## Required CI safety gate
+
+The repository's branch protection already requires the `test` check. That check is the aggregate safety gate and includes:
+
+- the full unit-test discovery suite;
+- real-source H-C capacity audit execution and PASS/invariant validation;
+- Teacher Correction v1 pilot build plus family/quarantine/untouched-final/training-boundary validation;
+- compile validation.
+
+The dedicated H-C and Teacher Correction workflows remain artifact-producing supplemental workflows. Required `test` therefore prevents those safety-critical behaviors from becoming optional merge checks. GitHub Actions in required CI are pinned to immutable SHAs, and CI dependency resolution is constrained for repeatability.
 
 ## GuitarSet v2 identity and result
 
