@@ -3,8 +3,12 @@
 ## Live safety statement
 
 `LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE`
+`LIVE_DOCUMENTATION_COMPATIBILITY_GOVERNANCE_HARDENED`
 
-Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Scientific synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Compatibility/governance hardening baseline: `5b18e0c6ac44ab3fba575658dd6ac8814cc1f0f8` (PR #121).
+
+These SHA references are provenance anchors, not a claim that this document blob equals either historical commit.
 
 Deterministic physical validity is authoritative. A learned score may rank only candidates already admitted by the deterministic authority; it may not create, repair, legalize, filter, truncate, or reintroduce candidates.
 
@@ -20,12 +24,18 @@ Scientific FAIL evidence must remain inspectable. `run_s2a_hc_capacity_audit.py`
 
 This does not soften the gate. `if-no-files-found: error` remains active, so a missing audit artifact is still a workflow failure. Evidence retention must never convert FAIL into PASS or authorize a subsequent scientific stage.
 
+## Required CI safety boundary
+
+The branch-protected `test` check is the required aggregate merge gate. It must execute the ordinary unit/compile suite plus the real-source H-C capacity audit and Teacher Correction v1 pilot boundary validation. Dedicated artifact workflows remain supplemental; a safety-critical behavior may not become optional merely because its standalone workflow name is not listed separately in branch protection.
+
+Required CI uses immutable commit SHAs for GitHub Actions and a repository CI constraints file for Python dependency resolution. These controls reduce supply-chain drift and improve reproducibility; they grant no scientific, model, runtime, or production authority.
+
 ## Separate research targets
 
 - S2-A ranks S1-H-C.v1 finger assignments for static naturalness. Batch01 is diagnostic-only and contributes zero fit rows. No fit-eligible corpus means no real S2-A fit.
 - `GUITARSET-OBSERVED-VOICING-MODEL.v2` ranks exact string/fret candidates for a fixed pitch multiset. Its scientific gates are complete, but its retained checkpoint is research-only.
 - PR #90 is closed without merge and cannot replace S1-H-C.v1.
-- PR #67 is an older draft and remains non-authoritative until a fresh rebase, architecture review, and exact-head CI are separately approved.
+- PR #67 is closed without merge and archived as non-authoritative legacy work. Any future reuse requires a fresh branch from current `main`, architecture/contract review, exact-head CI, and separate approval.
 
 ## GuitarSet v2 limits
 
