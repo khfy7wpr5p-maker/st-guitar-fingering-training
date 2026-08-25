@@ -109,6 +109,7 @@ jobs:
           assert boundary['shadow_or_production_integration'] is False
           PY
       - name: Upload H-C capacity audit evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: st-guitar-s2a-hc-capacity-audit
