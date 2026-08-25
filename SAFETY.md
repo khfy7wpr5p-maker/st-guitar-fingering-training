@@ -8,11 +8,24 @@ Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
 
 Deterministic physical validity is authoritative. A learned score may rank only candidates already admitted by the deterministic authority; it may not create, repair, legalize, filter, truncate, or reintroduce candidates.
 
+## Source identity integrity
+
+MusicXML measure identifiers are opaque source identity fields. They must remain exact strings through target-free parsing, H-C capacity evidence, Teacher task identity, and Teacher Correction audit output. Numeric coercion is forbidden because valid MusicXML identifiers may be non-numeric or formatting-sensitive, including `A1`, `12A`, `X`, and `001`.
+
+A component may derive a temporary numeric ordering hint from an entirely numeric identifier, but that hint must never replace or normalize the stored identifier.
+
+## Failure evidence retention
+
+Scientific FAIL evidence must remain inspectable. `run_s2a_hc_capacity_audit.py` writes the audit JSON before returning exit status `2`; the GitHub Actions artifact upload therefore runs with `if: always()` so the evidence survives a failed audit step or a later assertion failure.
+
+This does not soften the gate. `if-no-files-found: error` remains active, so a missing audit artifact is still a workflow failure. Evidence retention must never convert FAIL into PASS or authorize a subsequent scientific stage.
+
 ## Separate research targets
 
 - S2-A ranks S1-H-C.v1 finger assignments for static naturalness. Batch01 is diagnostic-only and contributes zero fit rows. No fit-eligible corpus means no real S2-A fit.
 - `GUITARSET-OBSERVED-VOICING-MODEL.v2` ranks exact string/fret candidates for a fixed pitch multiset. Its scientific gates are complete, but its retained checkpoint is research-only.
 - PR #90 is closed without merge and cannot replace S1-H-C.v1.
+- PR #67 is an older draft and remains non-authoritative until a fresh rebase, architecture review, and exact-head CI are separately approved.
 
 ## GuitarSet v2 limits
 

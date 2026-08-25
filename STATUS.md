@@ -9,7 +9,10 @@ Documentation synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd`
 | Track | Current state |
 |---|---|
 | Deterministic physical and S1-H-C.v1 assignment authority | Active and authoritative |
+| MusicXML measure identifier propagation | Compatibility hardened: opaque string identity preserved through H-C and Teacher Correction audit evidence |
+| H-C failure evidence retention | Fail-closed upload guard present; audit artifact upload runs on `always()`, missing artifact remains an error |
 | S2-A Teacher naturalness | Machinery complete; no fit-eligible corpus; no real fit |
+| PR #67 S1-D legacy draft | Open draft, non-authoritative; requires fresh rebase/re-review/exact-head CI before any future use |
 | PR #90 S1-H-C.v2 experiment | Closed without merge; non-authoritative |
 | GuitarSet v1 | Historical 0..19-domain evidence, frozen |
 | `GUITARSET-OBSERVED-VOICING-MODEL.v2` | Development, validation, final, retention, and integration review complete |
@@ -17,6 +20,14 @@ Documentation synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd`
 | Engine controlled-offline v2 evidence | `GUITARSET_V2_CONTROLLED_OFFLINE_SHADOW_EVIDENCE_COMPLETE` |
 | Engine runtime connection | Closed pending human review |
 | Production learned selection | Closed |
+
+## Compatibility hardening
+
+The target-free MusicXML parser already preserves the raw measure `number` attribute as `str`. H-C capacity evidence and Teacher Correction audit generation now use the same contract instead of coercing measure identity with `int(...)`. Regression coverage explicitly preserves `A1`, `12A`, `X`, and zero-padded `001`.
+
+The H-C audit command writes its JSON before returning exit status `2` on scientific failure. The workflow upload step therefore runs under `if: always()` so that a failed run remains auditable. The artifact is still mandatory: `if-no-files-found: error` remains enabled, so absence of evidence is fail-closed.
+
+These changes do not alter source reservation, H-C eligibility thresholds, deterministic assignment authority, Teacher-label access, model fitting, untouched-final access, checkpoint retention, or runtime/production authorization.
 
 ## GuitarSet v2 identity and result
 

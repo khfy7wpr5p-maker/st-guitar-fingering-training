@@ -9,6 +9,8 @@ Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
 ## Completed and sealed
 
 - deterministic physical candidate generation and S1-H-C.v1 assignment authority;
+- MusicXML measure identity compatibility hardening: opaque string identifiers are preserved through H-C capacity and Teacher Correction audit evidence, with regression coverage for non-numeric and zero-padded values;
+- H-C failure-evidence retention: the audit artifact upload runs under `if: always()` while missing evidence remains fail-closed through `if-no-files-found: error`;
 - S2-A feature, blind-task, pairwise ranker, development-CV, and final-evaluation machinery;
 - GuitarSet ingestion, performer-isolated split, v1 research history, and separate v2 preregistration;
 - `GUITARSET-OBSERVED-VOICING-MODEL.v2` DEVELOPMENT, one-shot VALIDATION, model seal, one-shot UNTOUCHED_FINAL, checkpoint-retention review, and shadow-integration review;
@@ -32,6 +34,8 @@ V2 identity remains fixed:
 3. Separate approval for any authoritative selector influence or production activation.
 
 PR #90 is closed without merge; S1-H-C.v1 remains authoritative. It is not a continuation gate.
+
+PR #67 is a legacy draft based on an older architecture snapshot. It is not a continuation gate and must not be merged without a fresh rebase onto current `main`, contract review, and exact-head CI under a separately approved scope.
 
 Current authorization: `new_training_or_refit_authorized=false`, `runtime_connection_authorized=false`, and `production_authorized=false`.
 
