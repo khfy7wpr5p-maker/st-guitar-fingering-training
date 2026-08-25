@@ -25,6 +25,18 @@ source score / observed event
 
 Learned code cannot create, repair, legalize, filter, truncate, or reintroduce a candidate. It cannot change physical validity, canonical output, TAB output, or writer behavior.
 
+## MusicXML identity compatibility boundary
+
+MusicXML measure numbers are treated as opaque source identifiers, not integers. `TargetFreeEvent.measure` remains a `str`, and downstream H-C capacity evidence plus Teacher Correction audit rows must preserve that exact identifier. Values such as `A1`, `12A`, `X`, or zero-padded `001` are valid identity values and must not be coerced to numeric form.
+
+Numeric interpretation may be used only as a local ordering hint when a measure identifier is entirely numeric; it must never rewrite the stored identifier or change event identity. This keeps the target-free parser, H-C audit, Teacher task identity, and audit evidence on one compatible contract.
+
+## Audit evidence retention boundary
+
+The H-C capacity command writes its audit JSON before returning exit status `2` for a scientific FAIL. The workflow therefore uploads the evidence step with `if: always()` so a failed audit remains inspectable. `if-no-files-found: error` stays enabled: missing evidence is itself a failure and is never converted into success.
+
+This retention rule changes observability only. It does not weaken the H-C gate, alter replacement selection, authorize Teacher labels, fit a model, open untouched-final data, retain a checkpoint, or enable shadow/production integration.
+
 ## S2-A path
 
 S2-A targets `STATIC_STANDARD_FINGERING_NATURALNESS` over exact S1-H-C.v1 assignment IDs. Its 30D target-blind feature contract and fail-closed pairwise ranking/evaluation code exist. Batch01 is diagnostic-only and contributes zero fit rows; a fit-eligible fresh Teacher corpus is unavailable. Consequently no real S2-A model fit, untouched-final opening, or checkpoint exists.
@@ -57,3 +69,7 @@ That artifact belongs to the engine repository. It demonstrates bounded fixture-
 Current gates remain fail-closed: `new_training_or_refit_authorized=false`, `runtime_connection_authorized=false`, and `production_authorized=false`.
 
 Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`.
+
+## Legacy draft isolation
+
+PR #67 (`Stage 7G-E3-S1-D`) remains a draft created against a substantially older `main` snapshot. It is non-authoritative and must not be merged merely because GitHub reports it mergeable. Any future use requires a fresh rebase onto current `main`, contract review against the live S1-H-C/S2-A/GuitarSet architecture, and exact-head CI before separate approval.
