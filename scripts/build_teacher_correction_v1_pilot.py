@@ -95,7 +95,7 @@ def _candidate_tasks_for_source(source, quarantine: dict) -> tuple[tuple[dict, d
                 "family_id": source.family_id,
                 "source_sha256": source.source_sha256,
                 "event_id": event_id,
-                "measure": int(event.measure),
+                "measure": str(event.measure),
                 "onset": str(event.onset),
                 "voice": str(event.voice),
                 "pitches_midi": list(event.pitches_midi),
