@@ -12,7 +12,7 @@ S2A_HC_MIN_ELIGIBLE_EVENTS = 8
 
 @dataclass(frozen=True)
 class HCCapacityEvent:
-    measure: int
+    measure: str
     onset: str
     voice: str
     pitches_midi: tuple[int, ...]
@@ -38,9 +38,9 @@ class HCCapacityAudit:
         return self.status == "PASS"
 
 
-def _event_identity(event) -> tuple[int, str, str, tuple[int, ...]]:
+def _event_identity(event) -> tuple[str, str, str, tuple[int, ...]]:
     return (
-        int(event.measure),
+        str(event.measure),
         str(event.onset),
         str(event.voice),
         tuple(sorted(int(value) for value in event.pitches_midi)),
