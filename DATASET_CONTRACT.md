@@ -3,10 +3,12 @@
 ## Live contract view
 
 `LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE`
+`LIVE_DOCUMENTATION_COMPATIBILITY_GOVERNANCE_HARDENED`
 
-Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Scientific synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Compatibility/governance hardening baseline: `5b18e0c6ac44ab3fba575658dd6ac8814cc1f0f8` (PR #121).
 
-This file summarizes the current live data boundary. Versioned contracts and sealed evidence under `docs/` and `evidence/` remain the exact historical authority.
+These SHA references are provenance anchors, not a claim that this document blob equals either historical commit. This file summarizes the current live data boundary. Versioned contracts and sealed evidence under `docs/` and `evidence/` remain the exact historical authority.
 
 ## GuitarSet observed voicing
 
@@ -42,7 +44,7 @@ Development, validation, untouched-final, retention, integration-review, and DEV
 
 S2-A is a separate target over S1-H-C.v1 assignment IDs. Batch01 is `DIAGNOSTIC_ONLY_NEVER_TRAINING` because its source-family identities had already participated in earlier development. Its effective fit-row count is zero. No fit-eligible fresh Teacher corpus is currently available, so no real S2-A fit has occurred.
 
-PR #90 is closed without merge and does not change S1-H-C.v1 or retroactively relabel S2-A evidence.
+PR #90 is closed without merge and does not change S1-H-C.v1 or retroactively relabel S2-A evidence. PR #67 is closed without merge and remains non-authoritative historical work.
 
 ## Cross-repository and privacy boundary
 

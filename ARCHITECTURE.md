@@ -3,8 +3,12 @@
 ## Live architecture view
 
 `LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE`
+`LIVE_DOCUMENTATION_COMPATIBILITY_GOVERNANCE_HARDENED`
 
-Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Scientific synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).
+Compatibility/governance hardening baseline: `5b18e0c6ac44ab3fba575658dd6ac8814cc1f0f8` (PR #121).
+
+These SHA references are provenance anchors, not a claim that this document blob equals either historical commit.
 
 The architecture separates deterministic candidate authority from two independent learned ranking paths.
 
@@ -36,6 +40,12 @@ Numeric interpretation may be used only as a local ordering hint when a measure 
 The H-C capacity command writes its audit JSON before returning exit status `2` for a scientific FAIL. The workflow therefore uploads the evidence step with `if: always()` so a failed audit remains inspectable. `if-no-files-found: error` stays enabled: missing evidence is itself a failure and is never converted into success.
 
 This retention rule changes observability only. It does not weaken the H-C gate, alter replacement selection, authorize Teacher labels, fit a model, open untouched-final data, retain a checkpoint, or enable shadow/production integration.
+
+## Required CI safety gate
+
+The branch-protected `test` check is the aggregate merge gate. It must include the normal unit/compile suite plus the real-source H-C capacity audit and Teacher Correction v1 pilot boundary validation. The dedicated H-C and Teacher Correction workflows remain supplemental artifact-producing workflows; their absence from branch-protection configuration must not create a bypass because the same safety-critical behavior is exercised inside required `test`.
+
+GitHub Actions used by the required gate are pinned to immutable commit SHAs, and CI dependency resolution is constrained by the repository's CI constraints file. These controls improve repeatability without changing model or deterministic authority.
 
 ## S2-A path
 
@@ -72,4 +82,4 @@ Next human/consequential gate: `ENGINE_RUNTIME_SHADOW_CONNECTION_REVIEW`.
 
 ## Legacy draft isolation
 
-PR #67 (`Stage 7G-E3-S1-D`) remains a draft created against a substantially older `main` snapshot. It is non-authoritative and must not be merged merely because GitHub reports it mergeable. Any future use requires a fresh rebase onto current `main`, contract review against the live S1-H-C/S2-A/GuitarSet architecture, and exact-head CI before separate approval.
+PR #67 (`Stage 7G-E3-S1-D`) is closed without merge and archived as non-authoritative legacy work. Any future reuse requires a new branch from current `main`, contract review against the live S1-H-C/S2-A/GuitarSet architecture, fresh exact-head CI, and separate approval.

@@ -5,15 +5,19 @@ Training, evaluation, and deterministic guitar-fingering research for polyphony,
 ## Live repository position
 
 `LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE`
+`LIVE_DOCUMENTATION_COMPATIBILITY_GOVERNANCE_HARDENED`
 
-This live view was reconciled against source commit `929264a1778b061ff21464da41ecacbcd952a3cd` (merged PR #115). Historical, versioned evidence documents remain authoritative for the stage at which they were sealed.
+Scientific synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (merged PR #115).
+Compatibility/governance hardening baseline: `5b18e0c6ac44ab3fba575658dd6ac8814cc1f0f8` (merged PR #121).
+
+These SHA references are provenance anchors, not a claim that the current document blob equals either historical commit. Historical, versioned evidence documents remain authoritative for the stage at which they were sealed.
 
 The repository has two deliberately separate learned-research paths:
 
 1. **S2-A static fingering naturalness** ranks exact S1-H-C.v1 assignment IDs from blind Teacher supervision. The executable ranker, development CV, and final-evaluation machinery exist, but no fit-eligible fresh Teacher corpus has passed the frozen admission gate. Batch01 is `DIAGNOSTIC_ONLY_NEVER_TRAINING` and contributes zero fit rows. No real S2-A fit has been executed.
 2. **GuitarSet observed voicing** ranks physically exact string/fret realizations for a fixed MIDI pitch multiset. Historical v1 used candidate frets 0..19. Separately preregistered `GUITARSET-OBSERVED-VOICING-MODEL.v2` uses candidate domain: 0..20 and completed DEVELOPMENT, one-shot VALIDATION, one-shot UNTOUCHED_FINAL, checkpoint-retention review, and shadow-integration review.
 
-PR #90 is closed without merge. Its S1-H-C.v2 same-fret experiment is not authoritative; S1-H-C.v1 remains the assignment authority consumed by S2-A.
+PR #90 is closed without merge. Its S1-H-C.v2 same-fret experiment is not authoritative; S1-H-C.v1 remains the assignment authority consumed by S2-A. PR #67 is also closed without merge and archived as non-authoritative legacy work.
 
 ## Non-negotiable authority boundary
 

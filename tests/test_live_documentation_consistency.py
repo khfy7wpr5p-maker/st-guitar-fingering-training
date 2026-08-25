@@ -13,7 +13,9 @@ LIVE_DOCS = (
 
 COMMON_REQUIRED = (
     "LIVE_DOCUMENTATION_GUITARSET_V2_SYNC_COMPLETE",
-    "929264a1778b061ff21464da41ecacbcd952a3cd",
+    "LIVE_DOCUMENTATION_COMPATIBILITY_GOVERNANCE_HARDENED",
+    "Scientific synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115)",
+    "Compatibility/governance hardening baseline: `5b18e0c6ac44ab3fba575658dd6ac8814cc1f0f8` (PR #121)",
     "GUITARSET-OBSERVED-VOICING-MODEL.v2",
     "candidate domain: 0..20",
     "observed positive-gold domain: 0..19",
@@ -38,8 +40,12 @@ STALE_LIVE_CLAIMS = (
     "Current live baseline after merged PR #93",
     "Current main baseline after merged PR #93",
     "Architecture synchronization base (PR #93 merge)",
+    "Synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).",
+    "Documentation synchronization source: `929264a1778b061ff21464da41ecacbcd952a3cd` (PR #115).",
     "PR #90 remains open",
     "PR #90 OPEN",
+    "PR #67 S1-D legacy draft | Open draft",
+    "PR #67 (`Stage 7G-E3-S1-D`) remains a draft",
     "GuitarSet real model fit: ⛔ not executed",
     "OBSERVED_VOICING_MODEL_DEVELOPMENT_IMPLEMENTATION_AND_FIT",
     "development implementation + fit                     ⏳ NEXT GATE",
@@ -62,7 +68,7 @@ def test_all_live_documents_share_the_v2_identity_and_closed_authority_boundary(
             assert marker in text, f"{relative_path} missing {marker}"
 
 
-def test_stale_v1_era_live_claims_cannot_return():
+def test_stale_live_claims_cannot_return():
     for relative_path in LIVE_DOCS:
         text = read(relative_path)
         for stale_claim in STALE_LIVE_CLAIMS:
@@ -74,6 +80,7 @@ def test_live_status_distinguishes_untrained_s2a_from_trained_guitarset_v2():
     assert "S2-A Teacher naturalness" in status and "no real fit" in status
     assert "Development, validation, final, retention, and integration review complete" in status
     assert "PR #90" in status and "Closed without merge" in status
+    assert "PR #67 S1-D legacy draft" in status and "Closed without merge" in status
 
 
 def test_live_documents_bind_completed_numerical_hardening_without_runtime_authority():
@@ -84,3 +91,10 @@ def test_live_documents_bind_completed_numerical_hardening_without_runtime_autho
         assert "n_iter=37" in text
         assert "runtime_connection_authorized=false" in text
         assert "production_authorized=false" in text
+
+
+def test_provenance_anchors_are_not_presented_as_current_blob_identity():
+    for relative_path in LIVE_DOCS:
+        text = read(relative_path)
+        assert "provenance anchors" in text
+        assert "not a claim that" in text
