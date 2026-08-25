@@ -225,6 +225,11 @@ class TeacherCorrectionV1Tests(unittest.TestCase):
         self.assertFalse(payload["old_batch_model_selection_authorized"])
         self.assertFalse(payload["old_batch_metrics_authorized"])
 
+    def test_pilot_audit_preserves_musicxml_measure_identifier(self):
+        script = Path("scripts/build_teacher_correction_v1_pilot.py").read_text(encoding="utf-8")
+        self.assertIn('"measure": str(event.measure)', script)
+        self.assertNotIn('"measure": int(event.measure)', script)
+
 
 if __name__ == "__main__":
     unittest.main()
