@@ -1,20 +1,28 @@
 from __future__ import annotations
 
+from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
 from st_guitar_fingering_training.s2a_hc_capacity import (
     S2A_HC_CAPACITY_RULE_VERSION,
     audit_hc_capacity,
+    audit_to_dict,
 )
 
 
 TUNING = (64, 59, 55, 50, 45, 40)
 
 
-def _event(index: int, *, chord: bool = True, pitches=(60, 64, 67)):
+def _event(
+    index: int,
+    *,
+    chord: bool = True,
+    pitches=(60, 64, 67),
+    measure: str | None = None,
+):
     return SimpleNamespace(
-        measure=index + 1,
+        measure=str(index + 1) if measure is None else measure,
         onset=str(index),
         voice="1",
         pitches_midi=tuple(pitches),
@@ -44,6 +52,19 @@ class S2AHCCapacityTests(unittest.TestCase):
         self.assertEqual(audit.checked_chord_event_count, 8)
         self.assertFalse(audit.source_scan_exhausted)
         self.assertEqual(audit.reason, "S2A_HC_000_MIN_CAPACITY_REACHED")
+
+    def test_preserves_musicxml_measure_identifiers_without_numeric_coercion(self):
+        for measure in ("A1", "12A", "X", "001"):
+            with self.subTest(measure=measure):
+                audit = audit_hc_capacity(
+                    (_event(0, measure=measure),),
+                    min_eligible_events=1,
+                    generation_fn=lambda pitches, tuning: _generated(2),
+                )
+                self.assertTrue(audit.passed)
+                self.assertEqual(audit.qualifying_events[0].measure, measure)
+                serialized = audit_to_dict(audit)
+                self.assertEqual(serialized["qualifying_events"][0]["measure"], measure)
 
     def test_fails_only_after_source_exhaustion_below_eight(self):
         events = tuple(_event(index) for index in range(7))
@@ -95,6 +116,14 @@ class S2AHCCapacityTests(unittest.TestCase):
                 audit_hc_capacity(events, generation_fn=lambda pitches, tuning: _generated(3)),
                 expected,
             )
+
+    def test_hc_workflow_uploads_evidence_even_after_a_failed_audit_step(self):
+        workflow = Path(".github/workflows/s2a_hc_capacity_audit.yml").read_text(encoding="utf-8")
+        marker = "      - name: Upload H-C capacity audit evidence"
+        self.assertIn(marker, workflow)
+        upload_block = workflow.split(marker, 1)[1].split("\n      - ", 1)[0]
+        self.assertIn("\n        if: always()", upload_block)
+        self.assertIn("if-no-files-found: error", upload_block)
 
 
 if __name__ == "__main__":
